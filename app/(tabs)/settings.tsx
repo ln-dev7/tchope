@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import Constants from 'expo-constants';
 
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -399,7 +400,7 @@ export default function SettingsScreen() {
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
               <Text style={{ fontSize: 16, color: colors.textSecondary }}>{t('version')}</Text>
               <Text style={{ fontSize: 16, fontWeight: '700', color: colors.accent, fontFamily: 'monospace' }}>
-                1.0.0
+                {Constants.expoConfig?.version ?? '1.0.0'}
               </Text>
             </View>
             <View style={{ height: 1, backgroundColor: colors.border }} />
@@ -409,7 +410,7 @@ export default function SettingsScreen() {
               <Text style={{ fontSize: 16, color: colors.textSecondary }}>{t('developer')}</Text>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
                 <Text style={{ fontSize: 16, fontWeight: '600', color: colors.textMuted }}>
-                  LNDEV.ME
+                  lndev.me
                 </Text>
                 <Ionicons name="open-outline" size={12} color={colors.textMuted} />
               </View>
