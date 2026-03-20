@@ -2,7 +2,7 @@
   "expo": {
     "name": "Tchope",
     "slug": "tchope",
-    "version": "1.0.1",
+    "version": "1.0.4",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
     "scheme": "tchope",
@@ -26,7 +26,7 @@
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "com.lndev.tchope",
-      "versionCode": 2
+      "versionCode": 4
     },
     "web": {
       "output": "static",
