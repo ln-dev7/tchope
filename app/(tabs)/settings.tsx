@@ -429,7 +429,7 @@ export default function SettingsScreen() {
             </TouchableOpacity>
             <View style={{ height: 1, backgroundColor: colors.border }} />
             <TouchableOpacity
-              onPress={() => Linking.openURL('https://github.com/ln-dev7/tchope/blob/main/PRIVACY_POLICY.md')}
+              onPress={() => Linking.openURL('https://github.com/ln-dev7/tchope/blob/master/PRIVACY_POLICY.md')}
               style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
               <Text style={{ fontSize: 16, color: colors.textSecondary }}>{t('privacyPolicy')}</Text>
               <Ionicons name="open-outline" size={12} color={colors.textMuted} />
