@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import React, { useState, useRef, useCallback } from 'react';
+import { View, Text, ScrollView, TextInput, TouchableOpacity, Keyboard } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -13,7 +14,7 @@ import SearchResultCard from '@/components/SearchResultCard';
 import EmptyState from '@/components/EmptyState';
 import type { Spiciness } from '@/types';
 
-const POPULAR_INGREDIENTS = ['Igname', 'Plantain', 'Manioc', 'Gombo', 'Ndolé', 'Arachides'];
+const POPULAR_INGREDIENTS = ['Plantain', 'Manioc', 'Arachides'];
 
 export default function SearchScreen() {
   const { colors } = useTheme();
@@ -21,8 +22,19 @@ export default function SearchScreen() {
   const recipes = useLocalizedRecipes();
   const { results, query, setQuery, filters, setFilters } = useSearch(recipes);
   const [selectedIngredient, setSelectedIngredient] = useState<string | null>(null);
+  const inputRef = useRef<TextInput>(null);
+
+  useFocusEffect(
+    useCallback(() => {
+      const timeout = setTimeout(() => inputRef.current?.focus(), 100);
+      return () => clearTimeout(timeout);
+    }, [])
+  );
+
+  const dismissKeyboard = () => Keyboard.dismiss();
 
   const handleDurationFilter = (duration: 'under30' | '30to60' | 'over60' | undefined) => {
+    dismissKeyboard();
     setFilters((prev) => ({
       ...prev,
       duration: prev.duration === duration ? undefined : duration,
@@ -30,6 +42,7 @@ export default function SearchScreen() {
   };
 
   const handleSpicinessFilter = (spiciness: Spiciness | undefined) => {
+    dismissKeyboard();
     setFilters((prev) => ({
       ...prev,
       spiciness: prev.spiciness === spiciness ? undefined : spiciness,
@@ -37,6 +50,7 @@ export default function SearchScreen() {
   };
 
   const handleIngredientFilter = (ingredient: string) => {
+    dismissKeyboard();
     const newIngredient = selectedIngredient === ingredient ? null : ingredient;
     setSelectedIngredient(newIngredient);
     setFilters((prev) => ({
@@ -65,11 +79,11 @@ export default function SearchScreen() {
         {/* Search Input - same style as home */}
         <View style={{ marginHorizontal: 24, position: 'relative' }}>
           <TextInput
+            ref={inputRef}
             value={query}
             onChangeText={setQuery}
             placeholder={t('searchPlaceholder')}
             placeholderTextColor="rgba(92,91,91,0.6)"
-            autoFocus
             style={{
               backgroundColor: colors.inputBg,
               borderRadius: 48,
@@ -142,38 +156,54 @@ export default function SearchScreen() {
         </View>
 
         {/* Popular Ingredients */}
-        {!hasActiveFilters && (
-          <View style={{ gap: 24, paddingHorizontal: 24 }}>
-            <Text
-              style={{
-                fontSize: 20,
-                fontWeight: '800',
-                color: colors.text,
-                letterSpacing: -0.5,
-              }}>
-              {t('popularIngredients')}
-            </Text>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 16 }}>
-              {POPULAR_INGREDIENTS.map((ing) => (
-                <View key={ing} style={{ width: '30%' }}>
-                  <IngredientItem
-                    name={ing}
-                    active={selectedIngredient === ing}
-                    onPress={() => handleIngredientFilter(ing)}
-                  />
-                </View>
-              ))}
-            </View>
+        <View style={{ gap: 24, paddingHorizontal: 24 }}>
+          <Text
+            style={{
+              fontSize: 20,
+              fontWeight: '800',
+              color: colors.text,
+              letterSpacing: -0.5,
+            }}>
+            {t('popularIngredients')}
+          </Text>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 16 }}>
+            {POPULAR_INGREDIENTS.map((ing) => (
+              <View key={ing} style={{ width: '30%' }}>
+                <IngredientItem
+                  name={ing}
+                  active={selectedIngredient === ing}
+                  onPress={() => handleIngredientFilter(ing)}
+                />
+              </View>
+            ))}
           </View>
-        )}
+        </View>
 
         {/* Results */}
         {hasActiveFilters && (
           <View style={{ gap: 20, paddingHorizontal: 24 }}>
-            <Text style={{ fontSize: 20, fontWeight: '800', color: colors.text, letterSpacing: -0.5 }}>
-              {t('results')}{' '}
-              <Text style={{ color: colors.accentOrange }}>({results.length})</Text>
-            </Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Text style={{ fontSize: 20, fontWeight: '800', color: colors.text, letterSpacing: -0.5 }}>
+                {t('results')}{' '}
+                <Text style={{ color: colors.accentOrange }}>({results.length})</Text>
+              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setQuery('');
+                  setSelectedIngredient(null);
+                  setFilters({});
+                }}
+                style={{
+                  paddingHorizontal: 14,
+                  paddingVertical: 6,
+                  borderRadius: 20,
+                  backgroundColor: colors.surface,
+                }}>
+                <Text style={{ fontSize: 13, fontWeight: '600', color: colors.accent }}>
+                  {t('reset')}
+                </Text>
+              </TouchableOpacity>
+            </View>
 
             {results.length > 0 ? (
               <View style={{ gap: 20 }}>
