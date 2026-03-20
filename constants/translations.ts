@@ -163,6 +163,7 @@ export const translations = {
     // Contact
     contactMe: 'Me contacter',
     contactSubtitle: 'Par email ou Telegram',
+    privacyPolicy: 'Politique de confidentialité',
 
     // General
     allRecipes: 'Toutes les recettes',
@@ -335,6 +336,7 @@ export const translations = {
     // Contact
     contactMe: 'Contact Me',
     contactSubtitle: 'By email or Telegram',
+    privacyPolicy: 'Privacy Policy',
 
     // General
     allRecipes: 'All Recipes',
