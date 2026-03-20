@@ -107,6 +107,9 @@ export const recipeVideos: Record<string, RecipeVideo[]> = {
     { id: 'DMNUwEY8TMk', title: 'Ntouba — Plantain pilé camerounais' },
     { id: 'eXK0D2t8uAc', title: 'Pilé de banane' },
   ],
+  'assok-bitetam': [
+    { id: 'lq9rdzbONEQ', title: 'Assok Bitetam — Gâteau de gombos camerounais' },
+  ],
   'soya': [
     { id: 'wI25CxenE7U', title: 'Brochettes de soya' },
   ],
