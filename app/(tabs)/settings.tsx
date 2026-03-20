@@ -415,6 +415,18 @@ export default function SettingsScreen() {
                 <Ionicons name="open-outline" size={12} color={colors.textMuted} />
               </View>
             </TouchableOpacity>
+            <View style={{ height: 1, backgroundColor: colors.border }} />
+            <TouchableOpacity
+              onPress={() => Linking.openURL('https://github.com/ln-dev7/tchope')}
+              style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Text style={{ fontSize: 16, color: colors.textSecondary }}>GitHub</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                <Text style={{ fontSize: 16, fontWeight: '600', color: colors.textMuted }}>
+                  ln-dev7/tchope
+                </Text>
+                <Ionicons name="open-outline" size={12} color={colors.textMuted} />
+              </View>
+            </TouchableOpacity>
             <View style={{ paddingTop: 16, alignItems: 'center', gap: 8 }}>
               <Text style={{ fontSize: 14, color: colors.textSecondary, textAlign: 'center' }}>
                 {t('madeWith')}
