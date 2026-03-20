@@ -19,7 +19,7 @@ function InnerLayout() {
   const { isDark } = useTheme();
 
   const navTheme = isDark
-    ? { ...DarkTheme, colors: { ...DarkTheme.colors, background: '#1A1A1A', card: '#1A1A1A' } }
+    ? { ...DarkTheme, colors: { ...DarkTheme.colors, background: '#121212', card: '#121212' } }
     : { ...DefaultTheme, colors: { ...DefaultTheme.colors, background: '#F9F6F5', card: '#F9F6F5' } };
 
   return (
