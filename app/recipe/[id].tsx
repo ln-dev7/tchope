@@ -92,6 +92,8 @@ export default function RecipeDetailScreen() {
     toast(`Timer lancé : ${recipe.duration} min`, 'done');
   };
 
+  const isUserCreated = userRecipes.some((r) => r.id === recipe.id);
+
   const difficultyLabel =
     recipe.difficulty === 'Easy' ? t('easy') : recipe.difficulty === 'Hard' ? t('hard') : t('medium');
 
@@ -151,31 +153,47 @@ export default function RecipeDetailScreen() {
             paddingTop: 32,
             paddingHorizontal: 24,
           }}>
-          {/* Title + Favorite */}
+          {/* Title + Actions */}
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
             <Text style={{ fontSize: 36, fontWeight: '800', color: colors.text, letterSpacing: -1.8, flex: 1 }}>
               {recipe.name}
             </Text>
-            <TouchableOpacity
-              onPress={handleFavorite}
-              style={{
-                width: 56,
-                height: 56,
-                borderRadius: 28,
-                backgroundColor: colors.surface,
-                alignItems: 'center',
-                justifyContent: 'center',
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.05,
-                shadowRadius: 2,
-              }}>
-              <Ionicons
-                name={isFavorite(recipe.id) ? 'heart' : 'heart-outline'}
-                size={25}
-                color={isFavorite(recipe.id) ? '#E74C3C' : colors.textSecondary}
-              />
-            </TouchableOpacity>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              {isUserCreated && (
+                <TouchableOpacity
+                  onPress={() => router.push(`/add-recipe?edit=${recipe.id}` as any)}
+                  style={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: 24,
+                    backgroundColor: isDark ? 'rgba(175,173,172,0.15)' : 'rgba(175,173,172,0.1)',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  <Ionicons name="pencil-outline" size={20} color={colors.accent} />
+                </TouchableOpacity>
+              )}
+              <TouchableOpacity
+                onPress={handleFavorite}
+                style={{
+                  width: 56,
+                  height: 56,
+                  borderRadius: 28,
+                  backgroundColor: colors.surface,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 1 },
+                  shadowOpacity: 0.05,
+                  shadowRadius: 2,
+                }}>
+                <Ionicons
+                  name={isFavorite(recipe.id) ? 'heart' : 'heart-outline'}
+                  size={25}
+                  color={isFavorite(recipe.id) ? '#E74C3C' : colors.textSecondary}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
 
           {/* Meta Bento Grid */}

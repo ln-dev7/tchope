@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 
 import { useTheme } from '@/hooks/useTheme';
@@ -30,8 +30,12 @@ export default function AddRecipeScreen() {
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
-  const { addRecipe } = useUserRecipes();
+  const { edit } = useLocalSearchParams<{ edit?: string }>();
+  const { addRecipe, updateRecipe, userRecipes } = useUserRecipes();
   const { toast } = useToast();
+
+  const editingRecipe = edit ? userRecipes.find((r) => r.id === edit) : null;
+  const isEditing = !!editingRecipe;
 
   const [name, setName] = useState('');
   const [region, setRegion] = useState<Region>('Centre');
@@ -43,6 +47,24 @@ export default function AddRecipeScreen() {
   ]);
   const [steps, setSteps] = useState<string[]>(['']);
   const [imageUri, setImageUri] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (editingRecipe) {
+      setName(editingRecipe.name);
+      setRegion(editingRecipe.region);
+      setDuration(String(editingRecipe.duration));
+      setDifficulty(editingRecipe.difficulty);
+      setIngredients(
+        editingRecipe.ingredients.length > 0
+          ? editingRecipe.ingredients
+          : [{ name: '', quantity: '' }]
+      );
+      setSteps(
+        editingRecipe.steps.length > 0 ? editingRecipe.steps : ['']
+      );
+      setImageUri(editingRecipe.imageUri ?? null);
+    }
+  }, [editingRecipe]);
 
   const handlePickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -92,8 +114,8 @@ export default function AddRecipeScreen() {
       return;
     }
 
-    const newRecipe: UserRecipe = {
-      id: `user-${Date.now()}`,
+    const recipe: UserRecipe = {
+      id: isEditing ? editingRecipe!.id : `user-${Date.now()}`,
       name: name.trim(),
       description: '',
       image: null,
@@ -107,12 +129,17 @@ export default function AddRecipeScreen() {
       ingredients: ingredients.filter((i) => i.name.trim()),
       steps: steps.filter((s) => s.trim()),
       isUserCreated: true,
-      createdAt: new Date().toISOString(),
+      createdAt: isEditing ? editingRecipe!.createdAt : new Date().toISOString(),
       imageUri,
     };
 
-    addRecipe(newRecipe);
-    toast(t('recipeAdded'), 'done');
+    if (isEditing) {
+      updateRecipe(editingRecipe!.id, recipe);
+      toast(t('recipeUpdated'), 'done');
+    } else {
+      addRecipe(recipe);
+      toast(t('recipeAdded'), 'done');
+    }
     router.back();
   };
 
@@ -156,7 +183,7 @@ export default function AddRecipeScreen() {
           <Ionicons name="arrow-back" size={20} color={colors.text} />
         </TouchableOpacity>
         <Text style={{ fontSize: 20, fontWeight: '700', color: colors.accent, letterSpacing: -0.5, flex: 1 }}>
-          {t('newRecipe')}
+          {isEditing ? t('editRecipe') : t('newRecipe')}
         </Text>
       </View>
 

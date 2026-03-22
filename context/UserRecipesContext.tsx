@@ -7,6 +7,7 @@ const USER_RECIPES_KEY = 'tchope_user_recipes';
 type UserRecipesContextType = {
   userRecipes: UserRecipe[];
   addRecipe: (recipe: UserRecipe) => void;
+  updateRecipe: (id: string, recipe: UserRecipe) => void;
   deleteRecipe: (id: string) => void;
   clearAll: () => void;
 };
@@ -14,6 +15,7 @@ type UserRecipesContextType = {
 const UserRecipesContext = createContext<UserRecipesContextType>({
   userRecipes: [],
   addRecipe: () => {},
+  updateRecipe: () => {},
   deleteRecipe: () => {},
   clearAll: () => {},
 });
@@ -37,6 +39,14 @@ export function UserRecipesProvider({ children }: { children: React.ReactNode })
     });
   }, []);
 
+  const updateRecipe = useCallback((id: string, recipe: UserRecipe) => {
+    setUserRecipes((prev) => {
+      const next = prev.map((r) => (r.id === id ? recipe : r));
+      AsyncStorage.setItem(USER_RECIPES_KEY, JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
   const deleteRecipe = useCallback((id: string) => {
     setUserRecipes((prev) => {
       const next = prev.filter((r) => r.id !== id);
@@ -51,7 +61,7 @@ export function UserRecipesProvider({ children }: { children: React.ReactNode })
   }, []);
 
   return (
-    <UserRecipesContext.Provider value={{ userRecipes, addRecipe, deleteRecipe, clearAll }}>
+    <UserRecipesContext.Provider value={{ userRecipes, addRecipe, updateRecipe, deleteRecipe, clearAll }}>
       {children}
     </UserRecipesContext.Provider>
   );
