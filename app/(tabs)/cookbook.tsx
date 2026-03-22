@@ -171,30 +171,41 @@ export default function CookbookScreen() {
                 {userRecipes.map((recipe) => (
                   <View key={recipe.id} style={{ position: 'relative' }}>
                     <RecipeCard recipe={recipe} />
-                    <TouchableOpacity
-                      onPress={() => {
-                        Alert.alert(
-                          t('clearConfirm'),
-                          t('clearConfirmMessage'),
-                          [
-                            { text: t('cancel'), style: 'cancel' },
-                            { text: t('confirm'), style: 'destructive', onPress: () => deleteRecipe(recipe.id) },
-                          ]
-                        );
-                      }}
-                      style={{
-                        position: 'absolute',
-                        top: 12,
-                        right: 12,
-                        width: 32,
-                        height: 32,
-                        borderRadius: 16,
-                        backgroundColor: 'rgba(231,76,60,0.1)',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}>
-                      <Ionicons name="trash-outline" size={14} color="#E74C3C" />
-                    </TouchableOpacity>
+                    <View style={{ position: 'absolute', top: 12, right: 12, flexDirection: 'row', gap: 8 }}>
+                      <TouchableOpacity
+                        onPress={() => router.push(`/add-recipe?edit=${recipe.id}` as any)}
+                        style={{
+                          width: 32,
+                          height: 32,
+                          borderRadius: 16,
+                          backgroundColor: isDark ? 'rgba(145,71,0,0.15)' : 'rgba(145,71,0,0.1)',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}>
+                        <Ionicons name="pencil-outline" size={14} color={colors.accent} />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => {
+                          Alert.alert(
+                            t('clearConfirm'),
+                            t('clearConfirmMessage'),
+                            [
+                              { text: t('cancel'), style: 'cancel' },
+                              { text: t('confirm'), style: 'destructive', onPress: () => deleteRecipe(recipe.id) },
+                            ]
+                          );
+                        }}
+                        style={{
+                          width: 32,
+                          height: 32,
+                          borderRadius: 16,
+                          backgroundColor: 'rgba(231,76,60,0.1)',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}>
+                        <Ionicons name="trash-outline" size={14} color="#E74C3C" />
+                      </TouchableOpacity>
+                    </View>
                   </View>
                 ))}
               </View>
