@@ -75,11 +75,15 @@ export default function RecipeImage({ recipeId, category, imageUri, style, borde
     );
   }
 
-  // User recipe without photo (id starts with "user-") -> emoji placeholder
+  // User recipe without photo (id starts with "user-") -> app logo
   if (recipeId.startsWith('user-')) {
     return (
-      <View style={[{ overflow: 'hidden', borderRadius }, style]}>
-        <EmojiPlaceholder category={category} isDark={isDark} />
+      <View style={[{ overflow: 'hidden', borderRadius, backgroundColor: isDark ? '#1A1A1A' : '#F5F5F5', alignItems: 'center', justifyContent: 'center' }, style]}>
+        <Image
+          source={require('@/assets/images/logo.png')}
+          style={{ width: 64, height: 64, borderRadius: 12 }}
+          contentFit="contain"
+        />
       </View>
     );
   }
