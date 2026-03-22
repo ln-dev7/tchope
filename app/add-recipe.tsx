@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -37,34 +37,22 @@ export default function AddRecipeScreen() {
   const editingRecipe = edit ? userRecipes.find((r) => r.id === edit) : null;
   const isEditing = !!editingRecipe;
 
-  const [name, setName] = useState('');
-  const [region, setRegion] = useState<Region>('Centre');
+  const [name, setName] = useState(editingRecipe?.name ?? '');
+  const [region, setRegion] = useState<Region>(editingRecipe?.region ?? 'Centre');
   const [showRegionPicker, setShowRegionPicker] = useState(false);
-  const [duration, setDuration] = useState('45');
-  const [difficulty, setDifficulty] = useState<Difficulty>('Easy');
-  const [ingredients, setIngredients] = useState<{ name: string; quantity: string }[]>([
-    { name: '', quantity: '' },
-  ]);
-  const [steps, setSteps] = useState<string[]>(['']);
-  const [imageUri, setImageUri] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (editingRecipe) {
-      setName(editingRecipe.name);
-      setRegion(editingRecipe.region);
-      setDuration(String(editingRecipe.duration));
-      setDifficulty(editingRecipe.difficulty);
-      setIngredients(
-        editingRecipe.ingredients.length > 0
-          ? editingRecipe.ingredients
-          : [{ name: '', quantity: '' }]
-      );
-      setSteps(
-        editingRecipe.steps.length > 0 ? editingRecipe.steps : ['']
-      );
-      setImageUri(editingRecipe.imageUri ?? null);
-    }
-  }, [editingRecipe]);
+  const [duration, setDuration] = useState(editingRecipe ? String(editingRecipe.duration) : '45');
+  const [difficulty, setDifficulty] = useState<Difficulty>(editingRecipe?.difficulty ?? 'Easy');
+  const [ingredients, setIngredients] = useState<{ name: string; quantity: string }[]>(
+    editingRecipe && editingRecipe.ingredients.length > 0
+      ? editingRecipe.ingredients
+      : [{ name: '', quantity: '' }]
+  );
+  const [steps, setSteps] = useState<string[]>(
+    editingRecipe && editingRecipe.steps.length > 0
+      ? editingRecipe.steps
+      : ['']
+  );
+  const [imageUri, setImageUri] = useState<string | null>(editingRecipe?.imageUri ?? null);
 
   const handlePickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
