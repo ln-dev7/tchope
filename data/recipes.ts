@@ -709,8 +709,8 @@ export const recipes: Recipe[] = [
       'Laissez cuire à feu moyen pendant 1h30 sans remuer à la cuillère. Secouez simplement la marmite. La sauce doit devenir rouge et onctueuse.',
     ],
     tips: 'Ne versez jamais l\'eau directement sur les rouleaux et ne remuez jamais à la cuillère. Secouez la marmite pour mélanger. La patience est la clé de ce plat.',
-    isFeatured: false,
-    tags: ['CHEF\'S CHOICE'],
+    isFeatured: true,
+    tags: ['POPULAIRE', 'CHEF\'S CHOICE'],
   },
   {
     id: 'eru',
@@ -1441,7 +1441,7 @@ export const recipes: Recipe[] = [
       'La Cuisson lente : Laissez cuire 20 min à feu doux (ne remuez pas à la cuillère pour ne pas casser le poisson). La sauce doit réduire jusqu\'à ce qu\'une fine pellicule d\'huile remonte à la surface. Elle doit être épaisse comme une crème.',
     ],
     tips: 'Ne remuez jamais le poisson à la cuillère pendant la cuisson, secouez doucement la marmite si besoin. La sauce est prête quand l\'huile remonte à la surface.',
-    isFeatured: false,
+    isFeatured: true,
     tags: ['POPULAIRE', 'CHEF\'S CHOICE'],
   },
   {
@@ -1475,8 +1475,8 @@ export const recipes: Recipe[] = [
       'Cuisson : Laissez cuire à la vapeur pendant 3 heures à feu moyen. Rajoutez de l\'eau bouillante si le fond sèche. Laissez refroidir avant de découper en tranches fermes.',
     ],
     tips: 'Les œufs sont essentiels pour lier et donner du moelleux au Bikedi. Ne chauffez pas les graines avant de les écraser sinon l\'huile sort et la texture sera différente.',
-    isFeatured: false,
-    tags: ['CHEF\'S CHOICE'],
+    isFeatured: true,
+    tags: ['POPULAIRE', 'CHEF\'S CHOICE'],
   },
   {
     id: 'minkong',
@@ -2014,8 +2014,8 @@ export const recipes: Recipe[] = [
       'Le final sucré : Ajoutez le sel et le sucre. Continuez de remuer à feu très doux. L\'Okok est prêt quand il commence à "mousser" légèrement et que l\'huile rouge des noix de palme remonte et entoure la masse.',
     ],
     tips: 'Accompagnement obligatoire : le manioc bouilli (tubercule). La finesse de la découpe de l\'Okok est essentielle — il doit ressembler à des fils de soie.',
-    isFeatured: false,
-    tags: [],
+    isFeatured: true,
+    tags: ['POPULAIRE', 'CHEF\'S CHOICE'],
   },
   {
     id: 'pate-arachides',
@@ -2565,8 +2565,8 @@ export const recipes: Recipe[] = [
       'La Réduction : Laissez cuire à feu doux pendant environ 1h en remuant régulièrement pour que le fond ne brûle pas. Le Sanga est prêt quand le mélange a la consistance d\'une purée épaisse et que l\'huile de palme commence à perler sur les côtés.',
     ],
     tips: 'Note traditionnelle : Au centre du Cameroun, on ne met ni sel ni sucre, on savoure le goût brut des ingrédients. Remuez régulièrement pour éviter que le fond ne brûle.',
-    isFeatured: false,
-    tags: [],
+    isFeatured: true,
+    tags: ['POPULAIRE', 'CHEF\'S CHOICE'],
   },
   {
     id: 'sauce-tomate-champignons',
@@ -2755,8 +2755,8 @@ export const recipes: Recipe[] = [
       'Service : Disposez le taro en formant un dôme, creusez un puits au centre, versez la sauce jaune et disposez les viandes tout autour.',
     ],
     tips: 'L\'émulsion est la clé : l\'eau de kanwa versée progressivement dans l\'huile de palme froide transforme l\'huile rouge en sauce jaune. Ne chauffez pas trop l\'huile sinon l\'émulsion ne prendra pas.',
-    isFeatured: false,
-    tags: ['CHEF\'S CHOICE'],
+    isFeatured: true,
+    tags: ['POPULAIRE', 'CHEF\'S CHOICE'],
   },
   {
     id: 'tenue-militaire',

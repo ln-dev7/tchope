@@ -18,15 +18,17 @@ const ALL_REGIONS: Region[] = [
 ];
 
 const FEATURED_ORDER = [
-  'ndole', 'poulet-dg', 'eru', 'kondre', 'poisson-braise', 'koki', 'okok-sale',
+  'ndole', 'poulet-dg', 'eru', 'mbongo-tchobi', 'koki',
+  'taro-sauce-jaune', 'kondre', 'sanga', 'okok-sucre',
+  'poisson-braise', 'ekwang', 'met-de-pistache', 'okok-sale',
 ];
 
 const POPULAR_ORDER = [
-  'ndole', 'poulet-dg', 'eru', 'poisson-braise', 'kondre',
-  'mbongo-tchobi', 'koki', 'okok-sale', 'ekwang', 'soya',
-  'pepper-soup', 'beignets-farine', 'plantains-frits-epices',
-  'corn-tchap', 'njama-njama', 'kati-kati', 'banane-malaxee',
-  'ndomba', 'kilishi', 'sauce-pistache',
+  'ndole', 'poulet-dg', 'eru', 'mbongo-tchobi', 'koki',
+  'taro-sauce-jaune', 'kondre', 'sanga', 'okok-sucre',
+  'poisson-braise', 'ekwang', 'met-de-pistache', 'okok-sale',
+  'soya', 'pepper-soup', 'beignets-farine', 'plantains-frits-epices',
+  'corn-tchap', 'njama-njama', 'kati-kati',
 ];
 
 export default function HomeScreen() {
