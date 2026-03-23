@@ -75,7 +75,7 @@ export default function SearchScreen() {
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingBottom: 80 + bottom, gap: 32 }}
         showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="always">
+        keyboardShouldPersistTaps="handled">
 
         {/* Search Input - same style as home */}
         <View style={{ marginHorizontal: 24, position: 'relative' }}>
