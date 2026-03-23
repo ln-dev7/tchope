@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { View, Text, ScrollView, TextInput, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
@@ -15,6 +15,7 @@ export default function RecipesListScreen() {
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
+  const { bottom } = useSafeAreaInsets();
   const recipes = useLocalizedRecipes();
   const [query, setQuery] = useState('');
 
@@ -90,7 +91,7 @@ export default function RecipesListScreen() {
       {/* List */}
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 48, gap: 16 }}
+        contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 24 + bottom, gap: 16 }}
         showsVerticalScrollIndicator={false}>
         {filteredRecipes.map((recipe) => (
           <RecipeCard key={recipe.id} recipe={recipe} />

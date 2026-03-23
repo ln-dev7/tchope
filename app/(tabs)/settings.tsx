@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert, Linking } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 
@@ -15,6 +15,7 @@ import type { Settings } from '@/types';
 export default function SettingsScreen() {
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
+  const { bottom } = useSafeAreaInsets();
   const { settings, updateTheme, updateLanguage } = useSettings();
   const { clearAll: clearFavorites } = useFavorites();
   const { clearAll: clearUserRecipes } = useUserRecipes();
@@ -59,7 +60,7 @@ export default function SettingsScreen() {
 
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: 120, paddingHorizontal: 24, gap: 40, paddingTop: 32 }}
+        contentContainerStyle={{ paddingBottom: 80 + bottom, paddingHorizontal: 24, gap: 40, paddingTop: 32 }}
         showsVerticalScrollIndicator={false}>
         {/* Appearance */}
         <View style={{ gap: 16 }}>

@@ -8,7 +8,7 @@ import {
   Alert,
   Image,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
@@ -30,6 +30,7 @@ export default function AddRecipeScreen() {
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
+  const { bottom } = useSafeAreaInsets();
   const { edit } = useLocalSearchParams<{ edit?: string }>();
   const { addRecipe, updateRecipe, userRecipes } = useUserRecipes();
   const { toast } = useToast();
@@ -177,7 +178,7 @@ export default function AddRecipeScreen() {
 
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 48, gap: 32 }}
+        contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 24 + bottom, gap: 32 }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled">
 

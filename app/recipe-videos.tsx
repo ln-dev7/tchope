@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
@@ -19,6 +19,7 @@ export default function RecipeVideosScreen() {
   const { t } = useTranslation();
   const router = useRouter();
 
+  const { bottom } = useSafeAreaInsets();
   const recipeId = id ?? '';
   const showTabs = hasMultipleLanguages(recipeId);
   const [lang, setLang] = useState<Lang>('fr');
@@ -67,7 +68,7 @@ export default function RecipeVideosScreen() {
 
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 48, gap: 20 }}
+        contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 24 + bottom, gap: 20 }}
         showsVerticalScrollIndicator={false}>
 
         {/* Language tabs - only shown when both FR and EN exist */}

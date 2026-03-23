@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
@@ -20,6 +20,7 @@ export default function CookbookScreen() {
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
+  const { bottom } = useSafeAreaInsets();
   const recipes = useLocalizedRecipes();
   const { favorites } = useFavorites();
   const { userRecipes, deleteRecipe } = useUserRecipes();
@@ -55,7 +56,7 @@ export default function CookbookScreen() {
 
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: 120, paddingHorizontal: 24, gap: 24 }}
+        contentContainerStyle={{ paddingBottom: 80 + bottom, paddingHorizontal: 24, gap: 24 }}
         showsVerticalScrollIndicator={false}>
         {/* Title + Add button */}
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>

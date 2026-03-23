@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
@@ -36,6 +36,7 @@ export default function HomeScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const recipes = useLocalizedRecipes();
+  const { bottom } = useSafeAreaInsets();
 
   const featuredRecipes = useMemo(
     () => FEATURED_ORDER.map((id) => recipes.find((r) => r.id === id)).filter(Boolean) as typeof recipes,
@@ -51,7 +52,7 @@ export default function HomeScreen() {
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: 120 }}
+        contentContainerStyle={{ paddingBottom: 80 + bottom }}
         showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { View, Text, ScrollView, TextInput, TouchableOpacity, Keyboard } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -20,6 +20,7 @@ export default function SearchScreen() {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const recipes = useLocalizedRecipes();
+  const { bottom } = useSafeAreaInsets();
   const { results, query, setQuery, filters, setFilters } = useSearch(recipes);
   const [selectedIngredient, setSelectedIngredient] = useState<string | null>(null);
   const inputRef = useRef<TextInput>(null);
@@ -72,7 +73,7 @@ export default function SearchScreen() {
 
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: 120, gap: 32 }}
+        contentContainerStyle={{ paddingBottom: 80 + bottom, gap: 32 }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="always">
 
