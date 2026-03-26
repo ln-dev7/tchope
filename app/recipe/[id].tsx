@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Share } from 'react-native';
 import * as ClipboardModule from 'expo-clipboard';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/useToast';
 import { useTimer } from '@/context/TimerContext';
 import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
 import { useUserRecipes } from '@/hooks/useUserRecipes';
+import { useRating } from '@/context/RatingContext';
 import { getRecipeVideos } from '@/constants/videos';
 import RecipeImage from '@/components/RecipeImage';
 
@@ -26,6 +27,7 @@ export default function RecipeDetailScreen() {
   const { toast } = useToast();
   const { startTimer, isTimerRunning } = useTimer();
   const { userRecipes } = useUserRecipes();
+  const { trackRecipeView } = useRating();
   const recipes = useLocalizedRecipes();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<Tab>('ingredients');
@@ -33,6 +35,10 @@ export default function RecipeDetailScreen() {
   const recipe = useMemo(() => {
     return recipes.find((r) => r.id === id) ?? userRecipes.find((r) => r.id === id);
   }, [id, userRecipes, recipes]);
+
+  useEffect(() => {
+    if (recipe) trackRecipeView();
+  }, [recipe?.id]);
 
   if (!recipe) {
     return (

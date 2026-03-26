@@ -10,6 +10,7 @@ import { useSettings } from '@/context/SettingsContext';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useUserRecipes } from '@/hooks/useUserRecipes';
 import { useToast } from '@/hooks/useToast';
+import { useRating } from '@/context/RatingContext';
 import type { Settings } from '@/types';
 
 export default function SettingsScreen() {
@@ -20,6 +21,7 @@ export default function SettingsScreen() {
   const { clearAll: clearFavorites } = useFavorites();
   const { clearAll: clearUserRecipes } = useUserRecipes();
   const { toast } = useToast();
+  const { requestRating } = useRating();
 
   const handleClearFavorites = () => {
     Alert.alert(t('clearConfirm'), t('clearConfirmMessage'), [
@@ -335,6 +337,40 @@ export default function SettingsScreen() {
             <Ionicons name="open-outline" size={14} color={colors.textMuted} />
           </TouchableOpacity>
         </View>
+
+        {/* Rate App */}
+        <TouchableOpacity
+          onPress={requestRating}
+          activeOpacity={0.8}
+          style={{
+            backgroundColor: colors.surface,
+            borderRadius: 32,
+            padding: 20,
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 16,
+          }}>
+          <View
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 20,
+              backgroundColor: isDark ? 'rgba(245,158,66,0.15)' : 'rgba(145,71,0,0.08)',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <Ionicons name="star" size={20} color={colors.accent} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }}>
+              {t('rateApp')}
+            </Text>
+            <Text style={{ fontSize: 12, color: colors.textSecondary }}>
+              {t('rateAppSubtitle')}
+            </Text>
+          </View>
+          <Ionicons name="open-outline" size={14} color={colors.textMuted} />
+        </TouchableOpacity>
 
         {/* Support */}
         <TouchableOpacity

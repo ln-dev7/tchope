@@ -169,6 +169,14 @@ export const translations = {
     contactSubtitle: "Par email ou Telegram",
     privacyPolicy: "Politique de confidentialité",
 
+    // Rating
+    rateApp: "Noter l'application",
+    rateAppSubtitle: "Donnez-nous votre avis sur le store",
+    rateTitle: "Vous aimez Tchope ?",
+    rateMessage: "Si l'app vous plait, prenez un moment pour la noter. Cela nous aide beaucoup !",
+    rateNow: "Noter maintenant",
+    rateLater: "Plus tard",
+
     // General
     allRecipes: "Toutes les recettes",
     favorites: "Favoris",
@@ -344,6 +352,14 @@ export const translations = {
     contactMe: "Contact Me",
     contactSubtitle: "By email or Telegram",
     privacyPolicy: "Privacy Policy",
+
+    // Rating
+    rateApp: "Rate the App",
+    rateAppSubtitle: "Give us your feedback on the store",
+    rateTitle: "Enjoying Tchope?",
+    rateMessage: "If you like the app, take a moment to rate it. It helps us a lot!",
+    rateNow: "Rate Now",
+    rateLater: "Later",
 
     // General
     allRecipes: "All Recipes",
