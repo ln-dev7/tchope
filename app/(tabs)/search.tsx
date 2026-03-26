@@ -110,75 +110,79 @@ export default function SearchScreen() {
           ) : null}
         </View>
 
-        {/* Quick Filters */}
-        <View style={{ gap: 12, paddingHorizontal: 24 }}>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ gap: 12 }}>
-            <CategoryChip
-              label={t('under30')}
-              active={filters.duration === 'under30'}
-              onPress={() => handleDurationFilter('under30')}
-            />
-            <CategoryChip
-              label={t('between30and60')}
-              active={filters.duration === '30to60'}
-              onPress={() => handleDurationFilter('30to60')}
-            />
-            <CategoryChip
-              label={t('over60')}
-              active={filters.duration === 'over60'}
-              onPress={() => handleDurationFilter('over60')}
-            />
-          </ScrollView>
+        {/* Quick Filters - hidden when search is active */}
+        {!hasActiveFilters && (
+          <View style={{ gap: 12, paddingHorizontal: 24 }}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ gap: 12 }}>
+              <CategoryChip
+                label={t('under30')}
+                active={filters.duration === 'under30'}
+                onPress={() => handleDurationFilter('under30')}
+              />
+              <CategoryChip
+                label={t('between30and60')}
+                active={filters.duration === '30to60'}
+                onPress={() => handleDurationFilter('30to60')}
+              />
+              <CategoryChip
+                label={t('over60')}
+                active={filters.duration === 'over60'}
+                onPress={() => handleDurationFilter('over60')}
+              />
+            </ScrollView>
 
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ gap: 12 }}>
-            <CategoryChip
-              label={t('mild')}
-              active={filters.spiciness === 'Mild'}
-              onPress={() => handleSpicinessFilter('Mild')}
-              variant="green"
-            />
-            <CategoryChip
-              label={t('mediumSpice')}
-              active={filters.spiciness === 'Medium'}
-              onPress={() => handleSpicinessFilter('Medium')}
-            />
-            <CategoryChip
-              label={t('extraHot')}
-              active={filters.spiciness === 'Extra Hot'}
-              onPress={() => handleSpicinessFilter('Extra Hot')}
-            />
-          </ScrollView>
-        </View>
-
-        {/* Popular Ingredients */}
-        <View style={{ gap: 24, paddingHorizontal: 24 }}>
-          <Text
-            style={{
-              fontSize: 20,
-              fontWeight: '800',
-              color: colors.text,
-              letterSpacing: -0.5,
-            }}>
-            {t('popularIngredients')}
-          </Text>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 16 }}>
-            {POPULAR_INGREDIENTS.map((ing) => (
-              <View key={ing} style={{ width: '30%' }}>
-                <IngredientItem
-                  name={ing}
-                  active={selectedIngredient === ing}
-                  onPress={() => handleIngredientFilter(ing)}
-                />
-              </View>
-            ))}
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ gap: 12 }}>
+              <CategoryChip
+                label={t('mild')}
+                active={filters.spiciness === 'Mild'}
+                onPress={() => handleSpicinessFilter('Mild')}
+                variant="green"
+              />
+              <CategoryChip
+                label={t('mediumSpice')}
+                active={filters.spiciness === 'Medium'}
+                onPress={() => handleSpicinessFilter('Medium')}
+              />
+              <CategoryChip
+                label={t('extraHot')}
+                active={filters.spiciness === 'Extra Hot'}
+                onPress={() => handleSpicinessFilter('Extra Hot')}
+              />
+            </ScrollView>
           </View>
-        </View>
+        )}
+
+        {/* Popular Ingredients - hidden when search is active */}
+        {!hasActiveFilters && (
+          <View style={{ gap: 24, paddingHorizontal: 24 }}>
+            <Text
+              style={{
+                fontSize: 20,
+                fontWeight: '800',
+                color: colors.text,
+                letterSpacing: -0.5,
+              }}>
+              {t('popularIngredients')}
+            </Text>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 16 }}>
+              {POPULAR_INGREDIENTS.map((ing) => (
+                <View key={ing} style={{ width: '30%' }}>
+                  <IngredientItem
+                    name={ing}
+                    active={selectedIngredient === ing}
+                    onPress={() => handleIngredientFilter(ing)}
+                  />
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
 
         {/* Results */}
         {hasActiveFilters && (
