@@ -22,6 +22,7 @@ export function useLocalizedRecipes(): LocalizedRecipe[] {
 
       return {
         ...recipe,
+        name: en.name ?? recipe.name,
         description: en.description ?? recipe.description,
         ingredients: en.ingredients
           ? recipe.ingredients.map((ing, i) => ({
