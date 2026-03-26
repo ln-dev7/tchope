@@ -95,6 +95,44 @@ export default function HomeScreen() {
           </Text>
         </TouchableOpacity>
 
+        {/* AI Recipe Finder */}
+        <TouchableOpacity
+          onPress={() => router.push('/ai-recipes' as any)}
+          activeOpacity={0.85}
+          style={{
+            marginHorizontal: 24,
+            marginTop: 16,
+            borderRadius: 24,
+            padding: 20,
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 16,
+            backgroundColor: 'rgba(168,85,247,0.08)',
+            borderWidth: 1.5,
+            borderColor: 'rgba(168,85,247,0.15)',
+          }}>
+          <View
+            style={{
+              width: 48,
+              height: 48,
+              borderRadius: 24,
+              backgroundColor: 'rgba(168,85,247,0.15)',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <Ionicons name="sparkles" size={24} color="#A855F7" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 16, fontWeight: '700', color: colors.text }}>
+              {t('aiCta')}
+            </Text>
+            <Text style={{ fontSize: 13, color: colors.textSecondary, marginTop: 2 }}>
+              {t('aiCtaSubtitle')}
+            </Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color="#A855F7" />
+        </TouchableOpacity>
+
         {/* Regions Section */}
         <View style={{ paddingVertical: 16, gap: 16 }}>
           <View style={{ paddingHorizontal: 24 }}>

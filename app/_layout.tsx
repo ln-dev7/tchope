@@ -31,6 +31,7 @@ function InnerLayout() {
         <Stack.Screen name="add-recipe" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
         <Stack.Screen name="recipe-videos" />
         <Stack.Screen name="recipes-list" />
+        <Stack.Screen name="ai-recipes" />
       </Stack>
       <StatusBar style={isDark ? 'light' : 'dark'} />
     </ThemeProvider>
