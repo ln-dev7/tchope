@@ -1,5 +1,6 @@
-export const batch2: Record<string, { description?: string; ingredients?: { name: string; quantity: string }[]; steps?: string[]; tips?: string | null }> = {
+export const batch2: Record<string, { name: string; description?: string; ingredients?: { name: string; quantity: string }[]; steps?: string[]; tips?: string | null }> = {
   'ekwang': {
+    name: 'Ekwang (Grated Cocoyam)',
     description: 'The prestige dish of the South-West and Littoral regions. The ultimate test of patience: each small cocoyam roll is individually wrapped in a leaf.',
     ingredients: [
       { name: 'Cocoyam tubers (malanga/white taro)', quantity: '3 kg' },
@@ -26,6 +27,7 @@ export const batch2: Record<string, { description?: string; ingredients?: { name
     tips: 'Never pour water directly on the rolls and never stir with a spoon. Shake the pot to mix. Patience is the key to this dish.',
   },
   'eru': {
+    name: 'Eru and Waterleaf',
     description: 'The iconic North-West Cameroon vegetable stew. The secret: absolutely no water added and a generous amount of red palm oil.',
     ingredients: [
       { name: 'Eru leaves (Okazi, dried or fresh, finely chopped)', quantity: '500 g' },
@@ -49,6 +51,7 @@ export const batch2: Record<string, { description?: string; ingredients?: { name
     tips: 'Never add water! The Waterleaf releases enough water naturally. If the dish looks dry, add palm oil, not water.',
   },
   'escargots-sautes': {
+    name: 'Sautéed Snails',
     description: 'Pan-fried Cameroonian snails sauteed with garlic, olive oil, and aromatic herbs, served as a popular street food delicacy.',
     ingredients: [
       { name: 'Shelled snails', quantity: '500 g' },
@@ -71,6 +74,7 @@ export const batch2: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'folere-en-sauce': {
+    name: 'Foléré Sauce',
     description: 'A traditional Fulani dish from Northern Cameroon featuring tangy roselle leaves cooked with meat and peanut paste, served with corn fufu.',
     ingredients: [
       { name: 'Meat', quantity: '1/2 kg' },
@@ -97,6 +101,7 @@ export const batch2: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'folong-saute': {
+    name: 'Sautéed Folong',
     description: 'A classic Cameroonian sauteed greens dish with folong leaves, smoked fish, crayfish, and a rich tomato base.',
     ingredients: [
       { name: 'Smoked fish', quantity: '1' },
@@ -120,6 +125,7 @@ export const batch2: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'foss': {
+    name: 'Foss (Edible Caterpillars)',
     description: 'A unique Cameroonian delicacy of edible white caterpillars cooked with tomatoes, onions, and messep leaves, rich in essential nutrients.',
     ingredients: [
       { name: 'Fresh foss (caterpillars)', quantity: '1/2 kg' },
@@ -138,6 +144,7 @@ export const batch2: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'gombo-boeuf': {
+    name: 'Okra Beef Stew',
     description: 'A hearty okra and beef stew with finely chopped okra thickening the sauce, seasoned with rock salt and served with fufu.',
     ingredients: [
       { name: 'Beef', quantity: '500 g' },
@@ -160,6 +167,7 @@ export const batch2: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'gombo-crabe': {
+    name: 'Okra Crab Soup',
     description: 'A rich and flavorful okra soup with fresh crab, tomatoes, and garlic - a seafood lover\'s delight from the coast.',
     ingredients: [
       { name: 'Crabs', quantity: '1 kg' },
@@ -181,6 +189,7 @@ export const batch2: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'haricots-en-sauce': {
+    name: 'Beans in Sauce',
     description: 'Red beans cooked in a savory tomato and vegetable sauce, a beloved everyday Cameroonian dish often called "sous-marin" when generously oiled.',
     ingredients: [
       { name: 'Red beans', quantity: '1 kg' },
@@ -210,6 +219,7 @@ export const batch2: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'kati-kati': {
+    name: 'Kati Kati',
     description: 'A spicy North-West Cameroonian chicken dish cooked in palm oil with tomatoes, peppers, and garlic, traditionally served with fufu.',
     ingredients: [
       { name: 'Chicken', quantity: '1' },
@@ -233,6 +243,7 @@ export const batch2: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'njama-njama': {
+    name: 'Njama Njama',
     description: 'A popular North-West Cameroonian sauteed huckleberry greens dish cooked with tomatoes, onions, and palm oil.',
     ingredients: [
       { name: 'Njama njama leaves', quantity: '1 kg' },
@@ -253,6 +264,7 @@ export const batch2: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'kelen-kelen': {
+    name: 'Kelen Kelen',
     description: 'A versatile Cameroonian dish made from okra leaves and cassava leaves with smoked fish and dried shrimp, enjoyed across all regions.',
     ingredients: [
       { name: 'Water', quantity: '1 litre' },
@@ -270,6 +282,7 @@ export const batch2: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'koki': {
+    name: 'Koki',
     description: 'The steamed black-eyed pea cake. The secret lies in "beating" the batter to oxygenate it, giving it its airy and soft texture.',
     ingredients: [
       { name: 'White beans (Koki / Black-eyed peas)', quantity: '1 kg' },
@@ -290,6 +303,7 @@ export const batch2: Record<string, { description?: string; ingredients?: { name
     tips: 'The 15-minute beating is crucial: it makes the batter rise and gives the Koki its airy texture. The cake should be yellow-orange like a ripe mango.',
   },
   'kondre': {
+    name: 'Kondré (Pork Stew)',
     description: 'The quintessential Bamiléké stew. The secret: slow cooking the plantain so it "drinks" the meat juices until it becomes butter-soft.',
     ingredients: [
       { name: 'Pork spare ribs or shoulder (slightly fatty pieces)', quantity: '1.5 kg' },
@@ -314,6 +328,7 @@ export const batch2: Record<string, { description?: string; ingredients?: { name
     tips: 'Never stir the Kondré with a spoon, shake the pot instead. The plantain starch naturally thickens the sauce. The deep red color indicates it\'s ready.',
   },
   'kouakoukou-sauce-blanche': {
+    name: 'Kouakoukou with White Sauce',
     description: 'A Western Cameroon delicacy of grated cocoyam steamed in banana leaves, served with a creamy peanut and fish sauce.',
     ingredients: [
       { name: 'White cocoyams', quantity: '2 kg' },
@@ -342,6 +357,7 @@ export const batch2: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'kpem-sale': {
+    name: 'Salted Kpem',
     description: 'A traditional Central/South Cameroon cassava leaf sauce enriched with peanut paste and palm oil, served with boiled cassava.',
     ingredients: [
       { name: 'Meat or fish', quantity: '200 g' },
@@ -361,6 +377,7 @@ export const batch2: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'kpem-sans-sel': {
+    name: 'Unsalted Kpem',
     description: 'The unsalted version of cassava leaf sauce, enriched with palm nut juice and sweetened with sugar or ripe banana.',
     ingredients: [
       { name: 'Kpem (cassava leaves)', quantity: '2 bundles' },
@@ -382,6 +399,7 @@ export const batch2: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'kwa-ni-ndong': {
+    name: 'Kwa ni Ndong (Salt Pepper)',
     description: 'An elaborate Eastern Cameroon catfish dish cooked with a complex blend of local herbs including messep, wild basil, and djansang.',
     ingredients: [
       { name: 'Fresh cleaned catfish', quantity: '2' },
@@ -409,6 +427,7 @@ export const batch2: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'kwaa-ndzap': {
+    name: 'Kwa\'a Ndzap',
     description: 'A traditional Dschang (Bamileke) dish of pounded cocoyam served with sauteed black nightshade greens in a savory sauce.',
     ingredients: [
       { name: 'Red cocoyams', quantity: '1 kg' },
@@ -434,6 +453,7 @@ export const batch2: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'kwanmkwala-esubag': {
+    name: 'Kwanmkwala & Esubag',
     description: 'A traditional Bakossi dish from South-West Cameroon featuring cocoyam leaf soup served alongside pounded taro fufu.',
     ingredients: [
       { name: 'Cocoyam leaves', quantity: '1 kg' },
@@ -458,6 +478,7 @@ export const batch2: Record<string, { description?: string; ingredients?: { name
     tips: 'Uncooked taro leaves can cause allergic reactions.',
   },
   'mbol': {
+    name: 'Mbol',
     description: 'A treasured Eastern Cameroon dish combining smoked meat and fish with squash seeds, crayfish, and the unique sticky kanda ingredient.',
     ingredients: [
       { name: 'Smoked fish', quantity: '1/2 kg' },
@@ -483,6 +504,7 @@ export const batch2: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'mbongo-tchobi': {
+    name: 'Mbongo Tchobi',
     description: 'The famous black sauce of the Bassa people. The secret lies in the roasting of the spices and the velvety texture of the sauce, which should be as thick as cream.',
     ingredients: [
       { name: 'Fish (Catfish or Sea bass), cut into steaks', quantity: '1 kg' },
@@ -506,6 +528,7 @@ export const batch2: Record<string, { description?: string; ingredients?: { name
     tips: 'Never stir the fish with a spoon during cooking, gently shake the pot if needed. The sauce is ready when the oil rises to the surface.',
   },
   'met-de-pistache': {
+    name: 'Bikedi (Pistachio Cake)',
     description: 'A staple at weddings in Central and Eastern Cameroon. A pumpkin seed cake enriched with eggs, meat, and crayfish, steamed in banana leaves.',
     ingredients: [
       { name: 'African pistachio seeds (squash/egusi)', quantity: '1 kg' },
@@ -528,6 +551,7 @@ export const batch2: Record<string, { description?: string; ingredients?: { name
     tips: 'Eggs are essential for binding and giving the Bikedi its softness. Don\'t heat the seeds before crushing or the oil will come out and change the texture.',
   },
   'minkong': {
+    name: 'Minkong',
     description: 'Edible caterpillars from palm tree trunks, cooked with traditional herbs like odzom and messep - a prized delicacy.',
     ingredients: [
       { name: 'Minkong caterpillars', quantity: '100 g' },
@@ -548,6 +572,7 @@ export const batch2: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'missounga': {
+    name: 'Missounga',
     description: 'Cameroonian-style tripe and offal, meticulously cleaned and slow-cooked with aromatic vegetables and four-spice powder.',
     ingredients: [
       { name: 'Lung', quantity: '0.5 kg' },

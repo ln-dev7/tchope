@@ -1,5 +1,6 @@
-export const batch4: Record<string, { description?: string; ingredients?: { name: string; quantity: string }[]; steps?: string[]; tips?: string | null }> = {
+export const batch4: Record<string, { name: string; description?: string; ingredients?: { name: string; quantity: string }[]; steps?: string[]; tips?: string | null }> = {
   'sanga': {
+    name: 'Sanga',
     description: 'The sweet tenderness of corn and greens. The secret: use very fresh corn (milky stage) for its natural sweet flavor. In Central Cameroon, neither salt nor sugar is added — the raw taste of ingredients is savored.',
     ingredients: [
       { name: 'Fresh corn on the cob (or fresh corn kernels)', quantity: '10 cobs (or 1 kg)' },
@@ -16,6 +17,7 @@ export const batch4: Record<string, { description?: string; ingredients?: { name
     tips: 'Traditional note: In Central Cameroon, neither salt nor sugar is added — the raw taste of the ingredients is savored. Stir regularly to prevent burning.',
   },
   'sauce-tomate-champignons': {
+    name: 'Mushroom Tomato Sauce',
     description: 'A savory mushroom and tomato sauce seasoned with garlic, fresh parsley, and olive oil.',
     ingredients: [
       { name: 'Small mushrooms', quantity: '600 g' },
@@ -35,6 +37,7 @@ export const batch4: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'sauce-oignons': {
+    name: 'Onion Sauce',
     description: 'A silky caramelized onion sauce with thyme and butter, perfect on grilled meats or toast.',
     ingredients: [
       { name: 'Yellow onions', quantity: '500 g' },
@@ -52,6 +55,7 @@ export const batch4: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'sauce-pistache': {
+    name: 'Pistachio Sauce',
     description: 'A rich pumpkin seed sauce with beef, tomatoes, and aromatic herbs - served with rice or plantains.',
     ingredients: [
       { name: 'Pistache (pumpkin seeds)', quantity: '250 g' },
@@ -74,6 +78,7 @@ export const batch4: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'spaghettis-sardine': {
+    name: 'Spaghetti with Sardines',
     description: 'A quick and popular Cameroonian pasta dish with canned sardines, fresh tomatoes, green peppers, and parsley.',
     ingredients: [
       { name: 'Spaghetti', quantity: '500 g' },
@@ -94,6 +99,7 @@ export const batch4: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'tapioca-saute': {
+    name: 'Stir-Fried Tapioca',
     description: 'A simple stir-fried tapioca dish with tomatoes, crayfish, and chili.',
     ingredients: [
       { name: 'Tapioca', quantity: 'As needed' },
@@ -111,6 +117,7 @@ export const batch4: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'taro-sauce-jaune': {
+    name: 'Achu (Taro with Yellow Sauce)',
     description: 'The iconic dish of the North-West. The secret lies in the perfect emulsion between limestone water (kanwa) and palm oil, which transforms red oil into a smooth yellow sauce.',
     ingredients: [
       { name: 'Taro (colocasia)', quantity: '2 kg' },
@@ -134,6 +141,7 @@ export const batch4: Record<string, { description?: string; ingredients?: { name
     tips: 'The emulsion is key: kanwa water poured gradually into cold palm oil transforms the red oil into yellow sauce. Don\'t overheat the oil or the emulsion won\'t set.',
   },
   'tenue-militaire': {
+    name: 'Tenue Militaire',
     description: 'A rustic dish of fresh corn paste mixed with cocoyam leaves and palm oil, wrapped in banana leaves and steamed for hours.',
     ingredients: [
       { name: 'Cocoyam leaves', quantity: 'Pre-cleaned' },
@@ -153,6 +161,7 @@ export const batch4: Record<string, { description?: string; ingredients?: { name
     tips: 'Cocoyam leaves can irritate the throat if not cooked thoroughly.',
   },
   'porc-fume-moutarde': {
+    name: 'Mustard Smoked Pork',
     description: 'Smoked pork marinated with mustard and colorful peppers, first wood-smoked then saut\u00e9ed with fresh vegetables.',
     ingredients: [
       { name: 'Pork', quantity: '2.5 kg' },
@@ -171,6 +180,7 @@ export const batch4: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'mbongo-herisson': {
+    name: 'Hedgehog Mbongo',
     description: 'A rich bush meat stew featuring hedgehog cooked in a dark sauce of mbongo spices, djansang, and local herbs.',
     ingredients: [
       { name: 'Fresh hedgehog', quantity: '1' },
@@ -193,6 +203,7 @@ export const batch4: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'jus-folere': {
+    name: 'Foléré Juice (Hibiscus)',
     description: 'A refreshing ruby-red hibiscus drink with pineapple, lime, and fresh mint - Cameroon\'s beloved natural tonic.',
     ingredients: [
       { name: 'Bissap (hibiscus)', quantity: '100 g' },
@@ -210,6 +221,7 @@ export const batch4: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'jus-gingembre': {
+    name: 'Ginger Juice (Njinja)',
     description: 'A fiery and invigorating ginger juice blended with pineapple juice and lime - a popular West African tonic.',
     ingredients: [
       { name: 'Fresh ginger', quantity: '400 g' },
@@ -227,6 +239,7 @@ export const batch4: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'kossam': {
+    name: 'Kossam',
     description: 'A creamy Cameroonian yogurt drink made from fermented milk, cream, and condensed milk - refreshing and found everywhere.',
     ingredients: [
       { name: 'Fermented milk', quantity: '500 ml' },
@@ -242,6 +255,7 @@ export const batch4: Record<string, { description?: string; ingredients?: { name
     tips: 'You can flavor it with vanilla sugar, ginger, or rum.',
   },
   'jus-ananas': {
+    name: 'Pineapple Juice',
     description: 'A fresh and tangy pineapple juice blended with orange, lemon, and grated ginger for an extra kick.',
     ingredients: [
       { name: 'Lemon', quantity: '1' },
@@ -260,6 +274,7 @@ export const batch4: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'beignets-farine': {
+    name: 'Flour Fritters',
     description: 'The classic Cameroonian street food doughnut - light, golden, and slightly sweet, enjoyed at breakfast or as a snack.',
     ingredients: [
       { name: 'Wheat flour', quantity: '500 g' },
@@ -280,6 +295,7 @@ export const batch4: Record<string, { description?: string; ingredients?: { name
     tips: 'If you like them crispy, use less water. For softer ones, add a little more water.',
   },
   'beignets-koki': {
+    name: 'Koki Fritters',
     description: 'Protein-rich bean fritters made from soaked and ground black-eyed peas, fried until golden.',
     ingredients: [
       { name: 'Black-eyed peas', quantity: '500 g' },
@@ -298,6 +314,7 @@ export const batch4: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'beignets-mais': {
+    name: 'Corn Fritters',
     description: 'Sweet and fluffy Cameroonian corn and banana fritters, a beloved treat made with corn flour and ripe bananas.',
     ingredients: [
       { name: 'Corn flour', quantity: '400-420 g' },
@@ -317,6 +334,7 @@ export const batch4: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'bonbon-coconut': {
+    name: 'Coconut Candy',
     description: 'Caramelized coconut candies made from thin coconut slices cooked in sugar until golden - a popular sweet treat.',
     ingredients: [
       { name: 'Coconut', quantity: '1' },
@@ -332,6 +350,7 @@ export const batch4: Record<string, { description?: string; ingredients?: { name
     tips: 'Store in an airtight jar for several days.',
   },
   'caramel-arachide': {
+    name: 'Peanut Caramel',
     description: 'Crunchy peanut caramels made by crystallizing sugar around roasted peanuts - an irresistible candy.',
     ingredients: [
       { name: 'Peanuts', quantity: '250 g' },
@@ -347,6 +366,7 @@ export const batch4: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'baton-manioc': {
+    name: 'Cassava Sticks',
     description: 'Fermented cassava sticks wrapped in banana leaves and steamed - the most iconic side dish in Cameroonian cuisine.',
     ingredients: [
       { name: 'Cassava', quantity: 'As needed' },
@@ -363,6 +383,7 @@ export const batch4: Record<string, { description?: string; ingredients?: { name
     tips: 'Keeps for several days or even months in the freezer.',
   },
   'plantains-bouillis': {
+    name: 'Boiled Plantains',
     description: 'Simple boiled plantains, a versatile and beloved side dish that accompanies countless Cameroonian meals.',
     ingredients: [
       { name: 'Plantains', quantity: '1 bunch' },
@@ -376,6 +397,7 @@ export const batch4: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'plantains-frits-epices': {
+    name: 'Spiced Fried Plantains',
     description: 'Ripe plantain cubes seasoned with chili powder and ginger, deep-fried until golden and crispy.',
     ingredients: [
       { name: 'Ripe plantains', quantity: '8' },
@@ -392,6 +414,7 @@ export const batch4: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'foufou-mais': {
+    name: 'Corn Fufu',
     description: 'A smooth and starchy corn paste formed into balls, the essential accompaniment for most Cameroonian sauces.',
     ingredients: [
       { name: 'Corn flour or polenta', quantity: '250 g' },
@@ -408,6 +431,7 @@ export const batch4: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'foufou-manioc': {
+    name: 'Cassava Fufu',
     description: 'A compact and elastic cassava paste, the quintessential accompaniment for Cameroonian sauces.',
     ingredients: [
       { name: 'Cassava flour', quantity: '250 g' },
@@ -423,6 +447,7 @@ export const batch4: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'water-fufu': {
+    name: 'Water Fufu',
     description: 'A fermented cassava paste with a distinctive translucent appearance, the traditional accompaniment for eru.',
     ingredients: [
       { name: 'Fresh cassava', quantity: '1 kg' },
@@ -439,6 +464,7 @@ export const batch4: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'tape-plantain': {
+    name: 'Plantain Tapé',
     description: 'Double-fried flattened plantain discs - crispy outside and soft inside, a popular street food snack.',
     ingredients: [
       { name: 'Green or semi-ripe plantains', quantity: '4' },

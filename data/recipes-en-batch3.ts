@@ -1,6 +1,7 @@
-export const batch3: Record<string, { description?: string; ingredients?: { name: string; quantity: string }[]; steps?: string[]; tips?: string | null }> = {
+export const batch3: Record<string, { name: string; description?: string; ingredients?: { name: string; quantity: string }[]; steps?: string[]; tips?: string | null }> = {
   // Recipe 51: Nnam Olis
   'nnam-olis': {
+    name: 'Nnam Olis',
     description: 'A traditional Béti dish of rice and peanuts steamed together in banana leaves.',
     ingredients: [
       { name: 'Roasted peanut paste', quantity: '200 g' },
@@ -21,6 +22,7 @@ export const batch3: Record<string, { description?: string; ingredients?: { name
 
   // Recipe 52: Nnam Wondo
   'nnam-wondo': {
+    name: 'Nnam Wondo',
     description: 'A traditional Béti peanut cake wrapped in banana leaves and steamed, served with cassava sticks or plantain.',
     ingredients: [
       { name: 'Warm water', quantity: '300 ml' },
@@ -42,6 +44,7 @@ export const batch3: Record<string, { description?: string; ingredients?: { name
 
   // Recipe 53: Ndomba de Bar
   'ndomba': {
+    name: 'Ndomba (Sea Bass)',
     description: 'A Béti-style fish papillote where sea bass fillets are wrapped in banana leaves with a fragrant paste of shallots, tomatoes, ginger, and basil.',
     ingredients: [
       { name: 'Sea bass fillets', quantity: '4' },
@@ -64,6 +67,7 @@ export const batch3: Record<string, { description?: string; ingredients?: { name
 
   // Recipe 54: Ndomba de Porc
   'ndomba-porc': {
+    name: 'Pork Ndomba',
     description: 'Fried pork pieces wrapped in banana leaves with odzom, tomatoes, ginger, and lemon, then steamed to perfection.',
     ingredients: [
       { name: 'Pork shank', quantity: '1' },
@@ -88,6 +92,7 @@ export const batch3: Record<string, { description?: string; ingredients?: { name
 
   // Recipe 55: Ndomba de Vipère
   'ndomba-vipere': {
+    name: 'Viper Ndomba',
     description: 'An exotic papillote of viper meat marinated with local herbs and spices, wrapped in banana leaves and slowly steamed then grilled.',
     ingredients: [
       { name: 'Fresh viper meat', quantity: '1' },
@@ -113,6 +118,7 @@ export const batch3: Record<string, { description?: string; ingredients?: { name
 
   // Recipe 56: Ndolé aux Crevettes
   'ndole': {
+    name: 'Royal Ndolé',
     description: 'The royal version of Cameroon\'s national dish: bitter leaves cooked with peanut cream, fresh shrimp, beef, and smoked crayfish. The secret lies in washing the Ndolé and the final emulsion.',
     ingredients: [
       { name: 'Pre-washed Ndolé balls (bitter leaves)', quantity: '4' },
@@ -142,6 +148,7 @@ export const batch3: Record<string, { description?: string; ingredients?: { name
 
   // Recipe 57: Nsugi au Gibier
   'nsugi': {
+    name: 'Nsugi with Game Meat',
     description: 'A Bassa palm nut sauce with game meat and peanuts, slow-cooked to a beautiful orange hue, served with grated cocoyam.',
     ingredients: [
       { name: 'Fresh or smoked game meat', quantity: '1' },
@@ -167,6 +174,7 @@ export const batch3: Record<string, { description?: string; ingredients?: { name
 
   // Recipe 58: Okok Salé
   'okok-sale': {
+    name: 'Salted Okok',
     description: 'The Bassa / Littoral version of Okok. The secret: the addition of rock salt (kanwa) and smoked fish or crayfish for intense umami flavor.',
     ingredients: [
       { name: 'Finely chopped okok', quantity: '500 g' },
@@ -191,6 +199,7 @@ export const batch3: Record<string, { description?: string; ingredients?: { name
 
   // Recipe 59: Okok Sucré
   'okok-sucre': {
+    name: 'Sweet Okok',
     description: 'The Beti version of Okok. The secret: the perfect balance between the creaminess of peanuts and the sweetness of sugar that lightly caramelizes with the palm juice.',
     ingredients: [
       { name: 'Finely chopped okok (should resemble silk threads)', quantity: '500 g' },
@@ -211,6 +220,7 @@ export const batch3: Record<string, { description?: string; ingredients?: { name
 
   // Recipe 60: Pâte d'Arachides
   'pate-arachides': {
+    name: 'Peanut Paste',
     description: 'A rich and creamy peanut sauce with crayfish, a versatile accompaniment for many Cameroonian staples.',
     ingredients: [
       { name: 'Peanuts', quantity: '500 g' },
@@ -229,6 +239,7 @@ export const batch3: Record<string, { description?: string; ingredients?: { name
 
   // Recipe 61: Pattes de Bœuf en Bouillon
   'pattes-boeuf-bouillon': {
+    name: 'Beef Trotters in Broth',
     description: 'A deeply flavorful beef trotter soup slow-cooked for hours with djansang, ginger, and vegetables.',
     ingredients: [
       { name: 'Cleaned beef trotters', quantity: '2' },
@@ -250,6 +261,7 @@ export const batch3: Record<string, { description?: string; ingredients?: { name
 
   // Recipe 62: Pattes de Porc en Bouillon
   'pattes-porc-bouillon': {
+    name: 'Pig Trotters in Broth',
     description: 'A rich pig trotter stew with potatoes, peppers, and aromatic herbs - a complete meal in itself.',
     ingredients: [
       { name: 'Pig trotters', quantity: '2 kg' },
@@ -275,6 +287,7 @@ export const batch3: Record<string, { description?: string; ingredients?: { name
 
   // Recipe 63: Peau de Bœuf Sauce Tomate
   'peau-boeuf-sauce-tomate': {
+    name: 'Cow Skin in Tomato Sauce',
     description: 'Cow skin simmered in a savory tomato sauce with peppers, leeks, and celery - an economical Cameroonian classic.',
     ingredients: [
       { name: 'Cow skin', quantity: '0.5 kg' },
@@ -299,6 +312,7 @@ export const batch3: Record<string, { description?: string; ingredients?: { name
 
   // Recipe 64: Pepper Soup
   'pepper-soup': {
+    name: 'Pepper Soup',
     description: 'A fiery and aromatic Cameroonian soup with fish, a signature blend of mbongo, djansang, pèbè, and fresh basil.',
     ingredients: [
       { name: 'Fish', quantity: '1 kg' },
@@ -325,6 +339,7 @@ export const batch3: Record<string, { description?: string; ingredients?: { name
 
   // Recipe 65: Pilé de Plantains
   'pile-plantains': {
+    name: 'Pounded Plantains',
     description: 'A hearty Bamiléké dish of ripe plantains and beans pounded together with red palm oil and hot pepper.',
     ingredients: [
       { name: 'Red or black beans', quantity: '500 g' },
@@ -344,6 +359,7 @@ export const batch3: Record<string, { description?: string; ingredients?: { name
 
   // Recipe 66: Pilé de Pommes de Terre
   'pile-pommes-de-terre': {
+    name: 'Pounded Potatoes',
     description: 'A Western Cameroon specialty of potatoes and beans pounded together with palm oil - simple, economical, and satisfying.',
     ingredients: [
       { name: 'Red or black beans', quantity: '700 g' },
@@ -363,6 +379,7 @@ export const batch3: Record<string, { description?: string; ingredients?: { name
 
   // Recipe 67: Pili Pili
   'pili-pili': {
+    name: 'Pili Pili',
     description: 'Savory Cameroonian stuffed fritters with a spiced meat filling, green herb rof, and tangy homemade tomato sauce.',
     ingredients: [
       { name: 'Flour', quantity: '500 g' },
@@ -385,6 +402,7 @@ export const batch3: Record<string, { description?: string; ingredients?: { name
 
   // Recipe 68: Poisson Braisé
   'poisson-braise': {
+    name: 'Grilled Fish',
     description: 'Cameroonian "Circuit"-style grilled fish. The secret: Djansang in the marinade and pre-drying the fish for firm, crispy flesh.',
     ingredients: [
       { name: 'Large fresh Sea bass or Mackerel', quantity: '2' },
@@ -411,6 +429,7 @@ export const batch3: Record<string, { description?: string; ingredients?: { name
 
   // Recipe 69: Porc Braisé
   'porc-braise': {
+    name: 'Grilled Pork',
     description: 'Succulent pork grilled over charcoal, marinated with crushed onions, garlic, parsley, and basil, basted with spiced oil.',
     ingredients: [
       { name: 'Pork', quantity: 'As needed' },
@@ -431,6 +450,7 @@ export const batch3: Record<string, { description?: string; ingredients?: { name
 
   // Recipe 70: Poulet Braisé
   'poulet-braise': {
+    name: 'Grilled Chicken',
     description: 'Cameroonian barbecued chicken marinated in a rich paste of celery, basil, djansang, ginger, and citrus, grilled to golden perfection.',
     ingredients: [
       { name: 'Whole chicken', quantity: '1' },
@@ -453,6 +473,7 @@ export const batch3: Record<string, { description?: string; ingredients?: { name
 
   // Recipe 71: Poulet DG
   'poulet-dg': {
+    name: 'Chicken DG',
     description: 'The legendary "Director General\'s Chicken". The secret lies in the uniform cutting and the precise order of introducing vegetables for a perfect result.',
     ingredients: [
       { name: 'Large free-range chicken', quantity: '1' },
@@ -484,6 +505,7 @@ export const batch3: Record<string, { description?: string; ingredients?: { name
 
   // Recipe 72: Poulet Rôti
   'poulet-roti': {
+    name: 'Roasted Chicken',
     description: 'A Cameroonian-style deep-fried whole chicken, first boiled with herbs and spices, then fried to a crispy golden finish.',
     ingredients: [
       { name: 'Whole chicken', quantity: '1' },
@@ -505,6 +527,7 @@ export const batch3: Record<string, { description?: string; ingredients?: { name
 
   // Recipe 73: Queue de Bœuf Sauce d'Arachides
   'queue-boeuf-sauce-arachides': {
+    name: 'Oxtail in Peanut Sauce',
     description: 'A luxurious oxtail stew simmered in a creamy peanut sauce with tomatoes and onions.',
     ingredients: [
       { name: 'Oxtail', quantity: '1.5 kg' },
@@ -526,6 +549,7 @@ export const batch3: Record<string, { description?: string; ingredients?: { name
 
   // Recipe 74: Riz Jollof Façon Buea
   'riz-jollof': {
+    name: 'Jollof Rice Buea Style',
     description: 'A Cameroonian twist on the famous West African Jollof rice, enriched with coconut milk, mushrooms, and fresh vegetables.',
     ingredients: [
       { name: 'Chopped onion', quantity: '1' },
@@ -553,6 +577,7 @@ export const batch3: Record<string, { description?: string; ingredients?: { name
 
   // Recipe 75: Rôti de Mouton
   'roti-mouton': {
+    name: 'Roast Lamb',
     description: 'A slow-roasted leg of lamb marinated with mustard, ginger, garlic, and onions - a festive dish for celebrations.',
     ingredients: [
       { name: 'Leg of lamb', quantity: '1' },

@@ -1,5 +1,6 @@
-export const batch1: Record<string, { description?: string; ingredients?: { name: string; quantity: string }[]; steps?: string[]; tips?: string | null }> = {
+export const batch1: Record<string, { name: string; description?: string; ingredients?: { name: string; quantity: string }[]; steps?: string[]; tips?: string | null }> = {
   'salade-avocat': {
+    name: 'Avocado Salad',
     description: 'A refreshing Cameroonian avocado salad with cherry tomatoes, red onion, and a tangy dressing of olive oil and condensed milk.',
     ingredients: [
       { name: 'Avocados', quantity: '2' },
@@ -19,6 +20,7 @@ export const batch1: Record<string, { description?: string; ingredients?: { name
     tips: 'Choose avocados that are ripe but still firm for a better texture.',
   },
   'salade-chou-rouge-blanc': {
+    name: 'Red and White Cabbage Salad',
     description: 'A crunchy and colorful cabbage slaw combining red and white cabbage with carrots, dressed in a creamy yogurt-mustard vinaigrette.',
     ingredients: [
       { name: 'Red cabbage', quantity: '1/4' },
@@ -41,6 +43,7 @@ export const batch1: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'salade-laitue': {
+    name: 'Lettuce Salad',
     description: 'A simple and classic lettuce salad with fresh tomatoes, radishes, and a light vinaigrette dressing.',
     ingredients: [
       { name: 'Tomatoes', quantity: '3' },
@@ -60,6 +63,7 @@ export const batch1: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'salade-tomate': {
+    name: 'Tomato Salad',
     description: 'A vibrant tomato salad with finely sliced onions, fresh basil, and a splash of olive oil and red wine vinegar.',
     ingredients: [
       { name: 'Tomatoes', quantity: '1 kg' },
@@ -83,6 +87,7 @@ export const batch1: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'salade-macedoine-simple': {
+    name: 'Simple Mixed Vegetable Salad',
     description: 'A classic vegetable medley of diced potatoes, carrots, green beans, and peas, bound together with creamy mayonnaise and hard-boiled eggs.',
     ingredients: [
       { name: 'Potatoes', quantity: '4' },
@@ -106,6 +111,7 @@ export const batch1: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'macedoine-legumes-mayonnaise': {
+    name: 'Vegetable Medley with Mayonnaise',
     description: 'An elaborate vegetable macédoine with turnips, a bouquet garni, and a generous mayonnaise dressing, garnished with fresh salad and tomatoes.',
     ingredients: [
       { name: 'Carrots', quantity: '500 g' },
@@ -129,6 +135,7 @@ export const batch1: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'avocat-ananas-concombre-penja': {
+    name: 'Avocado Pineapple Cucumber with Penja Pepper',
     description: 'A refreshing tropical salad featuring avocado, pineapple, and cucumber, elevated by the renowned Penja pepper from Cameroon.',
     ingredients: [
       { name: 'Pineapple', quantity: '1' },
@@ -149,6 +156,7 @@ export const batch1: Record<string, { description?: string; ingredients?: { name
     tips: 'Penja pepper is one of the finest peppers in the world, grown in the Littoral region of Cameroon.',
   },
   'salade-fruits-exotiques': {
+    name: 'Exotic Fruit Salad',
     description: 'A vibrant tropical fruit salad combining papaya, pineapple, and banana in fresh orange juice, perfect for hot days.',
     ingredients: [
       { name: 'Squeezed oranges', quantity: '10 (about 1 liter of juice)' },
@@ -165,6 +173,7 @@ export const batch1: Record<string, { description?: string; ingredients?: { name
     tips: 'Peel and cut the bananas just before serving to prevent them from browning.',
   },
   'spaghetti-sauce-avocat': {
+    name: 'Spaghetti with Avocado Sauce',
     description: 'A creamy and original pasta dish where ripe avocados are blended into a smooth sauce with garlic, green onions, and lemon juice.',
     ingredients: [
       { name: 'Spaghetti', quantity: '350 g' },
@@ -187,6 +196,7 @@ export const batch1: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'assok-bitetam': {
+    name: 'Assok Bitetam',
     description: 'A traditional Béti okra cake wrapped in banana leaves, combining finely chopped okra with beef or smoked fish and red palm oil.',
     ingredients: [
       { name: 'Finely chopped okra', quantity: '1 kg' },
@@ -212,6 +222,7 @@ export const batch1: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'banane-malaxee': {
+    name: 'Mashed Banana',
     description: 'Known as "Toxi Banana", this Western Cameroon specialty features unripe bananas simmered in a rich peanut sauce with smoked fish and aromatic spices.',
     ingredients: [
       { name: 'Unripe green bananas', quantity: '12' },
@@ -241,6 +252,7 @@ export const batch1: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'boulettes-viande': {
+    name: 'Meatballs',
     description: 'Tender Cameroonian beef meatballs served in a homemade tomato-basil sauce, perfect with pasta or rice.',
     ingredients: [
       { name: 'Ground beef', quantity: '500 g' },
@@ -266,6 +278,7 @@ export const batch1: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'boulettes-poisson': {
+    name: 'Fish Fritters',
     description: 'Crispy fish fritters made from flaked fish blended with onions, garlic, and black pepper, deep-fried to golden perfection.',
     ingredients: [
       { name: 'Fish', quantity: '1 kg' },
@@ -286,6 +299,7 @@ export const batch1: Record<string, { description?: string; ingredients?: { name
     tips: 'Add a little more lemon juice if you prefer them less dry.',
   },
   'choux-farcis': {
+    name: 'Stuffed Cabbage',
     description: 'Tender cabbage leaves stuffed with seasoned minced beef and simmered in a fragrant tomato sauce with garlic and coriander.',
     ingredients: [
       { name: 'Green cabbage leaves', quantity: '4' },
@@ -308,6 +322,7 @@ export const batch1: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'choux-sautes': {
+    name: 'Stir-Fried Cabbage',
     description: 'A quick and flavorful stir-fry of green cabbage with tomatoes, peppers, carrots, and smoked fish - a weeknight favorite.',
     ingredients: [
       { name: 'Finely sliced green cabbage', quantity: '750 g' },
@@ -328,6 +343,7 @@ export const batch1: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'corn-tchap': {
+    name: 'Corn Tchap',
     description: 'A hearty South-West Cameroonian dish of red beans and corn cooked with smoked fish, dried shrimp, and red palm oil.',
     ingredients: [
       { name: 'Red beans', quantity: '200 g' },
@@ -352,6 +368,7 @@ export const batch1: Record<string, { description?: string; ingredients?: { name
     tips: 'This dish tastes even better the next day.',
   },
   'crevettes-sauce-tomate': {
+    name: 'Shrimp in Tomato Sauce',
     description: 'Succulent shrimp cooked in a spiced tomato sauce with cumin, turmeric, and fresh coriander - a coastal Cameroonian delight.',
     ingredients: [
       { name: 'Peeled raw shrimp', quantity: '400 g' },
@@ -375,6 +392,7 @@ export const batch1: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'disingui': {
+    name: 'Disingui (Eggplant)',
     description: 'A simple and comforting eggplant purée cooked in red palm oil with dried shrimp and chili, served with cassava or taro.',
     ingredients: [
       { name: 'Eggplants', quantity: '1 kg' },
@@ -394,6 +412,7 @@ export const batch1: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'ebandjea': {
+    name: 'Ebandjea',
     description: 'A signature dish from Kribi featuring fresh fish steamed in banana leaves with hot peppers and fresh lemon juice - pure coastal simplicity.',
     ingredients: [
       { name: 'Fresh fish', quantity: '1 kg' },
@@ -412,6 +431,7 @@ export const batch1: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'ekomba': {
+    name: 'Ekomba',
     description: 'A traditional Béti corn cake made from fresh or dried corn mixed with peanut paste, steamed in banana leaf packets.',
     ingredients: [
       { name: 'Fresh corn or dried corn', quantity: '8 cobs or 600 g' },
@@ -430,6 +450,7 @@ export const batch1: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'ekwang': {
+    name: 'Ekwang (Grated Cocoyam)',
     description: 'The prestige dish of the South-West and Littoral regions. The ultimate test of patience: each small cocoyam roll is individually wrapped in a leaf.',
     ingredients: [
       { name: 'Cocoyam tubers (malanga/white taro)', quantity: '3 kg' },
@@ -456,6 +477,7 @@ export const batch1: Record<string, { description?: string; ingredients?: { name
     tips: 'Never pour water directly on the rolls and never stir with a spoon. Shake the pot to mix. Patience is the key to this dish.',
   },
   'eru': {
+    name: 'Eru and Waterleaf',
     description: 'The iconic North-West Cameroon vegetable stew. The secret: absolutely no water added and a generous amount of red palm oil.',
     ingredients: [
       { name: 'Eru leaves (Okazi, dried or fresh, finely chopped)', quantity: '500 g' },
@@ -479,6 +501,7 @@ export const batch1: Record<string, { description?: string; ingredients?: { name
     tips: 'Never add water! The Waterleaf releases enough water naturally. If the dish looks dry, add palm oil, not water.',
   },
   'escargots-sautes': {
+    name: 'Sautéed Snails',
     description: 'Pan-fried Cameroonian snails sautéed with garlic, olive oil, and aromatic herbs, served as a popular street food delicacy.',
     ingredients: [
       { name: 'Shelled snails', quantity: '500 g' },
@@ -501,6 +524,7 @@ export const batch1: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'folere-en-sauce': {
+    name: 'Foléré Sauce',
     description: 'A traditional Fulani dish from Northern Cameroon featuring tangy roselle leaves cooked with meat and peanut paste, served with corn fufu.',
     ingredients: [
       { name: 'Meat', quantity: '1/2 kg' },
@@ -527,6 +551,7 @@ export const batch1: Record<string, { description?: string; ingredients?: { name
     tips: null,
   },
   'folong-saute': {
+    name: 'Sautéed Folong',
     description: 'A classic Cameroonian sautéed greens dish with folong leaves, smoked fish, crayfish, and a rich tomato base.',
     ingredients: [
       { name: 'Smoked fish', quantity: '1' },

@@ -6,6 +6,7 @@ import { batch4 } from './recipes-en-batch4';
 import { batch5 } from './recipes-en-batch5';
 
 export type RecipeTranslation = {
+  name: string;
   description?: string;
   ingredients?: { name: string; quantity: string }[];
   steps?: string[];
