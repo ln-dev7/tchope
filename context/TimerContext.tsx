@@ -2,9 +2,13 @@ import React, { createContext, useContext, useState, useEffect, useRef, useCallb
 import { View, Text, TouchableOpacity, Animated, AppState, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
+import { useRouter, usePathname } from 'expo-router';
+import { useSettings } from '@/context/SettingsContext';
+import { translations } from '@/constants/translations';
 
 type TimerState = {
   isRunning: boolean;
+  recipeId: string;
   recipeName: string;
   totalSeconds: number;
   remainingSeconds: number;
@@ -12,7 +16,7 @@ type TimerState = {
 
 type TimerContextType = {
   timer: TimerState;
-  startTimer: (recipeName: string, durationMinutes: number) => void;
+  startTimer: (recipeId: string, recipeName: string, durationMinutes: number) => void;
   stopTimer: () => void;
   pauseTimer: () => void;
   resumeTimer: () => void;
@@ -21,7 +25,7 @@ type TimerContextType = {
 };
 
 const TimerContext = createContext<TimerContextType>({
-  timer: { isRunning: false, recipeName: '', totalSeconds: 0, remainingSeconds: 0 },
+  timer: { isRunning: false, recipeId: '', recipeName: '', totalSeconds: 0, remainingSeconds: 0 },
   startTimer: () => {},
   stopTimer: () => {},
   pauseTimer: () => {},
@@ -42,9 +46,15 @@ function formatTime(seconds: number): string {
   return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 }
 
+function truncateName(name: string, maxLength = 20): string {
+  if (name.length <= maxLength) return name;
+  return name.slice(0, maxLength) + '...';
+}
+
 export function TimerProvider({ children }: { children: React.ReactNode }) {
   const [timer, setTimer] = useState<TimerState>({
     isRunning: false,
+    recipeId: '',
     recipeName: '',
     totalSeconds: 0,
     remainingSeconds: 0,
@@ -55,6 +65,13 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
   const [minimized, setMinimized] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const pausedRemainingRef = useRef<number>(0);
+  const router = useRouter();
+  const pathname = usePathname();
+  const { settings } = useSettings();
+  const t = useCallback(
+    (key: keyof typeof translations.fr) => translations[settings.language][key],
+    [settings.language],
+  );
 
   // Countdown based on real clock
   useEffect(() => {
@@ -93,9 +110,9 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (timer.totalSeconds > 0 && timer.remainingSeconds === 0 && !timer.isRunning) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      Alert.alert('Tchopé', `${timer.recipeName} est prêt ! Bon appétit !`);
+      Alert.alert('Tchopé', `${timer.recipeName} ${t('timerDone')}`);
     }
-  }, [timer.remainingSeconds, timer.isRunning, timer.recipeName, timer.totalSeconds]);
+  }, [timer.remainingSeconds, timer.isRunning, timer.recipeName, timer.totalSeconds, t]);
 
   // Pulse animation
   useEffect(() => {
@@ -111,11 +128,11 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     }
   }, [timer.isRunning, pulseAnim]);
 
-  const startTimer = useCallback((recipeName: string, durationMinutes: number) => {
+  const startTimer = useCallback((recipeId: string, recipeName: string, durationMinutes: number) => {
     if (intervalRef.current) clearInterval(intervalRef.current);
     const totalSeconds = durationMinutes * 60;
     endTimeRef.current = Date.now() + totalSeconds * 1000;
-    setTimer({ isRunning: true, recipeName, totalSeconds, remainingSeconds: totalSeconds });
+    setTimer({ isRunning: true, recipeId, recipeName, totalSeconds, remainingSeconds: totalSeconds });
     setMinimized(false);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   }, []);
@@ -140,12 +157,19 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     endTimeRef.current = 0;
     pausedRemainingRef.current = 0;
     setIsPaused(false);
-    setTimer({ isRunning: false, recipeName: '', totalSeconds: 0, remainingSeconds: 0 });
+    setTimer({ isRunning: false, recipeId: '', recipeName: '', totalSeconds: 0, remainingSeconds: 0 });
   }, []);
 
   const progress = timer.totalSeconds > 0 ? (timer.totalSeconds - timer.remainingSeconds) / timer.totalSeconds : 0;
   const isTimerRunning = timer.isRunning || isPaused || (timer.totalSeconds > 0 && timer.remainingSeconds === 0);
   const isDone = timer.totalSeconds > 0 && timer.remainingSeconds === 0 && !timer.isRunning && !isPaused;
+  const isOnRecipePage = pathname === `/recipe/${timer.recipeId}`;
+
+  const handleGoToRecipe = () => {
+    if (timer.recipeId) {
+      router.push(`/recipe/${timer.recipeId}`);
+    }
+  };
 
   return (
     <TimerContext.Provider value={{ timer, startTimer, stopTimer, pauseTimer, resumeTimer, isPaused, isTimerRunning }}>
@@ -187,12 +211,12 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
               <View style={{ gap: 8, alignItems: 'center', width: '100%' }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                   <Ionicons name={isDone ? 'checkmark-circle' : isPaused ? 'pause-circle' : 'timer-outline'} size={16} color="#FFFFFF" />
-                  <Text style={{ fontSize: 13, fontWeight: '600', color: 'rgba(255,255,255,0.8)' }} numberOfLines={1}>
-                    {isPaused ? `${timer.recipeName} (pause)` : timer.recipeName}
+                  <Text style={{ fontSize: 13, fontWeight: '600', color: 'rgba(255,255,255,0.8)' }}>
+                    {isPaused ? `${truncateName(timer.recipeName)} (${t('timerPaused')})` : truncateName(timer.recipeName)}
                   </Text>
                 </View>
                 <Text style={{ fontSize: 28, fontWeight: '800', color: '#FFFFFF', fontVariant: ['tabular-nums'] }}>
-                  {isDone ? 'Prêt !' : formatTime(timer.remainingSeconds)}
+                  {isDone ? t('timerReady') : formatTime(timer.remainingSeconds)}
                 </Text>
                 {!isDone && (
                   <View style={{ width: '100%', height: 4, backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: 2 }}>
@@ -202,7 +226,7 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
                 {!isDone && (
                   <View style={{ flexDirection: 'row', gap: 8, marginTop: 4 }}>
                     <TouchableOpacity
-                      onPress={(e) => { e.stopPropagation(); isPaused ? resumeTimer() : pauseTimer(); }}
+                      onPress={(e) => { e.stopPropagation(); if (isPaused) { resumeTimer(); } else { pauseTimer(); } }}
                       style={{
                         width: 36,
                         height: 36,
@@ -225,20 +249,51 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
                       }}>
                       <Ionicons name="stop" size={18} color="#FFFFFF" />
                     </TouchableOpacity>
+                    {!isOnRecipePage && timer.recipeId && (
+                      <TouchableOpacity
+                        onPress={(e) => { e.stopPropagation(); handleGoToRecipe(); }}
+                        style={{
+                          width: 36,
+                          height: 36,
+                          borderRadius: 18,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          backgroundColor: 'rgba(255,255,255,0.15)',
+                        }}>
+                        <Ionicons name="chevron-forward" size={18} color="#FFFFFF" />
+                      </TouchableOpacity>
+                    )}
                   </View>
                 )}
                 {isDone && (
-                  <TouchableOpacity
-                    onPress={(e) => { e.stopPropagation(); stopTimer(); }}
-                    style={{
-                      marginTop: 4,
-                      paddingHorizontal: 16,
-                      paddingVertical: 8,
-                      backgroundColor: 'rgba(255,255,255,0.2)',
-                      borderRadius: 16,
-                    }}>
-                    <Text style={{ fontSize: 12, fontWeight: '600', color: '#FFFFFF' }}>Fermer</Text>
-                  </TouchableOpacity>
+                  <View style={{ flexDirection: 'row', gap: 8, marginTop: 4 }}>
+                    <TouchableOpacity
+                      onPress={(e) => { e.stopPropagation(); stopTimer(); }}
+                      style={{
+                        paddingHorizontal: 16,
+                        height: 36,
+                        borderRadius: 18,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: 'rgba(255,255,255,0.2)',
+                      }}>
+                      <Text style={{ fontSize: 12, fontWeight: '600', color: '#FFFFFF' }}>{t('timerClose')}</Text>
+                    </TouchableOpacity>
+                    {!isOnRecipePage && timer.recipeId && (
+                      <TouchableOpacity
+                        onPress={(e) => { e.stopPropagation(); handleGoToRecipe(); }}
+                        style={{
+                          width: 36,
+                          height: 36,
+                          borderRadius: 18,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          backgroundColor: 'rgba(255,255,255,0.15)',
+                        }}>
+                        <Ionicons name="chevron-forward" size={18} color="#FFFFFF" />
+                      </TouchableOpacity>
+                    )}
+                  </View>
                 )}
                 <Ionicons name="chevron-down" size={18} color="rgba(255,255,255,0.7)" />
               </View>

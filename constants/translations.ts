@@ -198,6 +198,16 @@ export const translations = {
     rateNow: "Noter maintenant",
     rateLater: "Plus tard",
 
+    // Timer
+    timerPause: "Pause",
+    timerResume: "Reprendre",
+    timerStop: "Arrêter",
+    timerReady: "Prêt !",
+    timerClose: "Fermer",
+    timerPaused: "en pause",
+    timerDone: "est prêt ! Bon appétit !",
+    timerGoToRecipe: "Voir la recette",
+
     // General
     allRecipes: "Toutes les recettes",
     favorites: "Favoris",
@@ -402,6 +412,16 @@ export const translations = {
     rateMessage: "If you like the app, take a moment to rate it. It helps us a lot!",
     rateNow: "Rate Now",
     rateLater: "Later",
+
+    // Timer
+    timerPause: "Pause",
+    timerResume: "Resume",
+    timerStop: "Stop",
+    timerReady: "Ready!",
+    timerClose: "Close",
+    timerPaused: "paused",
+    timerDone: "is ready! Enjoy your meal!",
+    timerGoToRecipe: "Go to recipe",
 
     // General
     allRecipes: "All Recipes",

@@ -95,7 +95,7 @@ export default function RecipeDetailScreen() {
   };
 
   const handleStartCooking = () => {
-    startTimer(recipe.name, recipe.duration);
+    startTimer(recipe.id, recipe.name, recipe.duration);
     toast(`Timer lancé : ${recipe.duration} min`, 'done');
   };
 
