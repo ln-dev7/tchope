@@ -20,7 +20,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
 import { useSettings } from '@/context/SettingsContext';
 import RecipeCard from '@/components/RecipeCard';
-import { searchByIngredients, isValidIngredient } from '@/utils/ingredient-matcher';
+import { searchByIngredients, isValidIngredient, getMissingIngredients } from '@/utils/ingredient-matcher';
 import type { Recipe } from '@/types';
 
 const API_KEY = process.env.EXPO_PUBLIC_TCHOPE_SECRET_KEY;
@@ -303,10 +303,11 @@ export default function AIRecipesScreen() {
       .map((r) => {
         const recipe = recipes.find((rec) => rec.id === r.id);
         if (!recipe) return null;
-        return { recipe, match: r.match, reason: r.reason };
+        const missing = mode === 'ingredients' ? getMissingIngredients(recipe, ingredients) : [];
+        return { recipe, match: r.match, reason: r.reason, missing };
       })
-      .filter(Boolean) as { recipe: Recipe; match: number; reason: string }[];
-  }, [results, recipes]);
+      .filter(Boolean) as { recipe: Recipe; match: number; reason: string; missing: string[] }[];
+  }, [results, recipes, mode, ingredients]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
@@ -677,38 +678,48 @@ export default function AIRecipesScreen() {
               <Text style={{ fontSize: 20, fontWeight: '700', color: colors.text }}>
                 {t('aiResults')} ({matchedRecipes.length})
               </Text>
-              {matchedRecipes.map(({ recipe, match, reason }) => (
+              {matchedRecipes.map(({ recipe, match, reason, missing }) => (
                 <View key={recipe.id} style={{ gap: 8 }}>
                   <RecipeCard recipe={recipe} />
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      gap: 8,
-                      paddingHorizontal: 8,
-                      marginTop: -4,
-                    }}>
+                  <View style={{ paddingHorizontal: 8, gap: 4, marginTop: -4 }}>
                     <View
                       style={{
-                        backgroundColor: match >= 70 ? 'rgba(34,197,94,0.15)' : match >= 50 ? 'rgba(245,158,66,0.15)' : 'rgba(239,68,68,0.15)',
-                        borderRadius: 12,
-                        paddingHorizontal: 8,
-                        paddingVertical: 3,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: 8,
                       }}>
-                      <Text
+                      <View
                         style={{
-                          fontSize: 12,
-                          fontWeight: '700',
-                          color: match >= 70 ? '#22C55E' : match >= 50 ? '#F59E42' : '#EF4444',
+                          backgroundColor: match >= 70 ? 'rgba(34,197,94,0.15)' : match >= 50 ? 'rgba(245,158,66,0.15)' : 'rgba(239,68,68,0.15)',
+                          borderRadius: 12,
+                          paddingHorizontal: 8,
+                          paddingVertical: 3,
                         }}>
-                        {match}%
+                        <Text
+                          style={{
+                            fontSize: 12,
+                            fontWeight: '700',
+                            color: match >= 70 ? '#22C55E' : match >= 50 ? '#F59E42' : '#EF4444',
+                          }}>
+                          {match}%
+                        </Text>
+                      </View>
+                      <Text
+                        style={{ fontSize: 12, color: colors.textSecondary, flex: 1 }}
+                        numberOfLines={2}>
+                        {reason}
                       </Text>
                     </View>
-                    <Text
-                      style={{ fontSize: 12, color: colors.textSecondary, flex: 1 }}
-                      numberOfLines={2}>
-                      {reason}
-                    </Text>
+                    {mode === 'ingredients' && missing.length > 0 && (
+                      <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 6, marginTop: 2 }}>
+                        <Ionicons name="cart-outline" size={13} color={colors.textMuted} style={{ marginTop: 1 }} />
+                        <Text style={{ fontSize: 12, color: colors.textMuted, flex: 1 }} numberOfLines={3}>
+                          {isFr
+                            ? `Il vous manque ${missing.length} ingrédient${missing.length > 1 ? 's' : ''} : ${missing.join(', ')}`
+                            : `Missing ${missing.length} ingredient${missing.length > 1 ? 's' : ''}: ${missing.join(', ')}`}
+                        </Text>
+                      </View>
+                    )}
                   </View>
                 </View>
               ))}

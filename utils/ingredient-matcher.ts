@@ -233,6 +233,19 @@ export function searchByIngredients(
   return results.sort((a, b) => b.match - a.match).slice(0, 15);
 }
 
+// ── Missing ingredients for a recipe ─────────────────────────────────────
+
+export function getMissingIngredients(
+  recipe: Recipe,
+  userIngredients: string[],
+): string[] {
+  const userTokenSets = userIngredients.map((ing) => tokenize(ing));
+  return recipe.ingredients
+    .filter((ing) => !isGeneric(ing.name))
+    .filter((ing) => !userTokenSets.some((tokens) => ingredientMatches(tokens, ing.name)))
+    .map((ing) => ing.name);
+}
+
 // ── Validation ──────────────────────────────────────────────────────────
 
 export function isValidIngredient(text: string, knownIngredients: Set<string>): boolean {
