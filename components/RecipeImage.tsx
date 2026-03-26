@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 import { getRecipeImage } from '@/constants/images';
 import type { Category } from '@/types';
 
-const categoryEmoji: Record<Category, string> = {
-  Plat: '🍲',
-  Entrée: '🥗',
-  Sauce: '🫕',
-  Accompagnement: '🍚',
-  Boisson: '🥤',
-  Grillade: '🔥',
-  Dessert: '🍰',
+type Props = {
+  recipeId: string;
+  category: Category;
+  imageUri?: string | null;
+  style?: object;
+  borderRadius?: number;
+  isDark?: boolean;
 };
 
 const categoryColors: Record<Category, string> = {
@@ -34,73 +33,49 @@ const categoryColorsDark: Record<Category, string> = {
   Dessert: '#2A1A3A',
 };
 
-type Props = {
-  recipeId: string;
-  category: Category;
-  imageUri?: string | null;
-  style?: object;
-  borderRadius?: number;
-  isDark?: boolean;
-};
-
-function EmojiPlaceholder({ category, isDark }: { category: Category; isDark?: boolean }) {
-  const emoji = categoryEmoji[category] || '🍲';
+function LogoPlaceholder({ category, isDark }: { category: Category; isDark?: boolean }) {
   const bg = isDark
     ? (categoryColorsDark[category] || '#3A2520')
     : (categoryColors[category] || '#FED3C7');
 
   return (
-    <View style={{ width: '100%', height: '100%', backgroundColor: bg, alignItems: 'center', justifyContent: 'center' }}>
-      <Text style={{ fontSize: 48 }}>{emoji}</Text>
+    <View style={[StyleSheet.absoluteFill, { backgroundColor: bg, alignItems: 'center', justifyContent: 'center' }]}>
+      <Image
+        source={require('@/assets/images/logo.png')}
+        style={{ width: 64, height: 64, borderRadius: 12 }}
+        contentFit="contain"
+      />
     </View>
   );
 }
 
 export default function RecipeImage({ recipeId, category, imageUri, style, borderRadius = 24, isDark }: Props) {
-  const [hasError, setHasError] = useState(false);
-
-  // User recipe with custom photo
-  if (imageUri) {
-    return (
-      <View style={[{ overflow: 'hidden', borderRadius, backgroundColor: categoryColors[category] || '#FED3C7' }, style]}>
-        <Image
-          source={{ uri: imageUri }}
-          style={{ width: '100%', height: '100%' }}
-          contentFit="cover"
-          transition={300}
-          onError={() => setHasError(true)}
-        />
-        {hasError && <EmojiPlaceholder category={category} isDark={isDark} />}
-      </View>
-    );
-  }
+  const [showLogo, setShowLogo] = useState(true);
 
   // User recipe without photo (id starts with "user-") -> app logo
-  if (recipeId.startsWith('user-')) {
+  if (!imageUri && recipeId.startsWith('user-')) {
     return (
-      <View style={[{ overflow: 'hidden', borderRadius, backgroundColor: isDark ? '#1A1A1A' : '#F5F5F5', alignItems: 'center', justifyContent: 'center' }, style]}>
-        <Image
-          source={require('@/assets/images/logo.png')}
-          style={{ width: 64, height: 64, borderRadius: 12 }}
-          contentFit="contain"
-        />
+      <View style={[{ overflow: 'hidden', borderRadius }, style]}>
+        <LogoPlaceholder category={category} isDark={isDark} />
       </View>
     );
   }
 
-  // Regular recipe with remote image
-  const imageUrl = getRecipeImage(recipeId, category);
+  const imageSource = imageUri
+    ? { uri: imageUri }
+    : { uri: getRecipeImage(recipeId, category) };
 
   return (
-    <View style={[{ overflow: 'hidden', borderRadius, backgroundColor: categoryColors[category] || '#FED3C7' }, style]}>
+    <View style={[{ overflow: 'hidden', borderRadius, backgroundColor: isDark ? '#1A1A1A' : '#F5F5F5' }, style]}>
+      {showLogo && <LogoPlaceholder category={category} isDark={isDark} />}
       <Image
-        source={{ uri: imageUrl }}
-        style={{ width: '100%', height: '100%' }}
+        source={imageSource}
+        style={[StyleSheet.absoluteFill]}
         contentFit="cover"
         transition={300}
-        onError={() => setHasError(true)}
+        onLoad={() => setShowLogo(false)}
+        onError={() => setShowLogo(true)}
       />
-      {hasError && <EmojiPlaceholder category={category} isDark={isDark} />}
     </View>
   );
 }
