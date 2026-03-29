@@ -32,6 +32,7 @@ function InnerLayout() {
         <Stack.Screen name="recipe-videos" />
         <Stack.Screen name="recipes-list" />
         <Stack.Screen name="ai-recipes" />
+        <Stack.Screen name="timer" />
       </Stack>
       <StatusBar style={isDark ? 'light' : 'dark'} />
     </ThemeProvider>
