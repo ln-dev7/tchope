@@ -46,7 +46,38 @@
           }
         }
       ],
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "react-native-android-widget",
+        {
+          "widgets": [
+            {
+              "name": "RecipeOfTheDay",
+              "label": "Tchopé - Recette du Jour",
+              "description": "Découvrez une nouvelle recette camerounaise chaque jour",
+              "minWidth": "250dp",
+              "minHeight": "180dp",
+              "targetCellWidth": 3,
+              "targetCellHeight": 2,
+              "previewImage": "./assets/images/logo.png",
+              "resizeMode": "horizontal|vertical",
+                            "updatePeriodMillis": 86400000
+            },
+            {
+              "name": "RecipeOfTheDaySmall",
+              "label": "Tchopé - Recette (petit)",
+              "description": "Recette du jour en format compact",
+              "minWidth": "250dp",
+              "minHeight": "80dp",
+              "targetCellWidth": 3,
+              "targetCellHeight": 1,
+              "previewImage": "./assets/images/logo.png",
+              "resizeMode": "horizontal|vertical",
+                            "updatePeriodMillis": 86400000
+            }
+          ]
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
