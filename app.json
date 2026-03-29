@@ -77,7 +77,8 @@
             }
           ]
         }
-      ]
+      ],
+      "@bacons/apple-targets"
     ],
     "experiments": {
       "typedRoutes": true,
