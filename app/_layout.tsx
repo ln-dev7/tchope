@@ -10,6 +10,7 @@ import { UserRecipesProvider } from '@/context/UserRecipesContext';
 import { TimerProvider } from '@/context/TimerContext';
 import { ToastProvider } from '@/context/ToastContext';
 import { RatingProvider } from '@/context/RatingContext';
+import { MealPlannerProvider } from '@/context/MealPlannerContext';
 import { useTheme } from '@/hooks/useTheme';
 
 export const unstable_settings = {
@@ -33,6 +34,7 @@ function InnerLayout() {
         <Stack.Screen name="recipes-list" />
         <Stack.Screen name="ai-recipes" />
         <Stack.Screen name="timer" />
+        <Stack.Screen name="shopping-list" />
       </Stack>
       <StatusBar style={isDark ? 'light' : 'dark'} />
     </ThemeProvider>
@@ -47,7 +49,9 @@ export default function RootLayout() {
           <ToastProvider>
             <TimerProvider>
               <RatingProvider>
-                <InnerLayout />
+                <MealPlannerProvider>
+                  <InnerLayout />
+                </MealPlannerProvider>
               </RatingProvider>
             </TimerProvider>
           </ToastProvider>
