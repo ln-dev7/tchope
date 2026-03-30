@@ -294,5 +294,6 @@ struct RecipeOfTheDayWidget: Widget {
 struct RecipeWidgetBundle: WidgetBundle {
     var body: some Widget {
         RecipeOfTheDayWidget()
+        PlannerWidget()
     }
 }

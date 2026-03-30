@@ -73,7 +73,31 @@
               "targetCellHeight": 1,
               "previewImage": "./assets/images/logo.png",
               "resizeMode": "horizontal|vertical",
-                            "updatePeriodMillis": 86400000
+              "updatePeriodMillis": 86400000
+            },
+            {
+              "name": "PlannerWidget",
+              "label": "Tchopé - Mon Plan",
+              "description": "Votre plan de repas de la semaine",
+              "minWidth": "250dp",
+              "minHeight": "180dp",
+              "targetCellWidth": 3,
+              "targetCellHeight": 2,
+              "previewImage": "./assets/images/logo.png",
+              "resizeMode": "horizontal|vertical",
+              "updatePeriodMillis": 3600000
+            },
+            {
+              "name": "PlannerWidgetSmall",
+              "label": "Tchopé - Mon Plan (petit)",
+              "description": "Votre plan de repas en format compact",
+              "minWidth": "250dp",
+              "minHeight": "80dp",
+              "targetCellWidth": 3,
+              "targetCellHeight": 1,
+              "previewImage": "./assets/images/logo.png",
+              "resizeMode": "horizontal|vertical",
+              "updatePeriodMillis": 3600000
             }
           ]
         }
