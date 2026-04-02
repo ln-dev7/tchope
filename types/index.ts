@@ -48,7 +48,17 @@ export type UserRecipe = Recipe & {
   imageUri?: string | null;
 };
 
+export type NotificationPreferences = {
+  mealReminder: boolean;
+  mealReminderTime: string; // "HH:mm" format
+  recipeOfTheDay: boolean;
+  recipeOfTheDayTime: string;
+  shoppingListReminder: boolean;
+  shoppingListReminderTime: string;
+};
+
 export type Settings = {
   theme: 'light' | 'dark' | 'system';
   language: 'fr' | 'en';
+  notifications: NotificationPreferences;
 };
