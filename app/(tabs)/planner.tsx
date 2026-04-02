@@ -25,6 +25,7 @@ import { useToast } from '@/hooks/useToast';
 import { getRecipeImage } from '@/constants/images';
 import { callClaude } from '@/utils/api';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
+import { exportMealPlanPDF } from '@/utils/export-pdf';
 import type { Recipe } from '@/types';
 
 const FULL_DAY_FR = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
@@ -191,7 +192,7 @@ function MealCard({
 // ── Main Screen ──────────────────────────────────────────
 
 export default function PlannerScreen() {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const { t } = useTranslation();
   const { settings } = useSettings();
   const router = useRouter();
@@ -296,6 +297,23 @@ export default function PlannerScreen() {
   const handleShoppingList = useCallback(() => {
     router.push('/shopping-list' as any);
   }, [router]);
+
+  const handleExportPdf = useCallback(async () => {
+    if (!currentPlan) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    try {
+      await exportMealPlanPDF({
+        plan: currentPlan,
+        recipeMap,
+        lang: settings.language,
+        title: t('pdfTitle'),
+        shoppingListTitle: t('pdfShoppingList'),
+      });
+      toast(t('plannerExportSuccess'), 'done');
+    } catch {
+      toast(t('plannerExportError'), 'error');
+    }
+  }, [currentPlan, recipeMap, settings.language, t, toast]);
 
   const sortedDays = useMemo(() => {
     if (!currentPlan) return [];
@@ -446,6 +464,13 @@ export default function PlannerScreen() {
                   style={{ backgroundColor: colors.green + '15', borderRadius: 16, padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
                   <Ionicons name="bookmark-outline" size={18} color={colors.green} />
                   <Text style={{ fontSize: 15, fontWeight: '700', color: colors.green }}>{t('plannerSave')}</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={handleExportPdf}
+                  style={{ backgroundColor: isDark ? 'rgba(168,85,247,0.1)' : 'rgba(168,85,247,0.08)', borderRadius: 16, padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                  <Ionicons name="document-text-outline" size={18} color="#A855F7" />
+                  <Text style={{ fontSize: 15, fontWeight: '700', color: '#A855F7' }}>{t('plannerExportPdf')}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
