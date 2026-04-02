@@ -201,11 +201,11 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
   const progress = timer.totalSeconds > 0 ? (timer.totalSeconds - timer.remainingSeconds) / timer.totalSeconds : 0;
   const isTimerRunning = timer.isRunning || isPaused || (timer.totalSeconds > 0 && timer.remainingSeconds === 0);
   const isDone = timer.totalSeconds > 0 && timer.remainingSeconds === 0 && !timer.isRunning && !isPaused;
-  const isOnRecipePage = pathname === `/recipe/${timer.recipeId}`;
+  const isOnCookingMode = pathname === '/cooking-mode';
 
-  const handleGoToRecipe = () => {
+  const handleGoToCookingMode = () => {
     if (timer.recipeId) {
-      router.push(`/recipe/${timer.recipeId}`);
+      router.push(`/cooking-mode?id=${timer.recipeId}` as any);
     }
   };
 
@@ -213,7 +213,7 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     <TimerContext.Provider value={{ timer, startTimer, stopTimer, pauseTimer, resumeTimer, isPaused, isTimerRunning }}>
       {children}
 
-      {isTimerRunning && (
+      {isTimerRunning && !isOnCookingMode && (
         <Animated.View
           style={{
             position: 'absolute',
@@ -287,9 +287,9 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
                       }}>
                       <Ionicons name="stop" size={18} color="#FFFFFF" />
                     </TouchableOpacity>
-                    {!isOnRecipePage && timer.recipeId && (
+                    {timer.recipeId && (
                       <TouchableOpacity
-                        onPress={(e) => { e.stopPropagation(); handleGoToRecipe(); }}
+                        onPress={(e) => { e.stopPropagation(); handleGoToCookingMode(); }}
                         style={{
                           width: 36,
                           height: 36,
@@ -317,9 +317,9 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
                       }}>
                       <Text style={{ fontSize: 12, fontWeight: '600', color: '#FFFFFF' }}>{t('timerClose')}</Text>
                     </TouchableOpacity>
-                    {!isOnRecipePage && timer.recipeId && (
+                    {timer.recipeId && (
                       <TouchableOpacity
-                        onPress={(e) => { e.stopPropagation(); handleGoToRecipe(); }}
+                        onPress={(e) => { e.stopPropagation(); handleGoToCookingMode(); }}
                         style={{
                           width: 36,
                           height: 36,

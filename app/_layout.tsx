@@ -37,6 +37,7 @@ function InnerLayout() {
         <Stack.Screen name="timer" />
         <Stack.Screen name="shopping-list" />
         <Stack.Screen name="notification-settings" />
+        <Stack.Screen name="cooking-mode" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
       </Stack>
       <NetworkBanner />
       <StatusBar style={isDark ? 'light' : 'dark'} />
