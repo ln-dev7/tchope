@@ -287,6 +287,10 @@ export const translations = {
     favorites: "Favoris",
     myRecipes: "Mes Recettes",
     recipes: "Recettes",
+
+    // Network
+    networkOffline: "Pas de connexion internet",
+    networkBackOnline: "Connexion rétablie",
   },
 
   en: {
@@ -576,6 +580,10 @@ export const translations = {
     favorites: "Favorites",
     myRecipes: "My Recipes",
     recipes: "Recipes",
+
+    // Network
+    networkOffline: "No internet connection",
+    networkBackOnline: "Back online",
   },
 } as const;
 

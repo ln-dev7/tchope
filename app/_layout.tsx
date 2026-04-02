@@ -12,6 +12,7 @@ import { ToastProvider } from '@/context/ToastContext';
 import { RatingProvider } from '@/context/RatingContext';
 import { MealPlannerProvider } from '@/context/MealPlannerContext';
 import { useTheme } from '@/hooks/useTheme';
+import NetworkBanner from '@/components/NetworkBanner';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -36,6 +37,7 @@ function InnerLayout() {
         <Stack.Screen name="timer" />
         <Stack.Screen name="shopping-list" />
       </Stack>
+      <NetworkBanner />
       <StatusBar style={isDark ? 'light' : 'dark'} />
     </ThemeProvider>
   );
