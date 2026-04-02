@@ -21,7 +21,7 @@ export const translations = {
     difficulty: "Difficulté",
     ingredients: "Ingrédients",
     steps: "Étapes",
-    servings: "Portions",
+    servings: "Personnes",
     minutes: "minutes",
     chefTips: "Astuces du chef",
     share: "Partager",
@@ -305,6 +305,20 @@ export const translations = {
     notifShoppingReminderDesc: "Un rappel quand vous avez une liste de courses en attente.",
     notifTime: "Heure",
     notifNoMealPlan: "Créez un plan de repas pour activer cette notification.",
+
+    // Portions
+    portionAdjust: "Ajuster les portions",
+
+    // Cooking mode
+    cookingMode: "Mode cuisine",
+    cookingModeStart: "Commencer la cuisine",
+    stepOf: "sur",
+    previousStep: "Précédent",
+    nextStep: "Suivant",
+    finishCooking: "Terminer",
+    cookingComplete: "Cuisine terminée !",
+    cookingCompleteMessage: "Bravo ! Vous avez terminé la recette.",
+    stepTimer: "Timer pour cette étape",
   },
 
   en: {
@@ -612,6 +626,20 @@ export const translations = {
     notifShoppingReminderDesc: "A reminder when you have a pending shopping list.",
     notifTime: "Time",
     notifNoMealPlan: "Create a meal plan to enable this notification.",
+
+    // Portions
+    portionAdjust: "Adjust portions",
+
+    // Cooking mode
+    cookingMode: "Cooking mode",
+    cookingModeStart: "Start cooking",
+    stepOf: "of",
+    previousStep: "Previous",
+    nextStep: "Next",
+    finishCooking: "Finish",
+    cookingComplete: "Cooking complete!",
+    cookingCompleteMessage: "Well done! You've finished the recipe.",
+    stepTimer: "Timer for this step",
   },
 } as const;
 
