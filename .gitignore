@@ -1,5 +1,8 @@
 # Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
+# drafts
+drafts/
+
 # dependencies
 node_modules/
 
@@ -34,6 +37,9 @@ yarn-error.*
 .env*.local
 
 .env
+server/.env
+server/node_modules/
+server/dist/
 
 # typescript
 *.tsbuildinfo
