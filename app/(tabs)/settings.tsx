@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert, Linking } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import Constants from 'expo-constants';
 
 import { useTheme } from '@/hooks/useTheme';
@@ -22,6 +23,7 @@ export default function SettingsScreen() {
   const { clearAll: clearUserRecipes } = useUserRecipes();
   const { toast } = useToast();
   const { requestRating } = useRating();
+  const router = useRouter();
 
   const handleClearFavorites = () => {
     Alert.alert(t('clearConfirm'), t('clearConfirmMessage'), [
@@ -207,6 +209,40 @@ export default function SettingsScreen() {
             </TouchableOpacity>
           </View>
         </View>
+
+        {/* Notifications */}
+        <TouchableOpacity
+          onPress={() => router.push('/notification-settings' as any)}
+          activeOpacity={0.8}
+          style={{
+            backgroundColor: colors.surface,
+            borderRadius: 32,
+            padding: 20,
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 16,
+          }}>
+          <View
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 20,
+              backgroundColor: isDark ? 'rgba(168,85,247,0.15)' : 'rgba(168,85,247,0.08)',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <Ionicons name="notifications-outline" size={20} color="#A855F7" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }}>
+              {t('notifications')}
+            </Text>
+            <Text style={{ fontSize: 12, color: colors.textSecondary }}>
+              {t('notificationsSubtitle')}
+            </Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+        </TouchableOpacity>
 
         {/* Data */}
         <View style={{ gap: 16 }}>
