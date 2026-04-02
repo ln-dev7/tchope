@@ -1,5 +1,6 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Share } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import * as ClipboardModule from 'expo-clipboard';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -15,6 +16,7 @@ import { useUserRecipes } from '@/hooks/useUserRecipes';
 import { useRating } from '@/context/RatingContext';
 import { getRecipeVideos } from '@/constants/videos';
 import RecipeImage from '@/components/RecipeImage';
+import { scaleQuantity } from '@/utils/quantity';
 
 type Tab = 'ingredients' | 'steps';
 
@@ -31,6 +33,7 @@ export default function RecipeDetailScreen() {
   const recipes = useLocalizedRecipes();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<Tab>('ingredients');
+  const [servings, setServings] = useState<number | null>(null);
 
   const recipe = useMemo(() => {
     return recipes.find((r) => r.id === id) ?? userRecipes.find((r) => r.id === id);
@@ -39,6 +42,24 @@ export default function RecipeDetailScreen() {
   useEffect(() => {
     if (recipe) trackRecipeView();
   }, [recipe?.id]);
+
+  const currentServings = servings ?? recipe?.servings ?? 1;
+  const portionRatio = recipe ? currentServings / recipe.servings : 1;
+
+  const scaledIngredients = useMemo(() => {
+    if (!recipe) return [];
+    return recipe.ingredients.map((ing) => ({
+      name: ing.name,
+      quantity: scaleQuantity(ing.quantity, portionRatio),
+    }));
+  }, [recipe, portionRatio]);
+
+  const adjustServings = useCallback((delta: number) => {
+    const base = servings ?? recipe?.servings ?? 1;
+    const next = Math.max(1, base + delta);
+    setServings(next);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  }, [servings, recipe?.servings]);
 
   if (!recipe) {
     return (
@@ -96,7 +117,7 @@ export default function RecipeDetailScreen() {
 
   const handleStartCooking = () => {
     startTimer(recipe.id, recipe.name, recipe.duration);
-    toast(`Timer lancé : ${recipe.duration} min`, 'done');
+    router.push(`/cooking-mode?id=${recipe.id}` as any);
   };
 
   const isUserCreated = userRecipes.some((r) => r.id === recipe.id);
@@ -226,11 +247,38 @@ export default function RecipeDetailScreen() {
             <View style={{ flex: 1, minWidth: '45%', backgroundColor: colors.surface, borderRadius: 32, padding: 16, alignItems: 'center', gap: 4 }}>
               <Ionicons name="people-outline" size={20} color={colors.accentOrange} />
               <Text style={{ fontSize: 12, color: colors.textSecondary, textTransform: 'uppercase', letterSpacing: 0.6, textAlign: 'center' }}>
-                {t('portions')}
+                {t('servings')}
               </Text>
-              <Text style={{ fontSize: 18, fontWeight: '700', color: colors.text }}>
-                {recipe.servings} {t('persons')}
-              </Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 2 }}>
+                <TouchableOpacity
+                  onPress={() => adjustServings(-1)}
+                  disabled={currentServings <= 1}
+                  style={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: 14,
+                    backgroundColor: currentServings <= 1 ? colors.border : colors.accent,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  <Ionicons name="remove" size={16} color={currentServings <= 1 ? colors.textMuted : '#FFFFFF'} />
+                </TouchableOpacity>
+                <Text style={{ fontSize: 18, fontWeight: '700', color: colors.text, minWidth: 24, textAlign: 'center' }}>
+                  {currentServings}
+                </Text>
+                <TouchableOpacity
+                  onPress={() => adjustServings(1)}
+                  style={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: 14,
+                    backgroundColor: colors.accent,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  <Ionicons name="add" size={16} color="#FFFFFF" />
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
 
@@ -340,12 +388,12 @@ export default function RecipeDetailScreen() {
                 </Text>
                 <View style={{ backgroundColor: colors.surface, paddingHorizontal: 12, paddingVertical: 4, borderRadius: 9999 }}>
                   <Text style={{ fontSize: 14, color: colors.textSecondary }}>
-                    {recipe.ingredients.length} {t('items')}
+                    {scaledIngredients.length} {t('items')}
                   </Text>
                 </View>
               </View>
               <View style={{ gap: 12 }}>
-                {recipe.ingredients.map((ing, index) => (
+                {scaledIngredients.map((ing, index) => (
                   <View
                     key={index}
                     style={{
