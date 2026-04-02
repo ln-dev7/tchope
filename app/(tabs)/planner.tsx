@@ -24,6 +24,7 @@ import { useMealPlanner, type MealPlan, type DayPlan } from '@/context/MealPlann
 import { useToast } from '@/hooks/useToast';
 import { getRecipeImage } from '@/constants/images';
 import { callClaude } from '@/utils/api';
+import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 import type { Recipe } from '@/types';
 
 const FULL_DAY_FR = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
@@ -202,6 +203,7 @@ export default function PlannerScreen() {
     savePlan, deleteSavedPlan, reusePlan, resetPlan, swapMeal,
   } = useMealPlanner();
 
+  const isConnected = useNetworkStatus();
   const [preferences, setPreferences] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [showSaved, setShowSaved] = useState(false);
@@ -216,7 +218,7 @@ export default function PlannerScreen() {
   }, [recipes]);
 
   const handleGenerate = useCallback(async () => {
-    if (!process.env.EXPO_PUBLIC_API_URL) { Alert.alert('Tchopé', t('plannerNoConnection')); return; }
+    if (!isConnected) { Alert.alert('Tchopé', t('plannerNoConnection')); return; }
     setIsGenerating(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     try {
@@ -247,6 +249,7 @@ export default function PlannerScreen() {
 
   const handleAdjust = useCallback(async () => {
     if (!currentPlan || !adjustText.trim()) return;
+    if (!isConnected) { Alert.alert('Tchopé', t('plannerNoConnection')); return; }
     setIsAdjusting(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     try {
@@ -260,7 +263,7 @@ export default function PlannerScreen() {
     } finally {
       setIsAdjusting(false);
     }
-  }, [currentPlan, adjustText, recipes, settings.language, setCurrentPlan, t]);
+  }, [currentPlan, adjustText, recipes, settings.language, setCurrentPlan, t, isConnected]);
 
   const handleSwap = useCallback((date: string, mealIndex: number) => {
     const current = currentPlan?.days[date]?.meals[mealIndex]?.recipeId;

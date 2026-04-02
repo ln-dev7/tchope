@@ -22,6 +22,7 @@ import { useSettings } from '@/context/SettingsContext';
 import RecipeCard from '@/components/RecipeCard';
 import { searchByIngredients, isValidIngredient, getMissingIngredients } from '@/utils/ingredient-matcher';
 import { callClaude } from '@/utils/api';
+import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 import type { Recipe } from '@/types';
 
 type SearchResult = {
@@ -166,7 +167,8 @@ export default function AIRecipesScreen() {
   const [freeInputFocused, setFreeInputFocused] = useState(false);
 
   const isFr = settings.language === 'fr';
-  const aiAvailable = !!process.env.EXPO_PUBLIC_API_URL;
+  const isConnected = useNetworkStatus();
+  const aiAvailable = !!process.env.EXPO_PUBLIC_API_URL && isConnected;
 
   const knownIngredients = useMemo(() => {
     const set = new Set<string>();
@@ -226,6 +228,16 @@ export default function AIRecipesScreen() {
     setResults(null);
     setError(null);
     setUsedFallback(false);
+
+    // Skip AI call if offline — go straight to local search
+    if (!isConnected) {
+      const localResults = searchByIngredients(recipes, ingredients, isFr);
+      setResults(localResults.map((r) => ({ id: r.id, match: r.match, reason: r.reason })));
+      setUsedFallback(true);
+      setLoading(false);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      return;
+    }
 
     try {
       const aiResults = await searchIngredientsAI(recipes, ingredients, isFr);
