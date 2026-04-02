@@ -49,6 +49,7 @@ export default function CookingModeScreen() {
 
   const [currentStep, setCurrentStep] = useState(0);
   const [voiceEnabled, setVoiceEnabled] = useState<boolean | null>(null);
+  const [listHeight, setListHeight] = useState(0);
   const flatListRef = useRef<FlatList>(null);
   const isFr = settings.language === 'fr';
 
@@ -133,7 +134,7 @@ export default function CookingModeScreen() {
     <View
       style={{
         width: SCREEN_WIDTH,
-        flex: 1,
+        height: listHeight || undefined,
         paddingHorizontal: 32,
         justifyContent: 'center',
       }}>
@@ -237,18 +238,22 @@ export default function CookingModeScreen() {
         </View>
 
         {/* Swipeable steps */}
-        <FlatList
-          ref={flatListRef}
-          data={steps}
-          renderItem={renderStep}
-          keyExtractor={(_, i) => i.toString()}
-          horizontal
-          pagingEnabled
-          showsHorizontalScrollIndicator={false}
-          onViewableItemsChanged={onViewableItemsChanged}
-          viewabilityConfig={viewabilityConfig}
-          style={{ flex: 1 }}
-        />
+        <View style={{ flex: 1 }} onLayout={(e) => setListHeight(e.nativeEvent.layout.height)}>
+          {listHeight > 0 && (
+            <FlatList
+              ref={flatListRef}
+              data={steps}
+              renderItem={renderStep}
+              keyExtractor={(_, i) => i.toString()}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              onViewableItemsChanged={onViewableItemsChanged}
+              viewabilityConfig={viewabilityConfig}
+              getItemLayout={(_, index) => ({ length: SCREEN_WIDTH, offset: SCREEN_WIDTH * index, index })}
+            />
+          )}
+        </View>
 
         {/* Inline Timer */}
         {hasTimer && (
