@@ -2,9 +2,21 @@ import React, { createContext, useContext, useState, useEffect, useRef, useCallb
 import { View, Text, TouchableOpacity, Animated, AppState, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
+import * as Notifications from 'expo-notifications';
 import { useRouter, usePathname } from 'expo-router';
 import { useSettings } from '@/context/SettingsContext';
 import { translations } from '@/constants/translations';
+
+// Configure notification behavior (show even when app is in foreground)
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+});
 
 type TimerState = {
   isRunning: boolean;
@@ -128,6 +140,28 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     }
   }, [timer.isRunning, pulseAnim]);
 
+  const scheduleNotification = useCallback(async (recipeName: string, seconds: number) => {
+    await Notifications.cancelAllScheduledNotificationsAsync();
+    if (seconds <= 0) return;
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: 'Tchopé 🍳',
+        body: `${recipeName} ${t('timerDone')}`,
+        sound: true,
+      },
+      trigger: { type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL, seconds, repeats: false },
+    });
+  }, [t]);
+
+  const cancelNotification = useCallback(async () => {
+    await Notifications.cancelAllScheduledNotificationsAsync();
+  }, []);
+
+  // Request notification permissions on mount
+  useEffect(() => {
+    Notifications.requestPermissionsAsync();
+  }, []);
+
   const startTimer = useCallback((recipeId: string, recipeName: string, durationMinutes: number) => {
     if (intervalRef.current) clearInterval(intervalRef.current);
     const totalSeconds = durationMinutes * 60;
@@ -135,7 +169,8 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     setTimer({ isRunning: true, recipeId, recipeName, totalSeconds, remainingSeconds: totalSeconds });
     setMinimized(false);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-  }, []);
+    scheduleNotification(recipeName, totalSeconds);
+  }, [scheduleNotification]);
 
   const pauseTimer = useCallback(() => {
     if (intervalRef.current) clearInterval(intervalRef.current);
@@ -143,14 +178,16 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     setIsPaused(true);
     setTimer((prev) => ({ ...prev, isRunning: false }));
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-  }, []);
+    cancelNotification();
+  }, [cancelNotification]);
 
   const resumeTimer = useCallback(() => {
     endTimeRef.current = Date.now() + pausedRemainingRef.current * 1000;
     setIsPaused(false);
     setTimer((prev) => ({ ...prev, isRunning: true, remainingSeconds: pausedRemainingRef.current }));
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-  }, []);
+    scheduleNotification(timer.recipeName, pausedRemainingRef.current);
+  }, [scheduleNotification, timer.recipeName]);
 
   const stopTimer = useCallback(() => {
     if (intervalRef.current) clearInterval(intervalRef.current);
@@ -158,7 +195,8 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     pausedRemainingRef.current = 0;
     setIsPaused(false);
     setTimer({ isRunning: false, recipeId: '', recipeName: '', totalSeconds: 0, remainingSeconds: 0 });
-  }, []);
+    cancelNotification();
+  }, [cancelNotification]);
 
   const progress = timer.totalSeconds > 0 ? (timer.totalSeconds - timer.remainingSeconds) / timer.totalSeconds : 0;
   const isTimerRunning = timer.isRunning || isPaused || (timer.totalSeconds > 0 && timer.remainingSeconds === 0);
