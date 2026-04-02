@@ -59,7 +59,7 @@
               "targetCellHeight": 2,
               "previewImage": "./assets/images/logo.png",
               "resizeMode": "horizontal|vertical",
-                            "updatePeriodMillis": 86400000
+              "updatePeriodMillis": 86400000
             },
             {
               "name": "RecipeOfTheDaySmall",
@@ -100,7 +100,8 @@
           ]
         }
       ],
-      "@bacons/apple-targets"
+      "@bacons/apple-targets",
+      "@react-native-community/datetimepicker"
     ],
     "experiments": {
       "typedRoutes": true,
