@@ -270,72 +270,87 @@ export default function NotificationSettingsScreen() {
         })}
       </ScrollView>
 
-      {/* Time picker modal */}
-      <Modal
-        visible={showPicker !== null}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setShowPicker(null)}>
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            justifyContent: 'flex-end',
-          }}>
-          <TouchableOpacity
-            style={{ flex: 1 }}
-            activeOpacity={1}
-            onPress={() => setShowPicker(null)}
-          />
+      {/* Time picker — Android: native dialog, iOS: bottom sheet modal */}
+      {Platform.OS === 'android' && showPicker !== null && (
+        <DateTimePicker
+          value={tempDate}
+          mode="time"
+          is24Hour={true}
+          display="default"
+          onChange={(_e, date) => {
+            if (date && showPicker) handleTimeChange(showPicker, date);
+            setShowPicker(null);
+          }}
+        />
+      )}
+
+      {Platform.OS === 'ios' && (
+        <Modal
+          visible={showPicker !== null}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setShowPicker(null)}>
           <View
             style={{
-              backgroundColor: isDark ? colors.card : '#FFFFFF',
-              borderTopLeftRadius: 24,
-              borderTopRightRadius: 24,
-              paddingBottom: bottom + 16,
+              flex: 1,
+              backgroundColor: 'rgba(0,0,0,0.5)',
+              justifyContent: 'flex-end',
             }}>
-            {/* Handle bar */}
-            <View style={{ alignItems: 'center', paddingVertical: 12 }}>
-              <View style={{ width: 40, height: 4, borderRadius: 2, backgroundColor: colors.border }} />
-            </View>
+            <TouchableOpacity
+              style={{ flex: 1 }}
+              activeOpacity={1}
+              onPress={() => setShowPicker(null)}
+            />
+            <View
+              style={{
+                backgroundColor: isDark ? colors.card : '#FFFFFF',
+                borderTopLeftRadius: 24,
+                borderTopRightRadius: 24,
+                paddingBottom: bottom + 16,
+              }}>
+              {/* Handle bar */}
+              <View style={{ alignItems: 'center', paddingVertical: 12 }}>
+                <View style={{ width: 40, height: 4, borderRadius: 2, backgroundColor: colors.border }} />
+              </View>
 
-            <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text, textAlign: 'center', marginBottom: 8 }}>
-              {t('notifTime')}
-            </Text>
+              <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text, textAlign: 'center', marginBottom: 8 }}>
+                {t('notifTime')}
+              </Text>
 
-            <View style={{ alignItems: 'center' }}>
-              <DateTimePicker
-                value={tempDate}
-                mode="time"
-                is24Hour={true}
-                display="spinner"
-                onChange={(_e, date) => {
-                  if (date) setTempDate(date);
-                }}
-                themeVariant={isDark ? 'dark' : 'light'}
-                style={{ height: 180, width: 200 }}
-              />
-            </View>
+              <View style={{ alignItems: 'center' }}>
+                <DateTimePicker
+                  value={tempDate}
+                  mode="time"
+                  is24Hour={true}
+                  display="spinner"
+                  onChange={(_e, date) => {
+                    if (date) setTempDate(date);
+                  }}
+                  themeVariant={isDark ? 'dark' : 'light'}
+                  style={{ height: 180, width: 200 }}
+                />
+              </View>
 
-            {/* Confirm button */}
-            <View style={{ paddingHorizontal: 24, paddingTop: 8 }}>
-              <TouchableOpacity
-                onPress={() => {
-                  if (showPicker) handleTimeChange(showPicker, tempDate);
-                  setShowPicker(null);
-                }}
-                style={{
-                  backgroundColor: colors.accent,
-                  borderRadius: 16,
-                  paddingVertical: 16,
-                  alignItems: 'center',
-                }}>
-                <Text style={{ fontSize: 16, fontWeight: '700', color: '#FFFFFF' }}>OK</Text>
-              </TouchableOpacity>
+              {/* Confirm button */}
+              <View style={{ paddingHorizontal: 24, paddingTop: 8 }}>
+                <TouchableOpacity
+                  onPress={() => {
+                    if (showPicker) handleTimeChange(showPicker, tempDate);
+                    setShowPicker(null);
+                  }}
+                  style={{
+                    backgroundColor: colors.accent,
+                    borderRadius: 16,
+                    paddingVertical: 16,
+                    alignItems: 'center',
+                  }}>
+                  <Text style={{ fontSize: 16, fontWeight: '700', color: '#FFFFFF' }}>OK</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
+      )}
     </SafeAreaView>
   );
 }
