@@ -1,7 +1,9 @@
 import "../global.css";
+import React, { useEffect, useState } from 'react';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import 'react-native-reanimated';
 
 import { SettingsProvider } from '@/context/SettingsContext';
@@ -13,6 +15,7 @@ import { RatingProvider } from '@/context/RatingContext';
 import { MealPlannerProvider } from '@/context/MealPlannerContext';
 import { useTheme } from '@/hooks/useTheme';
 import NetworkBanner from '@/components/NetworkBanner';
+import { ONBOARDING_KEY } from './onboarding';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -20,6 +23,17 @@ export const unstable_settings = {
 
 function InnerLayout() {
   const { isDark } = useTheme();
+  const router = useRouter();
+  const [onboardingChecked, setOnboardingChecked] = useState(false);
+
+  useEffect(() => {
+    AsyncStorage.getItem(ONBOARDING_KEY).then((val) => {
+      if (val !== 'true') {
+        router.replace('/onboarding' as any);
+      }
+      setOnboardingChecked(true);
+    });
+  }, []);
 
   const navTheme = isDark
     ? { ...DarkTheme, colors: { ...DarkTheme.colors, background: '#121212', card: '#121212' } }
@@ -38,6 +52,7 @@ function InnerLayout() {
         <Stack.Screen name="shopping-list" />
         <Stack.Screen name="notification-settings" />
         <Stack.Screen name="cooking-mode" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="onboarding" options={{ animation: 'none' }} />
       </Stack>
       <NetworkBanner />
       <StatusBar style={isDark ? 'light' : 'dark'} />

@@ -125,6 +125,10 @@ export const translations = {
     confirm: "Confirmer",
     irreversibleAction: "Action irréversible",
     allCreationsDeleted: "Toutes vos créations ont été supprimées",
+    resetAllData: "Réinitialiser toutes les données",
+    resetAllDataDesc: "Supprime tout : thème, langue, favoris, recettes, plans, cache, etc.",
+    resetAllDataConfirm: "Toutes les données de l'application seront supprimées. Cette action est irréversible.",
+    resetAllDataDone: "Toutes les données ont été supprimées",
 
     // Regions
     regionLittoral: "Littoral",
@@ -326,6 +330,19 @@ export const translations = {
     stepTimer: "Timer pour cette étape",
     voiceReadingOn: "Lecture vocale activée",
     voiceReadingOff: "Lecture vocale désactivée",
+
+    // Onboarding
+    onboardingSkip: "Passer",
+    onboardingNext: "Suivant",
+    onboardingStart: "C'est parti !",
+    onboarding1Title: "Bienvenue sur Tchopé",
+    onboarding1Desc: "Explorez plus de 100 recettes authentiques des 10 régions du Cameroun.",
+    onboarding2Title: "Cuisine pas-à-pas",
+    onboarding2Desc: "Lancez le mode cuisine et laissez-vous guider étape par étape, avec timer et lecture vocale.",
+    onboarding3Title: "Planifiez vos repas",
+    onboarding3Desc: "L'IA génère votre plan de la semaine et votre liste de courses automatiquement.",
+    onboarding4Title: "Votre carnet de recettes",
+    onboarding4Desc: "Sauvegardez vos favoris, créez vos propres recettes et ajustez les portions.",
   },
 
   en: {
@@ -453,6 +470,10 @@ export const translations = {
     confirm: "Confirm",
     irreversibleAction: "Irreversible Action",
     allCreationsDeleted: "All your creations have been deleted",
+    resetAllData: "Reset all data",
+    resetAllDataDesc: "Deletes everything: theme, language, favorites, recipes, plans, cache, etc.",
+    resetAllDataConfirm: "All app data will be deleted. This action cannot be undone.",
+    resetAllDataDone: "All data has been deleted",
 
     // Regions
     regionLittoral: "Littoral",
@@ -654,6 +675,19 @@ export const translations = {
     stepTimer: "Timer for this step",
     voiceReadingOn: "Voice reading enabled",
     voiceReadingOff: "Voice reading disabled",
+
+    // Onboarding
+    onboardingSkip: "Skip",
+    onboardingNext: "Next",
+    onboardingStart: "Let's go!",
+    onboarding1Title: "Welcome to Tchopé",
+    onboarding1Desc: "Explore over 100 authentic recipes from all 10 regions of Cameroon.",
+    onboarding2Title: "Step-by-step cooking",
+    onboarding2Desc: "Launch cooking mode and let yourself be guided step by step, with timer and voice reading.",
+    onboarding3Title: "Plan your meals",
+    onboarding3Desc: "AI generates your weekly meal plan and shopping list automatically.",
+    onboarding4Title: "Your recipe book",
+    onboarding4Desc: "Save favorites, create your own recipes and adjust portions.",
   },
 } as const;
 
