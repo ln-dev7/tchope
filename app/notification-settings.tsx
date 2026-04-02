@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Switch, Linking, Platform } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Switch, Linking, Platform, Modal } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -39,6 +39,7 @@ export default function NotificationSettingsScreen() {
 
   const [hasPermission, setHasPermission] = useState(true);
   const [showPicker, setShowPicker] = useState<string | null>(null);
+  const [tempDate, setTempDate] = useState<Date>(new Date());
 
   const hasMealPlan = !!currentPlan;
 
@@ -185,7 +186,6 @@ export default function NotificationSettingsScreen() {
         {items.map((item) => {
           const enabled = prefs[item.key];
           const timeValue = prefs[item.timeKey];
-          const pickerOpen = showPicker === item.timeKey;
 
           return (
             <View
@@ -238,102 +238,104 @@ export default function NotificationSettingsScreen() {
                 </View>
               )}
 
-              {/* Time picker */}
+              {/* Time button */}
               {enabled && (
                 <View style={{ paddingLeft: 56 }}>
-                  {Platform.OS === 'ios' ? (
-                    <>
-                      <TouchableOpacity
-                        onPress={() => setShowPicker(pickerOpen ? null : item.timeKey)}
-                        style={{
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          gap: 8,
-                          backgroundColor: isDark ? colors.card : '#FFFFFF',
-                          borderRadius: 14,
-                          paddingHorizontal: 14,
-                          paddingVertical: 10,
-                          alignSelf: 'flex-start',
-                          borderWidth: 1,
-                          borderColor: colors.border,
-                        }}>
-                        <Ionicons name="time-outline" size={16} color={colors.textSecondary} />
-                        <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text }}>
-                          {timeValue}
-                        </Text>
-                        <Ionicons
-                          name={pickerOpen ? 'chevron-up' : 'chevron-down'}
-                          size={14}
-                          color={colors.textMuted}
-                        />
-                      </TouchableOpacity>
-                      {pickerOpen && (
-                        <View style={{ marginTop: 8 }}>
-                          <DateTimePicker
-                            value={timeToDate(timeValue)}
-                            mode="time"
-                            is24Hour={true}
-                            display="spinner"
-                            onChange={(_e, date) => {
-                              if (date) handleTimeChange(item.timeKey, date);
-                            }}
-                            themeVariant={isDark ? 'dark' : 'light'}
-                          />
-                          <TouchableOpacity
-                            onPress={() => setShowPicker(null)}
-                            style={{
-                              alignSelf: 'flex-end',
-                              paddingHorizontal: 16,
-                              paddingVertical: 8,
-                              marginTop: 4,
-                            }}>
-                            <Text style={{ fontSize: 14, fontWeight: '600', color: colors.accent }}>OK</Text>
-                          </TouchableOpacity>
-                        </View>
-                      )}
-                    </>
-                  ) : (
-                    <>
-                      <TouchableOpacity
-                        onPress={() => setShowPicker(item.timeKey)}
-                        style={{
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          gap: 8,
-                          backgroundColor: isDark ? colors.card : '#FFFFFF',
-                          borderRadius: 14,
-                          paddingHorizontal: 14,
-                          paddingVertical: 10,
-                          alignSelf: 'flex-start',
-                          borderWidth: 1,
-                          borderColor: colors.border,
-                        }}>
-                        <Ionicons name="time-outline" size={16} color={colors.textSecondary} />
-                        <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text }}>
-                          {timeValue}
-                        </Text>
-                        <Ionicons name="chevron-down" size={14} color={colors.textMuted} />
-                      </TouchableOpacity>
-                      {pickerOpen && (
-                        <DateTimePicker
-                          value={timeToDate(timeValue)}
-                          mode="time"
-                          is24Hour={true}
-                          display="default"
-                          onChange={(_e, date) => {
-                            setShowPicker(null);
-                            if (date) handleTimeChange(item.timeKey, date);
-                          }}
-                        />
-                      )}
-                    </>
-                  )}
+                  <TouchableOpacity
+                    onPress={() => {
+                      setTempDate(timeToDate(timeValue));
+                      setShowPicker(item.timeKey);
+                    }}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 8,
+                      backgroundColor: isDark ? colors.card : '#FFFFFF',
+                      borderRadius: 14,
+                      paddingHorizontal: 14,
+                      paddingVertical: 10,
+                      alignSelf: 'flex-start',
+                      borderWidth: 1,
+                      borderColor: colors.border,
+                    }}>
+                    <Ionicons name="time-outline" size={16} color={colors.textSecondary} />
+                    <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text }}>
+                      {timeValue}
+                    </Text>
+                  </TouchableOpacity>
                 </View>
               )}
             </View>
           );
         })}
       </ScrollView>
+
+      {/* Time picker modal */}
+      <Modal
+        visible={showPicker !== null}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowPicker(null)}>
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            justifyContent: 'flex-end',
+          }}>
+          <TouchableOpacity
+            style={{ flex: 1 }}
+            activeOpacity={1}
+            onPress={() => setShowPicker(null)}
+          />
+          <View
+            style={{
+              backgroundColor: isDark ? colors.card : '#FFFFFF',
+              borderTopLeftRadius: 24,
+              borderTopRightRadius: 24,
+              paddingBottom: bottom + 16,
+            }}>
+            {/* Handle bar */}
+            <View style={{ alignItems: 'center', paddingVertical: 12 }}>
+              <View style={{ width: 40, height: 4, borderRadius: 2, backgroundColor: colors.border }} />
+            </View>
+
+            <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text, textAlign: 'center', marginBottom: 8 }}>
+              {t('notifTime')}
+            </Text>
+
+            <View style={{ alignItems: 'center' }}>
+              <DateTimePicker
+                value={tempDate}
+                mode="time"
+                is24Hour={true}
+                display="spinner"
+                onChange={(_e, date) => {
+                  if (date) setTempDate(date);
+                }}
+                themeVariant={isDark ? 'dark' : 'light'}
+                style={{ height: 180, width: 200 }}
+              />
+            </View>
+
+            {/* Confirm button */}
+            <View style={{ paddingHorizontal: 24, paddingTop: 8 }}>
+              <TouchableOpacity
+                onPress={() => {
+                  if (showPicker) handleTimeChange(showPicker, tempDate);
+                  setShowPicker(null);
+                }}
+                style={{
+                  backgroundColor: colors.accent,
+                  borderRadius: 16,
+                  paddingVertical: 16,
+                  alignItems: 'center',
+                }}>
+                <Text style={{ fontSize: 16, fontWeight: '700', color: '#FFFFFF' }}>OK</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
