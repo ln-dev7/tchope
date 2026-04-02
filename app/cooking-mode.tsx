@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   View,
   Text,
@@ -48,12 +49,21 @@ export default function CookingModeScreen() {
 
   const [currentStep, setCurrentStep] = useState(0);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const voiceLoaded = useRef(false);
   const flatListRef = useRef<FlatList>(null);
   const isFr = settings.language === 'fr';
 
+  // Load saved voice preference
+  useEffect(() => {
+    AsyncStorage.getItem('tchope_voice_reading').then((val) => {
+      if (val !== null) setVoiceEnabled(val === 'true');
+      voiceLoaded.current = true;
+    });
+  }, []);
+
   // Read step aloud when it changes
   useEffect(() => {
-    if (!voiceEnabled || steps.length === 0) return;
+    if (!voiceLoaded.current || !voiceEnabled || steps.length === 0) return;
     Speech.stop();
     Speech.speak(steps[currentStep], {
       language: isFr ? 'fr-FR' : 'en-US',
@@ -105,6 +115,7 @@ export default function CookingModeScreen() {
   const toggleVoice = useCallback(() => {
     const next = !voiceEnabled;
     setVoiceEnabled(next);
+    AsyncStorage.setItem('tchope_voice_reading', String(next));
     if (!next) Speech.stop();
     toast(next ? t('voiceReadingOn') : t('voiceReadingOff'), 'done');
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
