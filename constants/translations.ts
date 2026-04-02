@@ -319,6 +319,8 @@ export const translations = {
     cookingComplete: "Cuisine terminée !",
     cookingCompleteMessage: "Bravo ! Vous avez terminé la recette.",
     stepTimer: "Timer pour cette étape",
+    voiceReadingOn: "Lecture vocale activée",
+    voiceReadingOff: "Lecture vocale désactivée",
   },
 
   en: {
@@ -640,6 +642,8 @@ export const translations = {
     cookingComplete: "Cooking complete!",
     cookingCompleteMessage: "Well done! You've finished the recipe.",
     stepTimer: "Timer for this step",
+    voiceReadingOn: "Voice reading enabled",
+    voiceReadingOff: "Voice reading disabled",
   },
 } as const;
 

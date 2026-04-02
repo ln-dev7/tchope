@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,9 +11,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
+import * as Speech from 'expo-speech';
 
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useSettings } from '@/context/SettingsContext';
 import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
 import { useUserRecipes } from '@/hooks/useUserRecipes';
 import { useTimer } from '@/context/TimerContext';
@@ -38,13 +40,31 @@ export default function CookingModeScreen() {
   const { userRecipes } = useUserRecipes();
   const { timer, pauseTimer, resumeTimer, stopTimer, isPaused } = useTimer();
   const { toast } = useToast();
+  const { settings } = useSettings();
 
   const recipe = recipes.find((r) => r.id === id) ?? userRecipes.find((r) => r.id === id);
   const steps = recipe?.steps ?? [];
   const totalSteps = steps.length;
 
   const [currentStep, setCurrentStep] = useState(0);
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
   const flatListRef = useRef<FlatList>(null);
+  const isFr = settings.language === 'fr';
+
+  // Read step aloud when it changes
+  useEffect(() => {
+    if (!voiceEnabled || steps.length === 0) return;
+    Speech.stop();
+    Speech.speak(steps[currentStep], {
+      language: isFr ? 'fr-FR' : 'en-US',
+      rate: 0.9,
+    });
+  }, [currentStep, voiceEnabled]);
+
+  // Stop speech when leaving the screen
+  useEffect(() => {
+    return () => { Speech.stop(); };
+  }, []);
 
   // Timer state for this recipe
   const hasTimer = timer.recipeId === id && (timer.isRunning || isPaused || (timer.totalSeconds > 0 && timer.remainingSeconds === 0));
@@ -75,11 +95,20 @@ export default function CookingModeScreen() {
   }, [currentStep, totalSteps, goToStep]);
 
   const handleFinish = useCallback(() => {
+    Speech.stop();
     stopTimer();
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     toast(t('cookingComplete'), 'done');
     router.back();
   }, [router, toast, t, stopTimer]);
+
+  const toggleVoice = useCallback(() => {
+    const next = !voiceEnabled;
+    setVoiceEnabled(next);
+    if (!next) Speech.stop();
+    toast(next ? t('voiceReadingOn') : t('voiceReadingOff'), 'done');
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  }, [voiceEnabled, toast, t]);
 
   if (!recipe) {
     return (
@@ -140,7 +169,7 @@ export default function CookingModeScreen() {
             gap: 16,
           }}>
           <TouchableOpacity
-            onPress={() => router.replace(`/recipe/${id}` as any)}
+            onPress={() => { Speech.stop(); router.back(); }}
             style={{
               width: 40,
               height: 40,
@@ -159,6 +188,22 @@ export default function CookingModeScreen() {
               {t('steps')} {currentStep + 1} {t('stepOf')} {totalSteps}
             </Text>
           </View>
+          <TouchableOpacity
+            onPress={toggleVoice}
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 20,
+              backgroundColor: voiceEnabled ? colors.accent + '15' : colors.surface,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <Ionicons
+              name={voiceEnabled ? 'volume-high' : 'volume-mute'}
+              size={20}
+              color={voiceEnabled ? colors.accent : colors.textMuted}
+            />
+          </TouchableOpacity>
         </View>
 
         {/* Progress bar */}
