@@ -291,6 +291,20 @@ export const translations = {
     // Network
     networkOffline: "Pas de connexion internet",
     networkBackOnline: "Connexion rétablie",
+
+    // Notifications
+    notifications: "Notifications",
+    notificationsSubtitle: "Gérer les alertes et rappels",
+    notifPermissionRequired: "Les notifications sont désactivées. Activez-les dans les réglages de votre téléphone pour recevoir des alertes.",
+    notifOpenSettings: "Ouvrir les réglages",
+    notifMealReminder: "Rappel de repas",
+    notifMealReminderDesc: "Recevez une notification avant chaque repas avec la recette du jour prévue dans votre plan.",
+    notifRecipeOfTheDay: "Recette du jour",
+    notifRecipeOfTheDayDesc: "Découvrez une nouvelle recette camerounaise chaque jour.",
+    notifShoppingReminder: "Rappel liste de courses",
+    notifShoppingReminderDesc: "Un rappel quand vous avez une liste de courses en attente.",
+    notifTime: "Heure",
+    notifNoMealPlan: "Créez un plan de repas pour activer cette notification.",
   },
 
   en: {
@@ -584,6 +598,20 @@ export const translations = {
     // Network
     networkOffline: "No internet connection",
     networkBackOnline: "Back online",
+
+    // Notifications
+    notifications: "Notifications",
+    notificationsSubtitle: "Manage alerts and reminders",
+    notifPermissionRequired: "Notifications are disabled. Enable them in your phone settings to receive alerts.",
+    notifOpenSettings: "Open settings",
+    notifMealReminder: "Meal reminder",
+    notifMealReminderDesc: "Get notified before each meal with the recipe from your meal plan.",
+    notifRecipeOfTheDay: "Recipe of the day",
+    notifRecipeOfTheDayDesc: "Discover a new Cameroonian recipe every day.",
+    notifShoppingReminder: "Shopping list reminder",
+    notifShoppingReminderDesc: "A reminder when you have a pending shopping list.",
+    notifTime: "Time",
+    notifNoMealPlan: "Create a meal plan to enable this notification.",
   },
 } as const;
 
