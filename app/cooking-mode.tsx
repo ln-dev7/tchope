@@ -48,22 +48,20 @@ export default function CookingModeScreen() {
   const totalSteps = steps.length;
 
   const [currentStep, setCurrentStep] = useState(0);
-  const [voiceEnabled, setVoiceEnabled] = useState(true);
-  const voiceLoaded = useRef(false);
+  const [voiceEnabled, setVoiceEnabled] = useState<boolean | null>(null);
   const flatListRef = useRef<FlatList>(null);
   const isFr = settings.language === 'fr';
 
   // Load saved voice preference
   useEffect(() => {
     AsyncStorage.getItem('tchope_voice_reading').then((val) => {
-      if (val !== null) setVoiceEnabled(val === 'true');
-      voiceLoaded.current = true;
+      setVoiceEnabled(val === null ? true : val === 'true');
     });
   }, []);
 
   // Read step aloud when it changes
   useEffect(() => {
-    if (!voiceLoaded.current || !voiceEnabled || steps.length === 0) return;
+    if (voiceEnabled === null || !voiceEnabled || steps.length === 0) return;
     Speech.stop();
     Speech.speak(steps[currentStep], {
       language: isFr ? 'fr-FR' : 'en-US',
@@ -113,7 +111,7 @@ export default function CookingModeScreen() {
   }, [router, toast, t, stopTimer]);
 
   const toggleVoice = useCallback(() => {
-    const next = !voiceEnabled;
+    const next = !(voiceEnabled ?? true);
     setVoiceEnabled(next);
     AsyncStorage.setItem('tchope_voice_reading', String(next));
     if (!next) Speech.stop();
@@ -205,14 +203,14 @@ export default function CookingModeScreen() {
               width: 40,
               height: 40,
               borderRadius: 20,
-              backgroundColor: voiceEnabled ? colors.accent + '15' : colors.surface,
+              backgroundColor: (voiceEnabled ?? true) ? colors.accent + '15' : colors.surface,
               alignItems: 'center',
               justifyContent: 'center',
             }}>
             <Ionicons
-              name={voiceEnabled ? 'volume-high' : 'volume-mute'}
+              name={(voiceEnabled ?? true) ? 'volume-high' : 'volume-mute'}
               size={20}
-              color={voiceEnabled ? colors.accent : colors.textMuted}
+              color={(voiceEnabled ?? true) ? colors.accent : colors.textMuted}
             />
           </TouchableOpacity>
         </View>
