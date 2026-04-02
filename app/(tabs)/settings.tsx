@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert, Linking } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -43,6 +44,21 @@ export default function SettingsScreen() {
         text: t('confirm'),
         style: 'destructive',
         onPress: () => { clearUserRecipes(); toast(t('clearUserRecipes'), 'done'); },
+      },
+    ]);
+  };
+
+  const handleResetAllData = () => {
+    Alert.alert(t('resetAllData'), t('resetAllDataConfirm'), [
+      { text: t('cancel'), style: 'cancel' },
+      {
+        text: t('confirm'),
+        style: 'destructive',
+        onPress: async () => {
+          await AsyncStorage.clear();
+          toast(t('resetAllDataDone'), 'done');
+          router.replace('/onboarding' as any);
+        },
       },
     ]);
   };
@@ -259,7 +275,7 @@ export default function SettingsScreen() {
           </Text>
           <View style={{ gap: 12 }}>
             <TouchableOpacity
-              onPress={handleClearFavorites}
+              onPress={handleResetAllData}
               style={{
                 backgroundColor: colors.surface,
                 borderRadius: 32,
@@ -277,45 +293,14 @@ export default function SettingsScreen() {
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}>
-                <Ionicons name="heart" size={20} color="#E74C3C" />
-              </View>
-              <View>
-                <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }}>
-                  {t('clearFavorites')}
-                </Text>
-                <Text style={{ fontSize: 12, color: colors.textSecondary }}>
-                  {t('irreversibleAction')}
-                </Text>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={handleClearUserRecipes}
-              style={{
-                backgroundColor: colors.surface,
-                borderRadius: 32,
-                padding: 20,
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 16,
-              }}>
-              <View
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 20,
-                  backgroundColor: 'rgba(231,76,60,0.1)',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                <Ionicons name="trash" size={20} color="#E74C3C" />
+                <Ionicons name="nuclear" size={20} color="#E74C3C" />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }}>
-                  {t('clearUserRecipes')}
+                <Text style={{ fontSize: 16, fontWeight: '600', color: '#E74C3C' }}>
+                  {t('resetAllData')}
                 </Text>
                 <Text style={{ fontSize: 12, color: colors.textSecondary }}>
-                  {t('allCreationsDeleted')}
+                  {t('resetAllDataDesc')}
                 </Text>
               </View>
             </TouchableOpacity>
