@@ -20,12 +20,11 @@ import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
 import { useSettings } from '@/context/SettingsContext';
-import { useMealPlanner, type MealPlan, type DayPlan, type MealSlot } from '@/context/MealPlannerContext';
+import { useMealPlanner, type MealPlan, type DayPlan } from '@/context/MealPlannerContext';
 import { useToast } from '@/hooks/useToast';
 import { getRecipeImage } from '@/constants/images';
+import { callClaude } from '@/utils/api';
 import type { Recipe } from '@/types';
-
-const API_KEY = process.env.EXPO_PUBLIC_TCHOPE_SECRET_KEY;
 
 const FULL_DAY_FR = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
 const FULL_DAY_EN = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -58,8 +57,6 @@ async function generateMealPlanAI(
   days: string[],
   isFr: boolean,
 ): Promise<Record<string, DayPlan>> {
-  if (!API_KEY) throw new Error('No API key');
-
   const recipeList = buildRecipeIndex(recipes);
   const lang = isFr ? 'fr' : 'en';
   const dayLabels = days.map((d) => `${d} (${formatDate(d, lang)})`).join(', ');
@@ -87,24 +84,13 @@ Return ONLY valid JSON (no markdown), format:
   ...
 }`;
 
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': API_KEY,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 2048,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: `Recipe list:\n${recipeList}\n\nPreferences: ${preferences || 'No specific preferences. 2 meals per day (lunch + dinner), balanced and varied.'}` }],
-    }),
+  const text = await callClaude({
+    model: 'claude-sonnet-4-20250514',
+    max_tokens: 2048,
+    system: systemPrompt,
+    messages: [{ role: 'user', content: `Recipe list:\n${recipeList}\n\nPreferences: ${preferences || 'No specific preferences. 2 meals per day (lunch + dinner), balanced and varied.'}` }],
   });
 
-  if (!response.ok) throw new Error('API error');
-  const data = await response.json();
-  const text = data.content?.[0]?.text || '';
   const jsonMatch = text.match(/\{[\s\S]*\}/);
   if (!jsonMatch) throw new Error('Invalid response');
   return JSON.parse(jsonMatch[0]);
@@ -118,8 +104,6 @@ async function adjustMealPlanAI(
   adjustmentRequest: string,
   isFr: boolean,
 ): Promise<Record<string, DayPlan>> {
-  if (!API_KEY) throw new Error('No API key');
-
   const recipeList = buildRecipeIndex(recipes);
   const lang = isFr ? 'fr' : 'en';
 
@@ -146,24 +130,13 @@ Return the FULL updated plan as valid JSON (no markdown), same format:
   ...
 }`;
 
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': API_KEY,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 2048,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: `Available recipes:\n${recipeList}\n\nCurrent plan:\n${currentPlanStr}\n\nAdjustment requested: ${adjustmentRequest}` }],
-    }),
+  const text = await callClaude({
+    model: 'claude-sonnet-4-20250514',
+    max_tokens: 2048,
+    system: systemPrompt,
+    messages: [{ role: 'user', content: `Available recipes:\n${recipeList}\n\nCurrent plan:\n${currentPlanStr}\n\nAdjustment requested: ${adjustmentRequest}` }],
   });
 
-  if (!response.ok) throw new Error('API error');
-  const data = await response.json();
-  const text = data.content?.[0]?.text || '';
   const jsonMatch = text.match(/\{[\s\S]*\}/);
   if (!jsonMatch) throw new Error('Invalid response');
   return JSON.parse(jsonMatch[0]);
@@ -243,7 +216,7 @@ export default function PlannerScreen() {
   }, [recipes]);
 
   const handleGenerate = useCallback(async () => {
-    if (!API_KEY) { Alert.alert('Tchopé', t('plannerNoConnection')); return; }
+    if (!process.env.EXPO_PUBLIC_API_URL) { Alert.alert('Tchopé', t('plannerNoConnection')); return; }
     setIsGenerating(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     try {
@@ -273,7 +246,7 @@ export default function PlannerScreen() {
   }, [preferences, recipes, settings.language, setCurrentPlan, t]);
 
   const handleAdjust = useCallback(async () => {
-    if (!currentPlan || !adjustText.trim() || !API_KEY) return;
+    if (!currentPlan || !adjustText.trim()) return;
     setIsAdjusting(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     try {

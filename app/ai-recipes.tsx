@@ -21,9 +21,8 @@ import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
 import { useSettings } from '@/context/SettingsContext';
 import RecipeCard from '@/components/RecipeCard';
 import { searchByIngredients, isValidIngredient, getMissingIngredients } from '@/utils/ingredient-matcher';
+import { callClaude } from '@/utils/api';
 import type { Recipe } from '@/types';
-
-const API_KEY = process.env.EXPO_PUBLIC_TCHOPE_SECRET_KEY;
 
 type SearchResult = {
   id: string;
@@ -40,8 +39,6 @@ async function searchIngredientsAI(
   userIngredients: string[],
   isFr: boolean,
 ): Promise<SearchResult[]> {
-  if (!API_KEY) throw new Error('No API key');
-
   const recipeIndex = recipes
     .map((r) => `${r.id}|${r.name}|${r.ingredients.map((i) => i.name).join(', ')}`)
     .join('\n');
@@ -71,25 +68,13 @@ Return ONLY a valid JSON array (no markdown):
 - Return at most 15 results
 - If nothing matches, return []`;
 
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': API_KEY,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2048,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: `RECIPES:\n${recipeIndex}\n\nMY INGREDIENTS:\n${userIngredients.join(', ')}` }],
-    }),
+  const text = await callClaude({
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 2048,
+    system: systemPrompt,
+    messages: [{ role: 'user', content: `RECIPES:\n${recipeIndex}\n\nMY INGREDIENTS:\n${userIngredients.join(', ')}` }],
   });
 
-  if (!response.ok) throw new Error(`API error: ${response.status}`);
-
-  const data = await response.json();
-  const text = data.content?.[0]?.text ?? '';
   const jsonMatch = text.match(/\[[\s\S]*\]/);
   if (!jsonMatch) throw new Error('Invalid response');
 
@@ -115,8 +100,6 @@ async function searchFreeTextAI(
   query: string,
   isFr: boolean,
 ): Promise<SearchResult[]> {
-  if (!API_KEY) throw new Error('No API key');
-
   const recipeIndex = recipes
     .map((r) => `${r.id}|${r.name}|${r.category}|${r.duration}min|${r.difficulty}|${r.spiciness}|${r.servings}pers|${r.ingredients.map((i) => i.name).join(', ')}`)
     .join('\n');
@@ -148,25 +131,13 @@ Return ONLY a valid JSON array (no markdown):
 - Only include recipes with match >= 30
 - If nothing matches, return []`;
 
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': API_KEY,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2048,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: `RECIPES:\n${recipeIndex}\n\nREQUEST:\n${query}` }],
-    }),
+  const text = await callClaude({
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 2048,
+    system: systemPrompt,
+    messages: [{ role: 'user', content: `RECIPES:\n${recipeIndex}\n\nREQUEST:\n${query}` }],
   });
 
-  if (!response.ok) throw new Error(`API error: ${response.status}`);
-
-  const data = await response.json();
-  const text = data.content?.[0]?.text ?? '';
   const jsonMatch = text.match(/\[[\s\S]*\]/);
   if (!jsonMatch) throw new Error('Invalid response');
 
@@ -195,7 +166,7 @@ export default function AIRecipesScreen() {
   const [freeInputFocused, setFreeInputFocused] = useState(false);
 
   const isFr = settings.language === 'fr';
-  const aiAvailable = !!API_KEY;
+  const aiAvailable = !!process.env.EXPO_PUBLIC_API_URL;
 
   const knownIngredients = useMemo(() => {
     const set = new Set<string>();
