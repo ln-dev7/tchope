@@ -10,11 +10,13 @@ import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useSettings } from '@/context/SettingsContext';
 import { useMealPlanner } from '@/context/MealPlannerContext';
+import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
 import {
   getNotificationPermission,
   requestNotificationPermission,
   syncNotifications,
 } from '@/utils/notifications';
+import { getShoppingItemCount } from '@/utils/shopping';
 
 function timeToDate(time: string): Date {
   const [h, m] = time.split(':').map(Number);
@@ -34,6 +36,7 @@ export default function NotificationSettingsScreen() {
   const router = useRouter();
   const { settings, updateNotifications } = useSettings();
   const { currentPlan } = useMealPlanner();
+  const recipes = useLocalizedRecipes();
   const prefs = settings.notifications;
   const isFr = settings.language === 'fr';
 
@@ -42,6 +45,17 @@ export default function NotificationSettingsScreen() {
   const [tempDate, setTempDate] = useState<Date>(new Date());
 
   const hasMealPlan = !!currentPlan;
+
+  const recipeMap = React.useMemo(() => {
+    const map: Record<string, import('@/types').Recipe> = {};
+    recipes.forEach((r) => { map[r.id] = r; });
+    return map;
+  }, [recipes]);
+
+  const shoppingItemCount = React.useMemo(
+    () => getShoppingItemCount(currentPlan, recipeMap),
+    [currentPlan, recipeMap],
+  );
 
   useEffect(() => {
     getNotificationPermission().then(setHasPermission);
@@ -65,16 +79,16 @@ export default function NotificationSettingsScreen() {
     (key: 'mealReminder' | 'recipeOfTheDay' | 'shoppingListReminder', value: boolean) => {
       updateNotifications({ [key]: value });
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      syncNotifications({ ...prefs, [key]: value }, isFr, { hasMealPlan });
+      syncNotifications({ ...prefs, [key]: value }, isFr, { hasMealPlan, shoppingItemCount });
     },
-    [updateNotifications, prefs, isFr, hasMealPlan],
+    [updateNotifications, prefs, isFr, hasMealPlan, shoppingItemCount],
   );
 
   const handleTimeChange = useCallback(
     (key: string, date: Date) => {
       const timeStr = dateToTime(date);
       updateNotifications({ [key]: timeStr });
-      syncNotifications({ ...prefs, [key]: timeStr }, isFr, { hasMealPlan });
+      syncNotifications({ ...prefs, [key]: timeStr }, isFr, { hasMealPlan, shoppingItemCount });
     },
     [updateNotifications, prefs, isFr, hasMealPlan],
   );
