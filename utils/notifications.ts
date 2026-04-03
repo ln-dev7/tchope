@@ -1,5 +1,6 @@
 import * as Notifications from 'expo-notifications';
 import type { NotificationPreferences } from '@/types';
+import { getRecipeOfTheDay } from '@/widgets/data';
 
 // ── Helpers ───────────────────────────────────────────────────────
 
@@ -32,18 +33,22 @@ async function scheduleMealReminder(
   isFr: boolean,
 ) {
   const { hour, minute } = parseTime(time);
-  const title = isFr ? 'Bon appétit !' : 'Bon appétit!';
+  const title = isFr ? '🍽️ C\'est bientôt l\'heure !' : '🍽️ Almost time!';
   const body = recipeName
-    ? (isFr ? `C'est bientôt l'heure ! Aujourd'hui : ${recipeName}` : `Almost time! Today: ${recipeName}`)
-    : (isFr ? "C'est bientôt l'heure du repas ! Consultez votre plan." : 'Almost meal time! Check your plan.');
+    ? (isFr ? `Au menu aujourd'hui : ${recipeName} — Bon appétit !` : `On today's menu: ${recipeName} — Bon appétit!`)
+    : (isFr ? 'Consultez votre plan et choisissez une recette !' : 'Check your plan and pick a recipe!');
 
   await Notifications.scheduleNotificationAsync({
-    content: { title, body, sound: true },
+    content: {
+      title,
+      body,
+      sound: true,
+      data: { screen: '/planner' },
+    },
     trigger: {
       type: Notifications.SchedulableTriggerInputTypes.DAILY,
       hour,
       minute,
-
     },
   });
 }
@@ -52,50 +57,64 @@ async function scheduleMealReminder(
 
 async function scheduleRecipeOfTheDay(time: string, isFr: boolean) {
   const { hour, minute } = parseTime(time);
+  const recipe = getRecipeOfTheDay();
+
   await Notifications.scheduleNotificationAsync({
     content: {
-      title: isFr ? 'Recette du jour' : 'Recipe of the day',
+      title: isFr
+        ? `${recipe.emoji} Recette du jour : ${recipe.name}`
+        : `${recipe.emoji} Recipe of the day: ${recipe.name}`,
       body: isFr
-        ? 'Découvrez une nouvelle recette camerounaise !'
-        : 'Discover a new Cameroonian recipe!',
+        ? `${recipe.region} · ${recipe.duration} min — Découvrez la recette !`
+        : `${recipe.region} · ${recipe.duration} min — Check it out!`,
       sound: true,
+      data: { screen: `/recipe/${recipe.id}` },
     },
     trigger: {
       type: Notifications.SchedulableTriggerInputTypes.DAILY,
       hour,
       minute,
-
     },
   });
 }
 
 // ── Shopping List Reminder ────────────────────────────────────────
 
-async function scheduleShoppingReminder(time: string, isFr: boolean) {
+async function scheduleShoppingReminder(
+  time: string,
+  isFr: boolean,
+  itemCount: number,
+) {
   const { hour, minute } = parseTime(time);
   await Notifications.scheduleNotificationAsync({
     content: {
-      title: isFr ? 'Liste de courses' : 'Shopping list',
+      title: isFr ? '🛒 Liste de courses' : '🛒 Shopping list',
       body: isFr
-        ? "N'oubliez pas votre liste de courses !"
-        : "Don't forget your shopping list!",
+        ? `Vous avez ${itemCount} article${itemCount > 1 ? 's' : ''} à acheter — N'oubliez rien !`
+        : `You have ${itemCount} item${itemCount > 1 ? 's' : ''} to buy — Don't forget anything!`,
       sound: true,
+      data: { screen: '/shopping-list' },
     },
     trigger: {
       type: Notifications.SchedulableTriggerInputTypes.DAILY,
       hour,
       minute,
-
     },
   });
 }
 
 // ── Main Sync ─────────────────────────────────────────────────────
 
+export type SyncNotificationOptions = {
+  hasMealPlan?: boolean;
+  currentMealRecipeName?: string | null;
+  shoppingItemCount?: number;
+};
+
 export async function syncNotifications(
   prefs: NotificationPreferences,
   isFr: boolean,
-  options?: { hasMealPlan?: boolean; currentMealRecipeName?: string | null },
+  options?: SyncNotificationOptions,
 ) {
   // Cancel everything first, then reschedule what's enabled
   await cancelAllScheduled();
@@ -112,7 +131,8 @@ export async function syncNotifications(
     await scheduleRecipeOfTheDay(prefs.recipeOfTheDayTime, isFr);
   }
 
-  if (prefs.shoppingListReminder) {
-    await scheduleShoppingReminder(prefs.shoppingListReminderTime, isFr);
+  // Only schedule shopping reminder if there are items to buy
+  if (prefs.shoppingListReminder && options?.shoppingItemCount && options.shoppingItemCount > 0) {
+    await scheduleShoppingReminder(prefs.shoppingListReminderTime, isFr, options.shoppingItemCount);
   }
 }
