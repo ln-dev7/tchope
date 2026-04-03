@@ -4,6 +4,7 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Notifications from 'expo-notifications';
 import 'react-native-reanimated';
 
 import { SettingsProvider } from '@/context/SettingsContext';
@@ -34,6 +35,17 @@ function InnerLayout() {
       setOnboardingChecked(true);
     });
   }, []);
+
+  // Deep link on notification tap
+  useEffect(() => {
+    const sub = Notifications.addNotificationResponseReceivedListener((response) => {
+      const screen = response.notification.request.content.data?.screen;
+      if (typeof screen === 'string') {
+        router.push(screen as any);
+      }
+    });
+    return () => sub.remove();
+  }, [router]);
 
   const navTheme = isDark
     ? { ...DarkTheme, colors: { ...DarkTheme.colors, background: '#121212', card: '#121212' } }
