@@ -51,3 +51,8 @@ app-example
 /android
 
 .idea/
+
+#AI
+
+CLAUDE.md
+.claude/
