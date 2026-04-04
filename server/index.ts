@@ -1,5 +1,10 @@
 import express from 'express';
 import cors from 'cors';
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
+
+const appJson = JSON.parse(readFileSync(resolve(__dirname, '../app.json'), 'utf-8'));
+const APP_VERSION: string = appJson.expo.version;
 
 const app = express();
 app.use(cors());
@@ -51,11 +56,11 @@ app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok' });
 });
 
-// Returns the minimum required app version
+// Returns the minimum required app version (synced from app.json)
 app.get('/api/version', (_req, res) => {
   res.json({
-    minVersion: '1.3.1',
-    latestVersion: '1.3.1',
+    minVersion: APP_VERSION,
+    latestVersion: APP_VERSION,
     forceUpdate: false,
   });
 });
