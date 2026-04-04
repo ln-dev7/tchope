@@ -4,10 +4,16 @@ const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001';
 const CACHE_PREFIX = 'ai_cache:';
 const CACHE_TTL = 1000 * 60 * 60 * 24; // 24 hours
 
+type SystemBlock = {
+  type: 'text';
+  text: string;
+  cache_control?: { type: 'ephemeral' };
+};
+
 type ClaudeRequest = {
   model: string;
   max_tokens?: number;
-  system: string;
+  system: string | SystemBlock[];
   messages: { role: string; content: string }[];
 };
 
