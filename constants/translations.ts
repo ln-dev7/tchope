@@ -343,6 +343,13 @@ export const translations = {
     onboarding3Desc: "L'IA génère votre plan de la semaine et votre liste de courses automatiquement.",
     onboarding4Title: "Votre carnet de recettes",
     onboarding4Desc: "Sauvegardez vos favoris, créez vos propres recettes et ajustez les portions.",
+
+    // Update modal
+    updateAvailable: "Mise à jour disponible",
+    updateMessage: "Une nouvelle version de Tchopé est disponible. Mettez à jour pour profiter des dernières fonctionnalités et améliorations.",
+    updateForceMessage: "Cette version de Tchopé n'est plus supportée. Veuillez mettre à jour pour continuer à utiliser l'application.",
+    updateNow: "Mettre à jour",
+    updateLater: "Plus tard",
   },
 
   en: {
@@ -688,6 +695,13 @@ export const translations = {
     onboarding3Desc: "AI generates your weekly meal plan and shopping list automatically.",
     onboarding4Title: "Your recipe book",
     onboarding4Desc: "Save favorites, create your own recipes and adjust portions.",
+
+    // Update modal
+    updateAvailable: "Update Available",
+    updateMessage: "A new version of Tchopé is available. Update now to enjoy the latest features and improvements.",
+    updateForceMessage: "This version of Tchopé is no longer supported. Please update to continue using the app.",
+    updateNow: "Update",
+    updateLater: "Later",
   },
 } as const;
 
