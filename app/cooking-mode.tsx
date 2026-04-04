@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter, useNavigation } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import * as Speech from 'expo-speech';
 
@@ -70,10 +70,17 @@ export default function CookingModeScreen() {
     });
   }, [currentStep, voiceEnabled]);
 
-  // Stop speech when leaving the screen
+  // Stop speech when leaving the screen (blur handles modals that don't unmount)
+  const navigation = useNavigation();
   useEffect(() => {
-    return () => { Speech.stop(); };
-  }, []);
+    const unsubscribe = navigation.addListener('blur', () => {
+      Speech.stop();
+    });
+    return () => {
+      unsubscribe();
+      Speech.stop();
+    };
+  }, [navigation]);
 
   // Timer state for this recipe
   const hasTimer = timer.recipeId === id && (timer.isRunning || isPaused || (timer.totalSeconds > 0 && timer.remainingSeconds === 0));
@@ -198,6 +205,21 @@ export default function CookingModeScreen() {
               {t('steps')} {currentStep + 1} {t('stepOf')} {totalSteps}
             </Text>
           </View>
+          <TouchableOpacity
+            onPress={() => router.push(`/live-cooking?id=${id}&step=${currentStep}` as any)}
+            style={{
+              height: 36,
+              paddingHorizontal: 12,
+              borderRadius: 18,
+              backgroundColor: 'rgba(168,85,247,0.12)',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 4,
+            }}>
+            <Ionicons name="mic" size={16} color="#A855F7" />
+            <Text style={{ fontSize: 12, fontWeight: '700', color: '#A855F7' }}>Live</Text>
+          </TouchableOpacity>
           <TouchableOpacity
             onPress={toggleVoice}
             style={{

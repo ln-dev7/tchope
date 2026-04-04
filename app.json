@@ -10,7 +10,11 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.lndev.tchope"
+      "bundleIdentifier": "com.lndev.tchope",
+      "infoPlist": {
+        "NSSpeechRecognitionUsageDescription": "TchopAI Live utilise la reconnaissance vocale pour vous guider pendant la cuisine.",
+        "NSMicrophoneUsageDescription": "TchopAI Live utilise le micro pour écouter vos questions pendant la cuisine."
+      }
     },
     "splash": {
       "image": "./assets/images/splash.png",
@@ -101,7 +105,14 @@
         }
       ],
       "@bacons/apple-targets",
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "TchopAI Live utilise le micro pour écouter vos questions pendant la cuisine.",
+          "speechRecognitionPermission": "TchopAI Live utilise la reconnaissance vocale pour vous guider pendant la cuisine."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

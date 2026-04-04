@@ -284,6 +284,25 @@ export default function RecipeDetailScreen() {
 
           {/* Action Buttons */}
           <View style={{ gap: 12, marginTop: 24 }}>
+            <TouchableOpacity
+              onPress={() => router.push(`/live-cooking?id=${recipe.id}` as any)}
+              activeOpacity={0.85}
+              style={{
+                backgroundColor: isDark ? 'rgba(168,85,247,0.12)' : 'rgba(168,85,247,0.08)',
+                borderRadius: 20,
+                paddingVertical: 14,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+                borderWidth: 1.5,
+                borderColor: isDark ? 'rgba(168,85,247,0.3)' : 'rgba(168,85,247,0.2)',
+              }}>
+              <Ionicons name="mic" size={18} color="#A855F7" />
+              <Text style={{ fontSize: 14, fontWeight: '700', color: '#A855F7' }}>
+                {t('startLiveCooking')}
+              </Text>
+            </TouchableOpacity>
             {getRecipeVideos(recipe.id) && (
               <TouchableOpacity
                 onPress={() => router.push(`/recipe-videos?id=${recipe.id}&name=${encodeURIComponent(recipe.name)}` as any)}

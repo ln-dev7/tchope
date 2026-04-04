@@ -10,11 +10,18 @@ type SystemBlock = {
   cache_control?: { type: 'ephemeral' };
 };
 
+type MessageContent =
+  | string
+  | Array<
+      | { type: 'text'; text: string }
+      | { type: 'image'; source: { type: 'base64'; media_type: string; data: string } }
+    >;
+
 type ClaudeRequest = {
   model: string;
   max_tokens?: number;
   system: string | SystemBlock[];
-  messages: { role: string; content: string }[];
+  messages: { role: string; content: MessageContent }[];
 };
 
 type CacheEntry = {
@@ -54,6 +61,19 @@ async function setCache(key: string, text: string): Promise<void> {
   } catch {
     // Silently fail — cache is best-effort
   }
+}
+
+export async function callClaudeLive(params: ClaudeRequest): Promise<string> {
+  const response = await fetch(`${API_BASE_URL}/api/claude`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(params),
+  });
+
+  if (!response.ok) throw new Error(`API error: ${response.status}`);
+
+  const data = await response.json();
+  return data.content?.[0]?.text ?? '';
 }
 
 export async function callClaude(params: ClaudeRequest): Promise<string> {
