@@ -16,6 +16,7 @@ import { RatingProvider } from '@/context/RatingContext';
 import { MealPlannerProvider } from '@/context/MealPlannerContext';
 import { useTheme } from '@/hooks/useTheme';
 import NetworkBanner from '@/components/NetworkBanner';
+import UpdateModal from '@/components/UpdateModal';
 import { ONBOARDING_KEY } from './onboarding';
 
 export const unstable_settings = {
@@ -67,6 +68,7 @@ function InnerLayout() {
         <Stack.Screen name="onboarding" options={{ animation: 'none' }} />
       </Stack>
       <NetworkBanner />
+      <UpdateModal />
       <StatusBar style={isDark ? 'light' : 'dark'} />
     </ThemeProvider>
   );
