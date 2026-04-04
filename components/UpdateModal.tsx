@@ -2,8 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Modal, TouchableOpacity, Linking, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useTheme } from '@/hooks/useTheme';
+
+const VERSION_CHECK_KEY = 'last_version_check';
+const CHECK_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001';
 
@@ -36,8 +40,14 @@ export default function UpdateModal() {
 
   async function checkVersion() {
     try {
+      const lastCheck = await AsyncStorage.getItem(VERSION_CHECK_KEY);
+      if (lastCheck && Date.now() - Number(lastCheck) < CHECK_INTERVAL) return;
+
       const response = await fetch(`${API_BASE_URL}/api/version`);
       if (!response.ok) return;
+
+      await AsyncStorage.setItem(VERSION_CHECK_KEY, String(Date.now()));
+
       const data = await response.json();
       const currentVersion = Constants.expoConfig?.version ?? '0.0.0';
       const isOutdated = compareVersions(currentVersion, data.minVersion);
