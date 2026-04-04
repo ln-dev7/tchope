@@ -51,6 +51,15 @@ app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok' });
 });
 
+// Returns the minimum required app version
+app.get('/api/version', (_req, res) => {
+  res.json({
+    minVersion: '1.3.1',
+    latestVersion: '1.3.1',
+    forceUpdate: false,
+  });
+});
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Tchope API proxy running on port ${PORT}`);
