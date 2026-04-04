@@ -19,6 +19,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useSettings } from '@/context/SettingsContext';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
+import PremiumGate from '@/components/premium/PremiumGate';
 import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
 import { callClaude } from '@/utils/api';
 import RecipeImage from '@/components/RecipeImage';
@@ -449,9 +450,11 @@ export default function TchopAIScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top', 'bottom']}>
-      <Animated.View style={{ flex: 1, marginBottom: keyboardPadding }}>
-        {chatContent}
-      </Animated.View>
+      <PremiumGate onClose={() => router.back()}>
+        <Animated.View style={{ flex: 1, marginBottom: keyboardPadding }}>
+          {chatContent}
+        </Animated.View>
+      </PremiumGate>
     </SafeAreaView>
   );
 }

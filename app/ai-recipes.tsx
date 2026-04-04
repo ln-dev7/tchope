@@ -23,6 +23,7 @@ import RecipeCard from '@/components/RecipeCard';
 import { searchByIngredients, isValidIngredient, getMissingIngredients } from '@/utils/ingredient-matcher';
 import { callClaude } from '@/utils/api';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
+import { useLicense } from '@/context/LicenseContext';
 import type { Recipe } from '@/types';
 
 type SearchResult = {
@@ -168,6 +169,7 @@ export default function AIRecipesScreen() {
 
   const isFr = settings.language === 'fr';
   const isConnected = useNetworkStatus();
+  const { isPremium } = useLicense();
   const aiAvailable = !!process.env.EXPO_PUBLIC_API_URL && isConnected;
 
   const knownIngredients = useMemo(() => {
@@ -256,6 +258,10 @@ export default function AIRecipesScreen() {
   const handleSearchFreeText = async () => {
     Keyboard.dismiss();
     if (!freeText.trim()) return;
+    if (!isPremium) {
+      router.push('/tchop-ai' as any);
+      return;
+    }
     if (!aiAvailable) {
       setError(t('aiFreeUnavailable'));
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);

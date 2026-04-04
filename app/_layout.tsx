@@ -14,6 +14,7 @@ import { TimerProvider } from '@/context/TimerContext';
 import { ToastProvider } from '@/context/ToastContext';
 import { RatingProvider } from '@/context/RatingContext';
 import { MealPlannerProvider } from '@/context/MealPlannerContext';
+import { LicenseProvider } from '@/context/LicenseContext';
 import { useTheme } from '@/hooks/useTheme';
 import NetworkBanner from '@/components/NetworkBanner';
 import UpdateModal from '@/components/UpdateModal';
@@ -63,6 +64,7 @@ function InnerLayout() {
         <Stack.Screen name="shopping-list" />
         <Stack.Screen name="notification-settings" />
         <Stack.Screen name="cooking-mode" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="live-cooking" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
         <Stack.Screen name="tchop-ai" options={{ animation: 'slide_from_bottom' }} />
         <Stack.Screen name="onboarding" options={{ animation: 'none' }} />
       </Stack>
@@ -83,7 +85,9 @@ export default function RootLayout() {
             <TimerProvider>
               <RatingProvider>
                 <MealPlannerProvider>
-                  <InnerLayout />
+                  <LicenseProvider>
+                    <InnerLayout />
+                  </LicenseProvider>
                 </MealPlannerProvider>
               </RatingProvider>
             </TimerProvider>
