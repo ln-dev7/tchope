@@ -1,5 +1,5 @@
 import "../global.css";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -26,16 +26,13 @@ export const unstable_settings = {
 function InnerLayout() {
   const { isDark } = useTheme();
   const router = useRouter();
-  const [onboardingChecked, setOnboardingChecked] = useState(false);
-
   useEffect(() => {
     AsyncStorage.getItem(ONBOARDING_KEY).then((val) => {
       if (val !== 'true') {
         router.replace('/onboarding' as any);
       }
-      setOnboardingChecked(true);
     });
-  }, []);
+  }, [router]);
 
   // Deep link on notification tap
   useEffect(() => {
