@@ -1,8 +1,10 @@
 // ── Tchopé Plus pricing (edit here, reflects everywhere) ──
-export const PLUS_MONTHLY_PRICE = '1 500 FCFA';
-export const PLUS_ANNUAL_PRICE = '15 000 FCFA';
+export const PLUS_MONTHLY_PRICE_VALUE = 1500;
+export const PLUS_ANNUAL_PRICE_VALUE = 15000;
+export const PLUS_MONTHLY_PRICE = `${PLUS_MONTHLY_PRICE_VALUE.toLocaleString('fr-FR')} FCFA`;
+export const PLUS_ANNUAL_PRICE = `${PLUS_ANNUAL_PRICE_VALUE.toLocaleString('fr-FR')} FCFA`;
 export const PLUS_DEVICE_LIMIT = 2;
-export const PLUS_ANNUAL_SAVING = '17%';
+export const PLUS_ANNUAL_SAVING = `${Math.round((1 - PLUS_ANNUAL_PRICE_VALUE / (PLUS_MONTHLY_PRICE_VALUE * 12)) * 100)}%`;
 export const CHARIOW_URL_MONTHLY = 'https://ecaefmew.mychariow.shop/prd_nty5tx';
 export const CHARIOW_URL_ANNUAL = 'https://ecaefmew.mychariow.shop/prd_eg9w2m';
 
