@@ -17,6 +17,7 @@ import { MealPlannerProvider } from '@/context/MealPlannerContext';
 import { useTheme } from '@/hooks/useTheme';
 import NetworkBanner from '@/components/NetworkBanner';
 import UpdateModal from '@/components/UpdateModal';
+import TchopAI from '@/components/TchopAI';
 import { ONBOARDING_KEY } from './onboarding';
 
 export const unstable_settings = {
@@ -62,10 +63,12 @@ function InnerLayout() {
         <Stack.Screen name="shopping-list" />
         <Stack.Screen name="notification-settings" />
         <Stack.Screen name="cooking-mode" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="tchop-ai" options={{ animation: 'slide_from_bottom' }} />
         <Stack.Screen name="onboarding" options={{ animation: 'none' }} />
       </Stack>
       <NetworkBanner />
       <UpdateModal />
+      <TchopAI />
       <StatusBar style={isDark ? 'light' : 'dark'} />
     </ThemeProvider>
   );
