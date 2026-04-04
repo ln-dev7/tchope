@@ -87,9 +87,9 @@ Return ONLY valid JSON (no markdown), format:
 }`;
 
   const text = await callClaude({
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-haiku-4-5-20251001',
     max_tokens: 2048,
-    system: systemPrompt,
+    system: [{ type: 'text', text: systemPrompt, cache_control: { type: 'ephemeral' } }],
     messages: [{ role: 'user', content: `Recipe list:\n${recipeList}\n\nPreferences: ${preferences || 'No specific preferences. 2 meals per day (lunch + dinner), balanced and varied.'}` }],
   });
 
@@ -133,9 +133,9 @@ Return the FULL updated plan as valid JSON (no markdown), same format:
 }`;
 
   const text = await callClaude({
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-haiku-4-5-20251001',
     max_tokens: 2048,
-    system: systemPrompt,
+    system: [{ type: 'text', text: systemPrompt, cache_control: { type: 'ephemeral' } }],
     messages: [{ role: 'user', content: `Available recipes:\n${recipeList}\n\nCurrent plan:\n${currentPlanStr}\n\nAdjustment requested: ${adjustmentRequest}` }],
   });
 
