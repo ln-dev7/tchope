@@ -7,6 +7,7 @@ import { useRouter } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
+import { useLicense } from '@/context/LicenseContext';
 import FeaturedCard from '@/components/FeaturedCard';
 import RecipeCard from '@/components/RecipeCard';
 import RegionItem from '@/components/RegionItem';
@@ -37,6 +38,7 @@ export default function HomeScreen() {
   const router = useRouter();
   const recipes = useLocalizedRecipes();
   const { bottom } = useSafeAreaInsets();
+  const { isPremium } = useLicense();
 
   const featuredRecipes = useMemo(
     () => FEATURED_ORDER.map((id) => recipes.find((r) => r.id === id)).filter(Boolean) as typeof recipes,
@@ -60,15 +62,30 @@ export default function HomeScreen() {
             paddingHorizontal: 24,
             paddingVertical: 16,
           }}>
-          <Text
-            style={{
-              fontSize: 24,
-              fontWeight: '800',
-              color: colors.accent,
-              letterSpacing: -1.2,
-            }}>
-            Tchopé
-          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <Text
+              style={{
+                fontSize: 24,
+                fontWeight: '800',
+                color: colors.accent,
+                letterSpacing: -1.2,
+              }}>
+              Tchopé
+            </Text>
+            {isPremium && (
+              <View
+                style={{
+                  backgroundColor: '#D4A017',
+                  paddingHorizontal: 8,
+                  paddingVertical: 3,
+                  borderRadius: 8,
+                }}>
+                <Text style={{ color: '#FFFFFF', fontSize: 11, fontWeight: '800', letterSpacing: 0.5 }}>
+                  PLUS
+                </Text>
+              </View>
+            )}
+          </View>
         </View>
 
         {/* Search Bar */}
@@ -95,81 +112,103 @@ export default function HomeScreen() {
           </Text>
         </TouchableOpacity>
 
-        {/* AI Recipe Finder */}
-        <TouchableOpacity
-          onPress={() => router.push('/ai-recipes' as any)}
-          activeOpacity={0.85}
-          style={{
-            marginHorizontal: 24,
-            marginTop: 16,
-            borderRadius: 24,
-            padding: 20,
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 16,
-            backgroundColor: 'rgba(168,85,247,0.08)',
-            borderWidth: 1.5,
-            borderColor: 'rgba(168,85,247,0.15)',
-          }}>
-          <View
+        {/* AI Recipe Finder + Tchopé Plus */}
+        {isPremium ? (
+          <TouchableOpacity
+            onPress={() => router.push('/ai-recipes' as any)}
+            activeOpacity={0.85}
             style={{
-              width: 48,
-              height: 48,
+              marginHorizontal: 24,
+              marginTop: 16,
               borderRadius: 24,
-              backgroundColor: 'rgba(168,85,247,0.15)',
+              padding: 20,
+              flexDirection: 'row',
               alignItems: 'center',
-              justifyContent: 'center',
+              gap: 16,
+              backgroundColor: 'rgba(168,85,247,0.08)',
+              borderWidth: 1.5,
+              borderColor: 'rgba(168,85,247,0.15)',
             }}>
-            <Ionicons name="sparkles" size={24} color="#A855F7" />
-          </View>
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 16, fontWeight: '700', color: colors.text }}>
-              {t('aiCta')}
-            </Text>
-            <Text style={{ fontSize: 13, color: colors.textSecondary, marginTop: 2 }}>
-              {t('aiCtaSubtitle')}
-            </Text>
-          </View>
-          <Ionicons name="chevron-forward" size={18} color="#A855F7" />
-        </TouchableOpacity>
+            <View
+              style={{
+                width: 48,
+                height: 48,
+                borderRadius: 24,
+                backgroundColor: 'rgba(168,85,247,0.15)',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+              <Ionicons name="sparkles" size={24} color="#A855F7" />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 16, fontWeight: '700', color: colors.text }}>
+                {t('aiCta')}
+              </Text>
+              <Text style={{ fontSize: 13, color: colors.textSecondary, marginTop: 2 }}>
+                {t('aiCtaSubtitle')}
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={18} color="#A855F7" />
+          </TouchableOpacity>
+        ) : (
+          <View style={{ flexDirection: 'row', marginHorizontal: 24, marginTop: 16, gap: 10 }}>
+            <TouchableOpacity
+              onPress={() => router.push('/ai-recipes' as any)}
+              activeOpacity={0.85}
+              style={{
+                flex: 1,
+                borderRadius: 20,
+                padding: 16,
+                gap: 10,
+                backgroundColor: 'rgba(168,85,247,0.08)',
+                borderWidth: 1.5,
+                borderColor: 'rgba(168,85,247,0.15)',
+              }}>
+              <View
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 20,
+                  backgroundColor: 'rgba(168,85,247,0.15)',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                <Ionicons name="search" size={20} color="#A855F7" />
+              </View>
+              <Text style={{ fontSize: 14, fontWeight: '700', color: colors.text }}>
+                {t('aiCta')}
+              </Text>
+            </TouchableOpacity>
 
-        {/* Meal Planner CTA */}
-        <TouchableOpacity
-          onPress={() => router.push('/(tabs)/planner' as any)}
-          activeOpacity={0.85}
-          style={{
-            marginHorizontal: 24,
-            marginTop: 10,
-            borderRadius: 24,
-            padding: 20,
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 16,
-            backgroundColor: colors.accent + '08',
-            borderWidth: 1.5,
-            borderColor: colors.accent + '15',
-          }}>
-          <View
-            style={{
-              width: 48,
-              height: 48,
-              borderRadius: 24,
-              backgroundColor: colors.accent + '15',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-            <Ionicons name="calendar-outline" size={24} color={colors.accent} />
+            <TouchableOpacity
+              onPress={() => router.push('/tchop-ai' as any)}
+              activeOpacity={0.85}
+              style={{
+                flex: 1,
+                borderRadius: 20,
+                padding: 16,
+                gap: 10,
+                backgroundColor: colors.accent + '0C',
+                borderWidth: 1.5,
+                borderColor: colors.accent + '20',
+              }}>
+              <View
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 20,
+                  backgroundColor: colors.accent,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                <Ionicons name="sparkles" size={20} color="#FFFFFF" />
+              </View>
+              <Text style={{ fontSize: 14, fontWeight: '700', color: colors.accent }}>
+                {t('tchopePlusHome')}
+              </Text>
+            </TouchableOpacity>
           </View>
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 16, fontWeight: '700', color: colors.text }}>
-              {t('plannerCta')}
-            </Text>
-            <Text style={{ fontSize: 13, color: colors.textSecondary, marginTop: 2 }}>
-              {t('plannerCtaSubtitle')}
-            </Text>
-          </View>
-          <Ionicons name="chevron-forward" size={18} color={colors.accent} />
-        </TouchableOpacity>
+        )}
 
         {/* Regions Section */}
         <View style={{ paddingVertical: 16, gap: 16 }}>
