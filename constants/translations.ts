@@ -350,6 +350,14 @@ export const translations = {
     updateForceMessage: "Cette version de Tchopé n'est plus supportée. Veuillez mettre à jour pour continuer à utiliser l'application.",
     updateNow: "Mettre à jour",
     updateLater: "Plus tard",
+
+    // TchopAI chatbot
+    tchopaiTitle: "TchopAI",
+    tchopaiSubtitle: "Votre assistant culinaire camerounais",
+    tchopaiPlaceholder: "Posez-moi une question...",
+    tchopaiWelcome: "Salut ! Je suis TchopAI, votre assistant culinaire camerounais. Posez-moi vos questions sur les recettes, les ingrédients, les techniques de cuisine camerounaise et plus encore !",
+    tchopaiError: "Désolé, une erreur s'est produite. Réessayez.",
+    tchopaiOffline: "Vous êtes hors ligne. TchopAI a besoin d'une connexion internet.",
   },
 
   en: {
@@ -702,6 +710,14 @@ export const translations = {
     updateForceMessage: "This version of Tchopé is no longer supported. Please update to continue using the app.",
     updateNow: "Update",
     updateLater: "Later",
+
+    // TchopAI chatbot
+    tchopaiTitle: "TchopAI",
+    tchopaiSubtitle: "Your Cameroonian cooking assistant",
+    tchopaiPlaceholder: "Ask me a question...",
+    tchopaiWelcome: "Hi! I'm TchopAI, your Cameroonian cooking assistant. Ask me anything about recipes, ingredients, cooking techniques and more!",
+    tchopaiError: "Sorry, an error occurred. Please try again.",
+    tchopaiOffline: "You're offline. TchopAI needs an internet connection.",
   },
 } as const;
 
