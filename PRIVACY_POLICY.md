@@ -1,6 +1,6 @@
 # Politique de Confidentialité — Tchopé
 
-**Dernière mise à jour : 20 mars 2026**
+**Dernière mise à jour : 4 avril 2026**
 **Développeur : LNDEV — [lndev.me](https://lndev.me)**
 
 ---
@@ -30,7 +30,26 @@ Tchopé demande l'accès à votre caméra et/ou à votre galerie photo **uniquem
 - **Ponctuelle** : l'accès n'est demandé qu'au moment où vous appuyez sur le bouton d'ajout de photo
 - **Locale** : les photos sélectionnées ou prises sont stockées uniquement sur votre appareil. Elles ne sont jamais envoyées, partagées ou uploadées vers un serveur
 
-## 4. Stockage local
+## 4. Microphone et Reconnaissance vocale
+
+Tchopé utilise le microphone de votre appareil **uniquement** dans le cadre de la fonctionnalité TchopAI Live, qui permet de dialoguer vocalement avec l'assistant cuisine pendant que vous cuisinez.
+
+- **Activation explicite** : le microphone n'est utilisé que lorsque vous lancez une session TchopAI Live et maintenez le bouton de parole. Il n'est jamais activé en arrière-plan.
+- **Traitement sur l'appareil** : l'audio capté par le microphone est converti en texte directement sur votre appareil via les services de reconnaissance vocale du système d'exploitation (Google Speech Services sur Android, Speech Recognition sur iOS). Aucun flux audio n'est envoyé à un serveur distant.
+- **Aucun enregistrement** : aucun enregistrement audio n'est stocké sur l'appareil ni transmis à un tiers.
+- **Texte uniquement** : seul le texte transcrit par la reconnaissance vocale est envoyé à l'API Claude (Anthropic) pour générer une réponse. Anthropic ne reçoit jamais votre voix, uniquement du texte.
+- **Pas de sauvegarde** : les conversations vocales (texte transcrit et réponses de l'IA) ne sont pas sauvegardées après la fin de la session TchopAI Live. Elles sont supprimées de la mémoire dès que vous quittez l'écran.
+- **Révocable** : vous pouvez révoquer la permission microphone à tout moment dans les paramètres de votre téléphone (Réglages > Tchopé > Microphone).
+
+## 5. Paiement et Licence
+
+Les fonctionnalités IA de Tchopé (TchopAI Chat, Recherche IA, Meal Plan IA, TchopAI Live) nécessitent une licence payante.
+
+- **Paiement externe** : le paiement est géré entièrement par Chariow ([chariow.com](https://chariow.com)), un service tiers de paiement. L'achat s'effectue sur leur plateforme, en dehors de l'application.
+- **Aucune donnée bancaire** : Tchopé ne collecte, ne stocke et ne traite aucune donnée bancaire ou financière (carte de crédit, numéro de compte, mobile money). Aucune donnée de paiement ne transite par l'application.
+- **Clé de licence** : après l'achat, vous recevez une clé de licence que vous saisissez dans l'application. Seule cette clé est stockée localement sur votre appareil (via AsyncStorage) pour vérifier votre accès aux fonctionnalités IA.
+
+## 6. Stockage local
 
 L'application stocke localement sur votre appareil (via AsyncStorage) les données suivantes :
 
@@ -43,17 +62,17 @@ Ces données :
 - Ne sont jamais transmises à un tiers
 - Peuvent être supprimées à tout moment depuis les paramètres de l'application ou en désinstallant l'application
 
-## 5. Données de tiers
+## 7. Données de tiers
 
 L'application charge des images depuis Wikimedia Commons et des miniatures vidéo depuis YouTube pour illustrer les recettes. Ces requêtes sont soumises aux politiques de confidentialité respectives de [Wikimedia](https://foundation.wikimedia.org/wiki/Privacy_policy) et [Google/YouTube](https://policies.google.com/privacy).
 
 Lorsque vous choisissez de regarder une vidéo de recette, vous êtes redirigé vers YouTube via votre navigateur. Tchopé n'a aucun contrôle sur les données collectées par YouTube.
 
-## 6. Modifications
+## 8. Modifications
 
 Cette politique de confidentialité peut être mise à jour occasionnellement. Toute modification sera reflétée par la date de mise à jour en haut de ce document. Nous vous encourageons à consulter cette page régulièrement.
 
-## 7. Contact
+## 9. Contact
 
 Pour toute question concernant cette politique de confidentialité :
 
@@ -65,7 +84,7 @@ Pour toute question concernant cette politique de confidentialité :
 
 # Privacy Policy — Tchopé
 
-**Last updated: March 20, 2026**
+**Last updated: April 4, 2026**
 **Developer: LNDEV — [lndev.me](https://lndev.me)**
 
 ---
@@ -95,7 +114,26 @@ Tchopé requests access to your camera and/or photo library **only** when you ch
 - **On-demand**: access is only requested when you tap the photo button
 - **Local**: selected or captured photos are stored exclusively on your device. They are never sent, shared, or uploaded to any server
 
-## 4. Local Storage
+## 4. Microphone and Speech Recognition
+
+Tchopé uses your device's microphone **only** within the TchopAI Live feature, which allows you to have a voice conversation with the cooking assistant while you cook.
+
+- **Explicit activation**: the microphone is only used when you start a TchopAI Live session and hold the speak button. It is never activated in the background.
+- **On-device processing**: the audio captured by the microphone is converted to text directly on your device using the operating system's built-in speech recognition services (Google Speech Services on Android, Speech Recognition on iOS). No audio stream is sent to a remote server.
+- **No recordings**: no audio recording is stored on the device or transmitted to any third party.
+- **Text only**: only the transcribed text from speech recognition is sent to the Claude API (Anthropic) to generate a response. Anthropic never receives your voice, only text.
+- **No saving**: voice conversations (transcribed text and AI responses) are not saved after the TchopAI Live session ends. They are cleared from memory as soon as you leave the screen.
+- **Revocable**: you can revoke the microphone permission at any time in your phone settings (Settings > Tchopé > Microphone).
+
+## 5. Payment and License
+
+The AI features of Tchopé (TchopAI Chat, AI Search, AI Meal Plan, TchopAI Live) require a paid license.
+
+- **External payment**: payment is handled entirely by Chariow ([chariow.com](https://chariow.com)), a third-party payment service. The purchase takes place on their platform, outside the application.
+- **No financial data**: Tchopé does not collect, store, or process any banking or financial data (credit card, account number, mobile money). No payment data passes through the application.
+- **License key**: after purchase, you receive a license key that you enter in the application. Only this key is stored locally on your device (via AsyncStorage) to verify your access to AI features.
+
+## 6. Local Storage
 
 The app stores the following data locally on your device (via AsyncStorage):
 
@@ -108,17 +146,17 @@ This data:
 - Is never transmitted to any third party
 - Can be deleted at any time from the app settings or by uninstalling the app
 
-## 5. Third-Party Data
+## 7. Third-Party Data
 
 The app loads images from Wikimedia Commons and video thumbnails from YouTube to illustrate recipes. These requests are subject to the respective privacy policies of [Wikimedia](https://foundation.wikimedia.org/wiki/Privacy_policy) and [Google/YouTube](https://policies.google.com/privacy).
 
 When you choose to watch a recipe video, you are redirected to YouTube via your browser. Tchopé has no control over the data collected by YouTube.
 
-## 6. Changes
+## 8. Changes
 
 This privacy policy may be updated from time to time. Any changes will be reflected by the update date at the top of this document. We encourage you to review this page periodically.
 
-## 7. Contact
+## 9. Contact
 
 For any questions regarding this privacy policy:
 
