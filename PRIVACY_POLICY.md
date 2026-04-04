@@ -43,11 +43,14 @@ Tchopé utilise le microphone de votre appareil **uniquement** dans le cadre de 
 
 ## 5. Paiement et Licence
 
-Les fonctionnalités IA de Tchopé (TchopAI Chat, Recherche IA, Meal Plan IA, TchopAI Live) nécessitent une licence payante.
+Les fonctionnalités IA de Tchopé (TchopAI Chat, Recherche IA, Meal Plan IA, TchopAI Live) nécessitent une licence payante. Le processus d'achat implique deux services tiers, tous deux opérés par Axa Zara LLC ([axazara.com](https://axazara.com)) :
 
-- **Paiement externe** : le paiement est géré entièrement par Chariow ([chariow.com](https://chariow.com)), un service tiers de paiement. L'achat s'effectue sur leur plateforme, en dehors de l'application.
-- **Aucune donnée bancaire** : Tchopé ne collecte, ne stocke et ne traite aucune donnée bancaire ou financière (carte de crédit, numéro de compte, mobile money). Aucune donnée de paiement ne transite par l'application.
+- **Chariow** ([chariow.com](https://chariow.com)) : plateforme de vente qui gère la licence (génération de clé, activation, expiration). La page d'achat est hébergée sur Chariow, en dehors de l'application.
+- **Moneroo** ([moneroo.io](https://moneroo.io)) : passerelle de paiement qui traite la transaction financière. C'est Moneroo qui collecte et traite les données de paiement (carte bancaire, mobile money, etc.).
+- **Aucune donnée bancaire** : Tchopé ne collecte, ne stocke et ne traite aucune donnée bancaire ou financière. Aucune donnée de paiement ne transite par l'application. Tout est géré par les services tiers mentionnés ci-dessus.
 - **Clé de licence** : après l'achat, vous recevez une clé de licence que vous saisissez dans l'application. Seule cette clé est stockée localement sur votre appareil (via AsyncStorage) pour vérifier votre accès aux fonctionnalités IA.
+
+Pour plus d'informations sur le traitement de vos données par ces services, consultez leurs politiques de confidentialité respectives : [Chariow](https://chariow.com/privacy), [Moneroo](https://moneroo.io/privacy), [Axa Zara LLC](https://axazara.com).
 
 ## 6. Stockage local
 
@@ -127,11 +130,14 @@ Tchopé uses your device's microphone **only** within the TchopAI Live feature, 
 
 ## 5. Payment and License
 
-The AI features of Tchopé (TchopAI Chat, AI Search, AI Meal Plan, TchopAI Live) require a paid license.
+The AI features of Tchopé (TchopAI Chat, AI Search, AI Meal Plan, TchopAI Live) require a paid license. The purchase process involves two third-party services, both operated by Axa Zara LLC ([axazara.com](https://axazara.com)):
 
-- **External payment**: payment is handled entirely by Chariow ([chariow.com](https://chariow.com)), a third-party payment service. The purchase takes place on their platform, outside the application.
-- **No financial data**: Tchopé does not collect, store, or process any banking or financial data (credit card, account number, mobile money). No payment data passes through the application.
+- **Chariow** ([chariow.com](https://chariow.com)): sales platform that manages the license (key generation, activation, expiration). The purchase page is hosted on Chariow, outside the application.
+- **Moneroo** ([moneroo.io](https://moneroo.io)): payment gateway that processes the financial transaction. Moneroo collects and processes payment data (credit card, mobile money, etc.).
+- **No financial data**: Tchopé does not collect, store, or process any banking or financial data. No payment data passes through the application. Everything is handled by the third-party services mentioned above.
 - **License key**: after purchase, you receive a license key that you enter in the application. Only this key is stored locally on your device (via AsyncStorage) to verify your access to AI features.
+
+For more information on how your data is handled by these services, see their respective privacy policies: [Chariow](https://chariow.com/privacy), [Moneroo](https://moneroo.io/privacy), [Axa Zara LLC](https://axazara.com).
 
 ## 6. Local Storage
 
