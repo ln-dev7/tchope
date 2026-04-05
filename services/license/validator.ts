@@ -1,5 +1,5 @@
 import { validateLicenseKey, activateLicenseOnDevice } from '../chariow/api';
-import { getStoredLicense, storeLicense, getOrCreateDeviceId } from './storage';
+import { getStoredLicense, storeLicense, clearStoredLicense, getOrCreateDeviceId } from './storage';
 import type { LicenseStatus, LicenseValidationResult } from './types';
 
 const OFFLINE_GRACE_DAYS = 7;
@@ -45,7 +45,17 @@ export async function validateLicense(key: string): Promise<LicenseValidationRes
 
     // API returned a valid response but license is not valid
     const status = mapApiStatus(response.status);
-    return { success: false, status };
+    return {
+      success: false,
+      status,
+      info: response.license ? {
+        key,
+        status,
+        expiresAt: response.license.expiresAt,
+        activationsRemaining: response.license.activations?.remaining ?? null,
+        validatedAt: new Date().toISOString(),
+      } : undefined,
+    };
   } catch (err) {
     console.warn('[License] validateLicense error:', err);
     if (isNetworkError(err)) {
@@ -103,6 +113,12 @@ export async function validateStoredLicense(): Promise<LicenseValidationResult> 
 
   if (result.success && result.info) {
     await storeLicense(result.info);
+    return result;
+  }
+
+  // License expired or revoked — return with info so UI can display details
+  if (result.info) {
+    await clearStoredLicense();
     return result;
   }
 

@@ -23,7 +23,7 @@ export default function LicenseActivation() {
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
   const { settings } = useSettings();
-  const { isPremium, licenseInfo, activateLicense, deactivateLicense, refreshLicense } = useLicense();
+  const { isPremium, licenseInfo, licenseStatus, activateLicense, deactivateLicense, refreshLicense } = useLicense();
   const { toast } = useToast();
   const [licenseKey, setLicenseKey] = useState('');
   const [loading, setLoading] = useState(false);
@@ -162,6 +162,81 @@ export default function LicenseActivation() {
         >
           <Text style={{ fontSize: 14, color: '#E74C3C', fontWeight: '600' }}>
             {t('deactivate')}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  // Expired license view
+  if (licenseStatus === 'expired' && licenseInfo) {
+    return (
+      <View style={{ gap: 16 }}>
+        <View
+          style={{
+            backgroundColor: isDark ? 'rgba(231,76,60,0.1)' : 'rgba(231,76,60,0.06)',
+            borderRadius: 20,
+            padding: 20,
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 14,
+            borderWidth: 1.5,
+            borderColor: isDark ? 'rgba(231,76,60,0.2)' : 'rgba(231,76,60,0.12)',
+          }}
+        >
+          <View
+            style={{
+              width: 48,
+              height: 48,
+              borderRadius: 24,
+              backgroundColor: '#E74C3C',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Ionicons name="time-outline" size={28} color="#FFFFFF" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 17, fontWeight: '700', color: '#E74C3C' }}>
+              {isFr ? 'Licence expirée' : 'License expired'}
+            </Text>
+            {licenseInfo.expiresAt && (
+              <Text style={{ fontSize: 13, color: colors.textSecondary, marginTop: 2 }}>
+                {isFr ? 'Expirée le' : 'Expired on'} {formatDate(licenseInfo.expiresAt)}
+              </Text>
+            )}
+          </View>
+        </View>
+
+        {/* Masked key */}
+        <View
+          style={{
+            backgroundColor: colors.surface,
+            borderRadius: 16,
+            padding: 16,
+          }}
+        >
+          <Text style={{ fontSize: 13, color: colors.textMuted, fontFamily: 'monospace' }}>
+            {licenseInfo.key.slice(0, 8)}••••••••
+          </Text>
+        </View>
+
+        {/* Renew button */}
+        <TouchableOpacity
+          onPress={() => Linking.openURL(CHARIOW_URL_MONTHLY)}
+          style={{
+            backgroundColor: colors.accent,
+            borderRadius: 16,
+            paddingVertical: 14,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+          }}
+        >
+          <Ionicons name="sparkles" size={16} color="#FFFFFF" />
+          <Text style={{ fontSize: 15, fontWeight: '700', color: '#FFFFFF' }}>
+            {isFr ? 'Renouveler ma licence' : 'Renew my license'}
           </Text>
         </TouchableOpacity>
       </View>

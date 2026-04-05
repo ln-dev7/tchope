@@ -27,7 +27,7 @@ export default function SettingsScreen() {
   const { clearAll: clearUserRecipes } = useUserRecipes();
   const { toast } = useToast();
   const { requestRating } = useRating();
-  const { isPremium } = useLicense();
+  const { isPremium, licenseStatus } = useLicense();
   const router = useRouter();
   const [showPlusModal, setShowPlusModal] = useState(false);
 
@@ -108,7 +108,7 @@ export default function SettingsScreen() {
             }}>
             {t('tchopePlus')}
           </Text>
-          {isPremium ? (
+          {isPremium || licenseStatus === 'expired' ? (
             <LicenseActivation />
           ) : (
             <View style={{ gap: 12 }}>

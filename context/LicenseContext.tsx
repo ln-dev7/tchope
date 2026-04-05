@@ -6,12 +6,13 @@ import {
   validateStoredLicense,
 } from '@/services/license/validator';
 import { storeLicense, clearStoredLicense } from '@/services/license/storage';
-import type { LicenseInfo, LicenseValidationResult } from '@/services/license/types';
+import type { LicenseInfo, LicenseStatus, LicenseValidationResult } from '@/services/license/types';
 
 interface LicenseContextValue {
   isPremium: boolean;
   isLoading: boolean;
   licenseInfo: LicenseInfo | null;
+  licenseStatus: LicenseStatus;
   activateLicense: (key: string) => Promise<LicenseValidationResult>;
   deactivateLicense: () => Promise<void>;
   refreshLicense: () => Promise<void>;
@@ -21,6 +22,7 @@ const LicenseContext = createContext<LicenseContextValue>({
   isPremium: false,
   isLoading: true,
   licenseInfo: null,
+  licenseStatus: 'none',
   activateLicense: async () => ({ success: false, status: 'none' }),
   deactivateLicense: async () => {},
   refreshLicense: async () => {},
@@ -32,12 +34,14 @@ export function LicenseProvider({ children }: { children: React.ReactNode }) {
   const [isPremium, setIsPremium] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [licenseInfo, setLicenseInfo] = useState<LicenseInfo | null>(null);
+  const [licenseStatus, setLicenseStatus] = useState<LicenseStatus>('none');
   const lastValidation = useRef(0);
 
   const refreshLicense = useCallback(async () => {
     const result = await validateStoredLicense();
     setIsPremium(result.success);
     setLicenseInfo(result.info ?? null);
+    setLicenseStatus(result.status);
     lastValidation.current = Date.now();
   }, []);
 
@@ -78,6 +82,7 @@ export function LicenseProvider({ children }: { children: React.ReactNode }) {
     await storeLicense(info);
     setLicenseInfo(info);
     setIsPremium(true);
+    setLicenseStatus('valid');
     lastValidation.current = Date.now();
 
     return { success: true, status: 'valid', info };
@@ -87,11 +92,12 @@ export function LicenseProvider({ children }: { children: React.ReactNode }) {
     await clearStoredLicense();
     setLicenseInfo(null);
     setIsPremium(false);
+    setLicenseStatus('none');
   }, []);
 
   return (
     <LicenseContext.Provider
-      value={{ isPremium, isLoading, licenseInfo, activateLicense, deactivateLicense, refreshLicense }}
+      value={{ isPremium, isLoading, licenseInfo, licenseStatus, activateLicense, deactivateLicense, refreshLicense }}
     >
       {children}
     </LicenseContext.Provider>
