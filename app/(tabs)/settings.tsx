@@ -93,7 +93,8 @@ export default function SettingsScreen() {
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingBottom: 80 + bottom, paddingHorizontal: 24, gap: 40, paddingTop: 32 }}
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled">
         {/* Tchopé Plus */}
         <View style={{ gap: 16 }}>
           <Text
