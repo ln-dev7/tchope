@@ -287,21 +287,27 @@ export default function TchopAIScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
+  const [showSourceModal, setShowSourceModal] = useState(false);
+
   const handlePhotoPress = () => {
     if (!isPremium) {
       setShowPhotoModal(true);
       return;
     }
-    pickAndSendPhoto();
+    setShowSourceModal(true);
   };
 
-  const pickAndSendPhoto = async () => {
+  const pickAndSendPhoto = async (source: 'camera' | 'gallery') => {
+    setShowSourceModal(false);
     try {
       let result: ImagePicker.ImagePickerResult;
-      const { status } = await ImagePicker.requestCameraPermissionsAsync();
-      if (status === 'granted') {
+      if (source === 'camera') {
+        const { status } = await ImagePicker.requestCameraPermissionsAsync();
+        if (status !== 'granted') return;
         result = await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.5, base64: true });
       } else {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') return;
         result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.5, base64: true });
       }
       if (result.canceled || !result.assets[0]?.base64) return;
@@ -600,6 +606,61 @@ export default function TchopAIScreen() {
       <Modal visible={showPlusModal} animationType="slide" presentationStyle="pageSheet">
         <View style={{ flex: 1, backgroundColor: colors.background }}>
           <TchopePlusScreen onClose={() => setShowPlusModal(false)} />
+        </View>
+      </Modal>
+
+      {/* Photo source picker modal */}
+      <Modal visible={showSourceModal} transparent animationType="fade">
+        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end', paddingHorizontal: 16, paddingBottom: bottom + 16 }}>
+          <View style={{
+            backgroundColor: isDark ? colors.card : '#FFFFFF',
+            borderRadius: 20,
+            overflow: 'hidden',
+            marginBottom: 8,
+          }}>
+            <TouchableOpacity
+              onPress={() => pickAndSendPhoto('camera')}
+              style={{
+                paddingVertical: 16,
+                alignItems: 'center',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                gap: 10,
+                borderBottomWidth: 1,
+                borderBottomColor: colors.border,
+              }}>
+              <Ionicons name="camera-outline" size={20} color={colors.accent} />
+              <Text style={{ fontSize: 16, fontWeight: '600', color: colors.accent }}>
+                {isFr ? 'Prendre une photo' : 'Take a photo'}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => pickAndSendPhoto('gallery')}
+              style={{
+                paddingVertical: 16,
+                alignItems: 'center',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                gap: 10,
+              }}>
+              <Ionicons name="images-outline" size={20} color={colors.accent} />
+              <Text style={{ fontSize: 16, fontWeight: '600', color: colors.accent }}>
+                {isFr ? 'Choisir dans la galerie' : 'Choose from gallery'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity
+            onPress={() => setShowSourceModal(false)}
+            style={{
+              backgroundColor: isDark ? colors.card : '#FFFFFF',
+              borderRadius: 20,
+              paddingVertical: 16,
+              alignItems: 'center',
+            }}>
+            <Text style={{ fontSize: 16, fontWeight: '600', color: colors.textMuted }}>
+              {isFr ? 'Annuler' : 'Cancel'}
+            </Text>
+          </TouchableOpacity>
         </View>
       </Modal>
 
