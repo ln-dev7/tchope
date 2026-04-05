@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   Keyboard,
   Modal,
+  Alert,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -21,6 +22,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useSettings } from '@/context/SettingsContext';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 import { useLicense } from '@/context/LicenseContext';
+import { useImageQuota } from '@/hooks/useImageQuota';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
 import { callClaude, callClaudeLive } from '@/utils/api';
@@ -31,7 +33,7 @@ import type { Recipe } from '@/types';
 
 type Message = {
   id: string;
-  role: 'user' | 'assistant';
+  role: 'user' | 'assistant' | 'info';
   content: string;
   recipeIds?: string[];
 };
@@ -174,6 +176,7 @@ export default function TchopAIScreen() {
   }, [bottom, keyboardPadding]);
 
   const { isPremium } = useLicense();
+  const imageQuota = useImageQuota();
   const [messages, setMessages] = useState<Message[]>([{
     id: 'welcome',
     role: 'assistant',
@@ -240,7 +243,7 @@ export default function TchopAIScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
     try {
-      const history = [...messages.filter((m) => m.id !== 'welcome'), userMsg].map((m) => ({
+      const history = [...messages.filter((m) => m.id !== 'welcome' && m.role !== 'info'), userMsg].map((m) => ({
         role: m.role,
         content: m.content,
       }));
@@ -300,6 +303,15 @@ export default function TchopAIScreen() {
   const pickAndSendPhoto = async (source: 'camera' | 'gallery') => {
     setShowSourceModal(false);
     try {
+      // Check image quota before proceeding
+      if (!imageQuota.canSend) {
+        Alert.alert(
+          isFr ? 'Limite atteinte' : 'Limit reached',
+          t('imageQuotaReached'),
+        );
+        return;
+      }
+
       let result: ImagePicker.ImagePickerResult;
       if (source === 'camera') {
         const { status } = await ImagePicker.requestCameraPermissionsAsync();
@@ -312,12 +324,18 @@ export default function TchopAIScreen() {
       }
       if (result.canceled || !result.assets[0]?.base64) return;
 
+      await imageQuota.increment();
+      const remaining = imageQuota.remaining - 1; // after increment
       const base64Data = result.assets[0].base64;
+      const quotaInfo = remaining <= 0
+        ? (isFr ? `📷 0/${imageQuota.limit} — ${t('imageQuotaReached')}` : `📷 0/${imageQuota.limit} — ${t('imageQuotaReached')}`)
+        : `📷 ${remaining}/${imageQuota.limit} ${t('imageQuota')}`;
       const userMsg: Message = { id: Date.now().toString(), role: 'user', content: isFr ? '📷 Photo envoyée' : '📷 Photo sent' };
-      setMessages((prev) => [...prev, userMsg]);
+      const quotaMsg: Message = { id: `quota-${Date.now()}`, role: 'info', content: quotaInfo };
+      setMessages((prev) => [...prev, userMsg, quotaMsg]);
       setLoading(true);
 
-      const history = [...messages.filter((m) => m.id !== 'welcome'), userMsg].map((m) => ({
+      const history = [...messages.filter((m) => m.id !== 'welcome' && m.role !== 'info'), userMsg].map((m) => ({
         role: m.role,
         content: m.content,
       }));
@@ -360,6 +378,17 @@ export default function TchopAIScreen() {
   };
 
   const renderMessage = ({ item }: { item: Message }) => {
+    // Info messages (quota notifications) — centered small text
+    if (item.role === 'info') {
+      return (
+        <View style={{ alignSelf: 'center', marginBottom: 8, paddingHorizontal: 20 }}>
+          <Text style={{ fontSize: 12, color: colors.textMuted, textAlign: 'center' }}>
+            {item.content}
+          </Text>
+        </View>
+      );
+    }
+
     const isUser = item.role === 'user';
     const linkedRecipes = (item.recipeIds ?? [])
       .map((id) => recipes.find((r) => r.id === id))
@@ -510,7 +539,7 @@ export default function TchopAIScreen() {
         }}>
           <TouchableOpacity
             onPress={handlePhotoPress}
-            disabled={loading}
+            disabled={loading || !imageQuota.canSend}
             style={{
               width: 40,
               height: 40,
@@ -518,7 +547,7 @@ export default function TchopAIScreen() {
               alignItems: 'center',
               justifyContent: 'center',
               marginBottom: 4,
-              opacity: loading ? 0.4 : 1,
+              opacity: loading || !imageQuota.canSend ? 0.4 : 1,
             }}>
             <Ionicons name="camera-outline" size={20} color={colors.textMuted} />
           </TouchableOpacity>
