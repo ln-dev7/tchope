@@ -5,11 +5,10 @@ import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useTheme } from '@/hooks/useTheme';
+import { API_BASE_URL } from '@/constants/api';
 
 const VERSION_CHECK_KEY = 'last_version_check';
 const CHECK_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours
-
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001';
 
 const STORE_URL = Platform.select({
   ios: 'https://apps.apple.com/app/id<YOUR_APP_ID>', // TODO: replace with real App Store ID

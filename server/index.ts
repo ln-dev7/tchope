@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
+import { ANTHROPIC_URL, CHARIOW_API_URL } from './config';
 
 const appJson = JSON.parse(readFileSync(resolve(__dirname, '../app.json'), 'utf-8'));
 const APP_VERSION: string = appJson.expo.version;
@@ -11,9 +12,7 @@ app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
-const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
 const CHARIOW_API_KEY = process.env.CHARIOW_API_KEY;
-const CHARIOW_API_URL = 'https://api.chariow.com/v1';
 
 if (!ANTHROPIC_API_KEY) {
   console.error('ANTHROPIC_API_KEY is not set');

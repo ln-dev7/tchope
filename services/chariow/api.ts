@@ -1,6 +1,5 @@
 import type { ValidateLicenseResponse, ActivateLicenseResponse } from './types';
-
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001';
+import { API_BASE_URL } from '@/constants/api';
 
 export async function validateLicenseKey(key: string): Promise<ValidateLicenseResponse> {
   const response = await fetch(`${API_BASE_URL}/api/validate-license`, {

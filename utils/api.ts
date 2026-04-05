@@ -1,6 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3001';
+import { API_BASE_URL } from '@/constants/api';
 const CACHE_PREFIX = 'ai_cache:';
 const CACHE_TTL = 1000 * 60 * 60 * 24; // 24 hours
 

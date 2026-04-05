@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { ANTHROPIC_URL } from '../config';
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
-const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS
