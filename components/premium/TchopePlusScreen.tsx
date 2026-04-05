@@ -335,7 +335,7 @@ export default function TchopePlusScreen({ onClose }: { onClose?: () => void }) 
         }}
       >
         <Ionicons name="cart-outline" size={18} color="#FFFFFF" />
-        <Text style={{ fontSize: 16, fontWeight: '700', color: '#FFFFFF' }}>{t('buyLicense')}</Text>
+        <Text style={{ fontSize: 16, fontWeight: '700', color: '#FFFFFF' }}>{t(selectedPlan === 'annual' ? 'buyLicenseAnnual' : 'buyLicenseMonthly')}</Text>
       </TouchableOpacity>
 
       {/* Already have a license */}
