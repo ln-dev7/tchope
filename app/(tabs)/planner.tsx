@@ -15,8 +15,6 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
-import { Image } from 'expo-image';
-
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLicense } from '@/context/LicenseContext';
@@ -25,7 +23,7 @@ import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
 import { useSettings } from '@/context/SettingsContext';
 import { useMealPlanner, type MealPlan, type DayPlan } from '@/context/MealPlannerContext';
 import { useToast } from '@/hooks/useToast';
-import { getRecipeImage } from '@/constants/images';
+import RecipeImage from '@/components/RecipeImage';
 import { callClaude } from '@/utils/api';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 import { exportMealPlanPDF } from '@/utils/export-pdf';
@@ -150,16 +148,16 @@ Return the FULL updated plan as valid JSON (no markdown), same format:
 // ── Meal Card ──────────────────────────────────────────
 
 function MealCard({
-  recipe, label, colors, onSwap, onPress,
+  recipe, label, colors, isDark, onSwap, onPress,
 }: {
   recipe: Recipe | undefined;
   label: string;
   colors: any;
+  isDark?: boolean;
   onSwap: () => void;
   onPress: () => void;
 }) {
   if (!recipe) return null;
-  const imageUrl = getRecipeImage(recipe.id, recipe.category);
 
   return (
     <TouchableOpacity onPress={onPress} activeOpacity={0.85}>
@@ -172,7 +170,7 @@ function MealCard({
           borderWidth: 1,
           borderColor: colors.border,
         }}>
-        <Image source={{ uri: imageUrl }} style={{ width: 80, height: 80 }} contentFit="cover" />
+        <RecipeImage recipeId={recipe.id} category={recipe.category} isDark={isDark} style={{ width: 80, height: 80 }} borderRadius={0} />
         <View style={{ flex: 1, padding: 12, justifyContent: 'center' }}>
           <Text style={{ fontSize: 10, fontWeight: '600', color: colors.accent, textTransform: 'uppercase' }}>
             {label}
@@ -378,6 +376,7 @@ export default function PlannerScreen() {
                           recipe={recipeMap[meal.recipeId]}
                           label={meal.label}
                           colors={colors}
+                          isDark={isDark}
                           onSwap={() => handleSwap(date, idx)}
                           onPress={() => recipeMap[meal.recipeId] && router.push(`/recipe/${meal.recipeId}` as any)}
                         />
