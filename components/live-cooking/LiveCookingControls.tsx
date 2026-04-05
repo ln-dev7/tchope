@@ -23,6 +23,7 @@ type Props = {
   holdLabel: string;
   endLabel: string;
   photoLabel: string;
+  mode?: 'audio' | 'camera';
 };
 
 export default function LiveCookingControls({
@@ -34,6 +35,7 @@ export default function LiveCookingControls({
   onEnd,
   colors,
   holdLabel,
+  mode = 'audio',
 }: Props) {
   const isListening = state === 'listening';
   const isThinking = state === 'thinking';
@@ -41,22 +43,26 @@ export default function LiveCookingControls({
 
   return (
     <View style={styles.container}>
-      {/* Camera button */}
-      <TouchableOpacity
-        onPress={onPhoto}
-        disabled={isThinking}
-        style={[
-          styles.sideButton,
-          {
-            backgroundColor: isDark ? colors.surface : '#FFFFFF',
-            borderWidth: isDark ? 0 : 1,
-            borderColor: colors.border,
-            opacity: isThinking ? 0.4 : 1,
-          },
-        ]}
-      >
-        <Ionicons name="camera-outline" size={24} color={colors.accent} />
-      </TouchableOpacity>
+      {/* Camera button — only in audio mode */}
+      {mode === 'audio' ? (
+        <TouchableOpacity
+          onPress={onPhoto}
+          disabled={isThinking}
+          style={[
+            styles.sideButton,
+            {
+              backgroundColor: isDark ? colors.surface : '#FFFFFF',
+              borderWidth: isDark ? 0 : 1,
+              borderColor: colors.border,
+              opacity: isThinking ? 0.4 : 1,
+            },
+          ]}
+        >
+          <Ionicons name="camera-outline" size={24} color={colors.accent} />
+        </TouchableOpacity>
+      ) : (
+        <View style={styles.sideButton} />
+      )}
 
       {/* Main mic button */}
       <View style={styles.micContainer}>

@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, Alert, Linking, TouchableOpacity, Modal, ScrollView } from 'react-native';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { View, Text, StyleSheet, Alert, Linking, TouchableOpacity, Modal, ScrollView, AppState } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 
 import { Ionicons } from '@expo/vector-icons';
 
@@ -16,6 +17,7 @@ import VoiceOrb from './VoiceOrb';
 import LiveCookingHeader from './LiveCookingHeader';
 import LiveSubtitles from './LiveSubtitles';
 import LiveCookingControls from './LiveCookingControls';
+import CameraPreview from './CameraPreview';
 
 type Props = {
   recipe: Recipe;
@@ -48,12 +50,19 @@ export default function LiveCookingScreen({
     getHistory,
     requestPermissions,
     checkPermissions,
+    setLiveCameraImage,
   } = useLiveCooking(recipe, initialStep, settings.language);
 
   const isFr = settings.language === 'fr';
   const { bottom } = useSafeAreaInsets();
   const [showSourceModal, setShowSourceModal] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+
+  // Live Camera mode state
+  const [mode, setMode] = useState<'audio' | 'camera'>('audio');
+  const [cameraFacing, setCameraFacing] = useState<'front' | 'back'>('back');
+  const cameraRef = useRef<CameraView | null>(null);
+  const [cameraPermission, requestCameraPermission] = useCameraPermissions();
 
   // Check permissions on mount
   useEffect(() => {
@@ -78,6 +87,41 @@ export default function LiveCookingScreen({
     // If canAskAgain but not granted, stay on denied_can_ask
   }, [requestPermissions]);
 
+  // Use a ref to always have the current mode in async callbacks
+  const modeRef = useRef(mode);
+  modeRef.current = mode;
+
+  // Switch between audio and camera mode
+  const handleModeSwitch = useCallback(async () => {
+    if (modeRef.current === 'camera') {
+      setMode('audio');
+      return;
+    }
+    // Switching to camera — check permission
+    if (!cameraPermission?.granted) {
+      const result = await requestCameraPermission();
+      if (!result.granted) {
+        Alert.alert(
+          isFr ? 'Permission caméra' : 'Camera permission',
+          t('cameraPermissionNeeded'),
+        );
+        return;
+      }
+    }
+    setMode('camera');
+  }, [cameraPermission, requestCameraPermission, isFr, t]);
+
+  // Pause camera when app goes to background
+  useEffect(() => {
+    if (mode !== 'camera') return;
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state !== 'active') {
+        setMode('audio');
+      }
+    });
+    return () => sub.remove();
+  }, [mode]);
+
   const handleMicPress = useCallback(() => {
     if (!isConnected) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
@@ -87,9 +131,28 @@ export default function LiveCookingScreen({
     startListening();
   }, [isConnected, startListening]);
 
-  const handleMicRelease = useCallback(() => {
+  const handleMicRelease = useCallback(async () => {
+    // In live camera mode, capture a snapshot automatically before stopping
+    if (mode === 'camera' && cameraRef.current) {
+      try {
+        const photo = await cameraRef.current.takePictureAsync({
+          quality: 0.5,
+          base64: true,
+          skipProcessing: true,
+          imageType: 'jpg',
+        });
+        if (photo?.base64) {
+          setLiveCameraImage(photo.base64);
+        }
+      } catch {
+        Alert.alert(
+          isFr ? 'Photo non capturée' : 'Photo not captured',
+          t('errorPhotoCapture'),
+        );
+      }
+    }
     stopListening();
-  }, [stopListening]);
+  }, [mode, stopListening, setLiveCameraImage, isFr, t]);
 
   const handlePhoto = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -233,14 +296,68 @@ export default function LiveCookingScreen({
           </View>
         )}
 
-        {/* Voice Orb */}
-        <View style={styles.orbContainer}>
-          <VoiceOrb state={liveState} volume={volume} isDark={isDark} colors={colors} />
-          {statusText ? (
-            <Text style={[styles.statusText, { color: colors.textSecondary }]}>
-              {statusText}
+        {/* Mode switch pill */}
+        <View style={styles.modeSwitchRow}>
+          <TouchableOpacity
+            onPress={handleModeSwitch}
+            style={[
+              styles.modeSwitchPill,
+              {
+                backgroundColor: isDark
+                  ? (mode === 'camera' ? `${colors.accent}25` : colors.surface)
+                  : (mode === 'camera' ? `${colors.accent}12` : '#F3F0EF'),
+                borderColor: mode === 'camera' ? colors.accent : colors.border,
+              },
+            ]}
+          >
+            <Ionicons
+              name={mode === 'camera' ? 'videocam' : 'videocam-outline'}
+              size={16}
+              color={mode === 'camera' ? colors.accent : colors.textMuted}
+            />
+            <Text
+              style={{
+                fontSize: 13,
+                fontWeight: '600',
+                color: mode === 'camera' ? colors.accent : colors.textMuted,
+              }}
+            >
+              {mode === 'camera' ? t('liveCameraMode') : t('audioOnlyMode')}
             </Text>
-          ) : null}
+          </TouchableOpacity>
+        </View>
+
+        {/* Center area: VoiceOrb or Camera Preview */}
+        <View style={styles.orbContainer}>
+          {mode === 'audio' ? (
+            <>
+              <VoiceOrb state={liveState} volume={volume} isDark={isDark} colors={colors} />
+              {statusText ? (
+                <Text style={[styles.statusText, { color: colors.textSecondary }]}>
+                  {statusText}
+                </Text>
+              ) : null}
+            </>
+          ) : (
+            <>
+              <CameraPreview
+                cameraRef={cameraRef}
+                facing={cameraFacing}
+                onFlip={() => setCameraFacing((f) => (f === 'back' ? 'front' : 'back'))}
+                isThinking={liveState === 'thinking'}
+                isDark={isDark}
+                colors={colors}
+              />
+              <Text style={[styles.cameraHint, { color: colors.textMuted }]}>
+                {t('cameraCaptureHint')}
+              </Text>
+              {statusText ? (
+                <Text style={[styles.statusText, { color: colors.textSecondary }]}>
+                  {statusText}
+                </Text>
+              ) : null}
+            </>
+          )}
         </View>
 
         {/* Subtitles */}
@@ -267,6 +384,7 @@ export default function LiveCookingScreen({
             holdLabel={t('holdToSpeak')}
             endLabel={t('endSession')}
             photoLabel={t('takePhotoForAI')}
+            mode={mode}
           />
         </SafeAreaView>
       </SafeAreaView>
@@ -429,6 +547,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
   },
+  modeSwitchRow: {
+    alignItems: 'center',
+    paddingTop: 8,
+  },
+  modeSwitchPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+  },
   offlineBanner: {
     paddingVertical: 10,
     paddingHorizontal: 16,
@@ -452,6 +583,12 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 14,
     fontWeight: '500',
+  },
+  cameraHint: {
+    fontSize: 12,
+    textAlign: 'center',
+    marginTop: 10,
+    marginHorizontal: 32,
   },
   subtitleContainer: {
     minHeight: 80,
