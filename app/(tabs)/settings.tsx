@@ -60,7 +60,14 @@ export default function SettingsScreen() {
         text: t('confirm'),
         style: 'destructive',
         onPress: async () => {
+          // Preserve license and free message limits
+          const license = await AsyncStorage.getItem('tchope_license');
+          const deviceId = await AsyncStorage.getItem('tchope_device_id');
+          const freeMessages = await AsyncStorage.getItem('tchope_free_messages');
           await AsyncStorage.clear();
+          if (license) await AsyncStorage.setItem('tchope_license', license);
+          if (deviceId) await AsyncStorage.setItem('tchope_device_id', deviceId);
+          if (freeMessages) await AsyncStorage.setItem('tchope_free_messages', freeMessages);
           toast(t('resetAllDataDone'), 'done');
           router.replace('/onboarding' as any);
         },
