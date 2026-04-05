@@ -127,7 +127,7 @@ export default function LicenseActivation() {
             )}
             {licenseInfo.activationsRemaining != null && (
               <Text style={{ fontSize: 12, color: colors.textMuted, marginTop: 2 }}>
-                {licenseInfo.activationsRemaining} {t('devicesUsed')}
+                {licenseInfo.activationsRemaining} {licenseInfo.activationsRemaining === 1 ? t('deviceUsedSingular') : t('devicesUsed')}
               </Text>
             )}
           </View>
