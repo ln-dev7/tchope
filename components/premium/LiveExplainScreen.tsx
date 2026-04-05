@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -16,10 +17,11 @@ export default function LiveExplainScreen({ onClose }: { onClose: () => void }) 
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
   const [showPlusModal, setShowPlusModal] = useState(false);
+  const { top } = useSafeAreaInsets();
 
   return (
     <ScrollView
-      contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingVertical: 16 }}
+      contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingTop: top + 8, paddingBottom: 16 }}
       showsVerticalScrollIndicator={false}
     >
       {/* Close */}
