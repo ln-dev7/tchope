@@ -12,6 +12,7 @@ import { useSettings } from '@/context/SettingsContext';
 import { useLiveCooking } from '@/hooks/useLiveCooking';
 import { isSpeechRecognitionAvailable } from '@/hooks/useSpeechRecognition';
 import type { Recipe } from '@/types';
+import { useImageQuota } from '@/hooks/useImageQuota';
 
 import VoiceOrb from './VoiceOrb';
 import LiveCookingHeader from './LiveCookingHeader';
@@ -55,6 +56,7 @@ export default function LiveCookingScreen({
 
   const isFr = settings.language === 'fr';
   const { bottom } = useSafeAreaInsets();
+  const imageQuota = useImageQuota();
   const [showSourceModal, setShowSourceModal] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
 
@@ -134,35 +136,52 @@ export default function LiveCookingScreen({
   const handleMicRelease = useCallback(async () => {
     // In live camera mode, capture a snapshot automatically before stopping
     if (mode === 'camera' && cameraRef.current) {
-      try {
-        const photo = await cameraRef.current.takePictureAsync({
-          quality: 0.5,
-          base64: true,
-          skipProcessing: true,
-          imageType: 'jpg',
-        });
-        if (photo?.base64) {
-          setLiveCameraImage(photo.base64);
-        }
-      } catch {
+      if (!imageQuota.canSend) {
+        // Quota reached — skip photo, send voice only
         Alert.alert(
-          isFr ? 'Photo non capturée' : 'Photo not captured',
-          t('errorPhotoCapture'),
+          isFr ? 'Limite atteinte' : 'Limit reached',
+          t('imageQuotaReached'),
         );
+      } else {
+        try {
+          const photo = await cameraRef.current.takePictureAsync({
+            quality: 0.5,
+            base64: true,
+            skipProcessing: true,
+            imageType: 'jpg',
+          });
+          if (photo?.base64) {
+            setLiveCameraImage(photo.base64);
+            await imageQuota.increment();
+          }
+        } catch {
+          Alert.alert(
+            isFr ? 'Photo non capturée' : 'Photo not captured',
+            t('errorPhotoCapture'),
+          );
+        }
       }
     }
     stopListening();
-  }, [mode, stopListening, setLiveCameraImage, isFr, t]);
+  }, [mode, stopListening, setLiveCameraImage, isFr, t, imageQuota]);
 
   const handlePhoto = useCallback(() => {
+    if (!imageQuota.canSend) {
+      Alert.alert(
+        isFr ? 'Limite atteinte' : 'Limit reached',
+        t('imageQuotaReached'),
+      );
+      return;
+    }
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setShowSourceModal(true);
-  }, []);
+  }, [imageQuota, isFr, t]);
 
-  const handlePhotoSource = useCallback((source: 'camera' | 'gallery') => {
+  const handlePhotoSource = useCallback(async (source: 'camera' | 'gallery') => {
     setShowSourceModal(false);
+    await imageQuota.increment();
     takePhoto(source);
-  }, [takePhoto]);
+  }, [takePhoto, imageQuota]);
 
   const handleEnd = useCallback(() => {
     endSession();
@@ -295,6 +314,16 @@ export default function LiveCookingScreen({
             </Text>
           </View>
         )}
+
+        {/* Image quota banner */}
+        <View style={styles.quotaBannerRow}>
+          <Ionicons name="camera-outline" size={14} color={colors.textMuted} />
+          <Text style={[styles.quotaBannerText, {
+            color: imageQuota.remaining <= 3 ? '#E74C3C' : colors.textMuted,
+          }]}>
+            {imageQuota.remaining}/{imageQuota.limit} {t('imageQuota')}
+          </Text>
+        </View>
 
         {/* Mode switch pill */}
         <View style={styles.modeSwitchRow}>
@@ -547,9 +576,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
   },
+  quotaBannerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingTop: 10,
+  },
+  quotaBannerText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
   modeSwitchRow: {
     alignItems: 'center',
-    paddingTop: 8,
+    paddingTop: 6,
   },
   modeSwitchPill: {
     flexDirection: 'row',
