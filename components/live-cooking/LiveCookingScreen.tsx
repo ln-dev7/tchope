@@ -315,46 +315,49 @@ export default function LiveCookingScreen({
           </View>
         )}
 
-        {/* Image quota banner */}
-        <View style={styles.quotaBannerRow}>
-          <Ionicons name="camera-outline" size={14} color={colors.textMuted} />
-          <Text style={[styles.quotaBannerText, {
-            color: imageQuota.remaining <= 3 ? '#E74C3C' : colors.textMuted,
-          }]}>
-            {imageQuota.remaining}/{imageQuota.limit} {t('imageQuota')}
-          </Text>
-        </View>
+        {/* Image quota banner + Mode switch — hidden while speaking/listening */}
+        {liveState === 'idle' && (
+          <>
+            <View style={styles.quotaBannerRow}>
+              <Ionicons name="camera-outline" size={14} color={colors.textMuted} />
+              <Text style={[styles.quotaBannerText, {
+                color: imageQuota.remaining <= 3 ? '#E74C3C' : colors.textMuted,
+              }]}>
+                {imageQuota.remaining}/{imageQuota.limit} {t('imageQuota')}
+              </Text>
+            </View>
 
-        {/* Mode switch pill */}
-        <View style={styles.modeSwitchRow}>
-          <TouchableOpacity
-            onPress={handleModeSwitch}
-            style={[
-              styles.modeSwitchPill,
-              {
-                backgroundColor: isDark
-                  ? (mode === 'camera' ? `${colors.accent}25` : colors.surface)
-                  : (mode === 'camera' ? `${colors.accent}12` : '#F3F0EF'),
-                borderColor: mode === 'camera' ? colors.accent : colors.border,
-              },
-            ]}
-          >
-            <Ionicons
-              name={mode === 'camera' ? 'videocam' : 'videocam-outline'}
-              size={16}
-              color={mode === 'camera' ? colors.accent : colors.textMuted}
-            />
-            <Text
-              style={{
-                fontSize: 13,
-                fontWeight: '600',
-                color: mode === 'camera' ? colors.accent : colors.textMuted,
-              }}
-            >
-              {mode === 'camera' ? t('liveCameraMode') : t('audioOnlyMode')}
-            </Text>
-          </TouchableOpacity>
-        </View>
+            <View style={styles.modeSwitchRow}>
+              <TouchableOpacity
+                onPress={handleModeSwitch}
+                style={[
+                  styles.modeSwitchPill,
+                  {
+                    backgroundColor: isDark
+                      ? (mode === 'camera' ? `${colors.accent}25` : colors.surface)
+                      : (mode === 'camera' ? `${colors.accent}12` : '#F3F0EF'),
+                    borderColor: mode === 'camera' ? colors.accent : colors.border,
+                  },
+                ]}
+              >
+                <Ionicons
+                  name={mode === 'camera' ? 'videocam' : 'videocam-outline'}
+                  size={16}
+                  color={mode === 'camera' ? colors.accent : colors.textMuted}
+                />
+                <Text
+                  style={{
+                    fontSize: 13,
+                    fontWeight: '600',
+                    color: mode === 'camera' ? colors.accent : colors.textMuted,
+                  }}
+                >
+                  {mode === 'camera' ? t('liveCameraMode') : t('audioOnlyMode')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </>
+        )}
 
         {/* Center area: VoiceOrb or Camera Preview */}
         <View style={styles.orbContainer}>
