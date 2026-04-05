@@ -152,7 +152,7 @@ export default function LicenseActivation() {
           </TouchableOpacity>
         </View>
 
-        {/* Deactivate */}
+        {/* Deactivate - temporarily disabled
         <TouchableOpacity
           onPress={handleDeactivate}
           style={{
@@ -164,6 +164,7 @@ export default function LicenseActivation() {
             {t('deactivate')}
           </Text>
         </TouchableOpacity>
+        */}
       </View>
     );
   }
