@@ -368,6 +368,9 @@ export const translations = {
     tchopaiWelcome: "Salut ! Je suis TchopAI, votre assistant culinaire camerounais. Posez-moi vos questions sur les recettes, les ingrédients, les techniques de cuisine camerounaise et plus encore !",
     tchopaiError: "Désolé, une erreur s'est produite. Réessayez.",
     tchopaiOffline: "Vous êtes hors ligne. TchopAI a besoin d'une connexion internet.",
+    addToCookbook: "Ajouter au Cookbook",
+    recipeAddedToCookbook: "Recette ajoutée à ton Cookbook !",
+    recipeAlreadyAdded: "Déjà ajouté",
 
     // TchopAI Live
     tchopAILive: "TchopAI Live",
@@ -818,6 +821,9 @@ export const translations = {
     tchopaiWelcome: "Hi! I'm TchopAI, your Cameroonian cooking assistant. Ask me anything about recipes, ingredients, cooking techniques and more!",
     tchopaiError: "Sorry, an error occurred. Please try again.",
     tchopaiOffline: "You're offline. TchopAI needs an internet connection.",
+    addToCookbook: "Add to Cookbook",
+    recipeAddedToCookbook: "Recipe added to your Cookbook!",
+    recipeAlreadyAdded: "Already added",
 
     // TchopAI Live
     tchopAILive: "TchopAI Live",

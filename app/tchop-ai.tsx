@@ -29,13 +29,15 @@ import { callClaude, callClaudeLive } from '@/utils/api';
 import * as ImagePicker from 'expo-image-picker';
 import TchopePlusScreen from '@/components/premium/TchopePlusScreen';
 import RecipeImage from '@/components/RecipeImage';
-import type { Recipe } from '@/types';
+import { useUserRecipes } from '@/context/UserRecipesContext';
+import type { Recipe, UserRecipe } from '@/types';
 
 type Message = {
   id: string;
   role: 'user' | 'assistant' | 'info';
   content: string;
   recipeIds?: string[];
+  saveRecipe?: UserRecipe;
 };
 
 const SYSTEM_PROMPT_FR = `Tu es TchopAI, l'assistant culinaire intégré à l'application Tchopé — une app dédiée aux recettes camerounaises authentiques.
@@ -69,6 +71,23 @@ Règles :
 - Pas d'espaces dans la liste des IDs
 - Maximum 4 recettes
 - TOUJOURS inclure cette ligne quand tu parles de recettes de l'app
+
+AJOUT DE RECETTE AU COOKBOOK :
+Quand l'utilisateur te demande d'ajouter une recette à son cookbook (qu'il te donne les détails, qu'il mentionne une recette connue, ou qu'il te donne un lien/description d'internet), tu DOIS générer la recette complète au format JSON sur la DERNIÈRE ligne de ta réponse :
+[SAVE_RECIPE:{"name":"...","description":"...","region":"...","category":"...","duration":...,"difficulty":"...","spiciness":"...","servings":...,"ingredients":[{"name":"...","quantity":"..."}],"steps":["..."],"tips":"..."}]
+Règles :
+- region doit TOUJOURS être "TchopAI" (toute recette ajoutée via le chat utilise cette région)
+- category doit être une de : Plat, Sauce, Grillade, Boisson, Dessert, Entrée, Accompagnement
+- difficulty doit être : Easy, Medium, ou Hard
+- spiciness doit être : Mild, Medium, ou Extra Hot
+- duration est en minutes (nombre)
+- servings est un nombre
+- steps est un tableau de strings, chaque étape étant une phrase claire
+- ingredients est un tableau d'objets avec name et quantity
+- tips est optionnel (string ou null)
+- Le JSON doit être valide et sur UNE seule ligne
+- La région est TOUJOURS "TchopAI", ne mets jamais une autre région
+- Avant le JSON, écris un court message confirmant l'ajout et décrivant brièvement la recette
 
 RECETTES DISPONIBLES DANS L'APP :
 {RECIPES}`;
@@ -104,8 +123,73 @@ Rules:
 - Maximum 4 recipes
 - ALWAYS include this line when you talk about recipes from the app
 
+ADD RECIPE TO COOKBOOK:
+When the user asks you to add a recipe to their cookbook (whether they give you details, mention a known recipe, or give you a link/description from the internet), you MUST generate the full recipe in JSON format on the LAST line of your response:
+[SAVE_RECIPE:{"name":"...","description":"...","region":"...","category":"...","duration":...,"difficulty":"...","spiciness":"...","servings":...,"ingredients":[{"name":"...","quantity":"..."}],"steps":["..."],"tips":"..."}]
+Rules:
+- region must ALWAYS be "TchopAI" (all recipes added via chat use this region)
+- category must be one of: Plat, Sauce, Grillade, Boisson, Dessert, Entrée, Accompagnement
+- difficulty must be: Easy, Medium, or Hard
+- spiciness must be: Mild, Medium, or Extra Hot
+- duration is in minutes (number)
+- servings is a number
+- steps is an array of strings, each step being a clear sentence
+- ingredients is an array of objects with name and quantity
+- tips is optional (string or null)
+- The JSON must be valid and on ONE single line
+- The region is ALWAYS "TchopAI", never use any other region
+- Before the JSON, write a short message confirming the addition and briefly describing the recipe
+
 RECIPES AVAILABLE IN THE APP:
 {RECIPES}`;
+
+function SaveRecipeButton({ recipe, isDark, colors, onSave, alreadySaved, t }: {
+  recipe: UserRecipe; isDark: boolean; colors: any; isFr: boolean;
+  onSave: (r: UserRecipe) => void; alreadySaved: boolean; t: (k: any) => string;
+}) {
+  const [saved, setSaved] = React.useState(alreadySaved);
+
+  const handlePress = () => {
+    if (saved) return;
+    onSave(recipe);
+    setSaved(true);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+  };
+
+  return (
+    <TouchableOpacity
+      onPress={handlePress}
+      disabled={saved}
+      activeOpacity={0.8}
+      style={{
+        marginTop: 8,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 8,
+        backgroundColor: saved
+          ? (isDark ? '#2A2A2A' : '#F3F0EF')
+          : colors.accent,
+        borderRadius: 14,
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+      }}
+    >
+      <Ionicons
+        name={saved ? 'checkmark-circle' : 'book-outline'}
+        size={18}
+        color={saved ? colors.textMuted : '#FFFFFF'}
+      />
+      <Text style={{
+        fontSize: 14,
+        fontWeight: '600',
+        color: saved ? colors.textMuted : '#FFFFFF',
+      }}>
+        {saved ? t('recipeAlreadyAdded') : t('addToCookbook')}
+      </Text>
+    </TouchableOpacity>
+  );
+}
 
 function MiniRecipeCard({ recipe, isDark, colors, onPress }: { recipe: Recipe; isDark: boolean; colors: any; onPress: () => void }) {
   return (
@@ -149,6 +233,7 @@ export default function TchopAIScreen() {
   const { settings } = useSettings();
   const isConnected = useNetworkStatus();
   const recipes = useLocalizedRecipes();
+  const { addRecipe, userRecipes } = useUserRecipes();
   const router = useRouter();
   const { bottom } = useSafeAreaInsets();
 
@@ -209,15 +294,37 @@ export default function TchopAIScreen() {
     return template.replace('{RECIPES}', recipeIndex);
   }, [recipes, isFr]);
 
-  function parseResponse(text: string): { content: string; recipeIds: string[] } {
-    const match = text.match(/\[RECIPES:\s*([^\]]+)\]\s*$/);
-    if (!match) return { content: text, recipeIds: [] };
-    const content = text.slice(0, text.lastIndexOf('[RECIPES:')).trimEnd();
+  function parseResponse(text: string): { content: string; recipeIds: string[]; saveRecipe?: UserRecipe } {
+    let remaining = text;
+    let saveRecipe: UserRecipe | undefined;
+
+    // Parse [SAVE_RECIPE:{...}]
+    const saveMatch = remaining.match(/\[SAVE_RECIPE:(\{[\s\S]*\})\]\s*$/);
+    if (saveMatch) {
+      remaining = remaining.slice(0, remaining.lastIndexOf('[SAVE_RECIPE:')).trimEnd();
+      try {
+        const parsed = JSON.parse(saveMatch[1]);
+        saveRecipe = {
+          ...parsed,
+          id: 'user-' + Date.now(),
+          image: null,
+          region: 'TchopAI',
+          rating: 0,
+          isUserCreated: true,
+          createdAt: new Date().toISOString(),
+        };
+      } catch {}
+    }
+
+    // Parse [RECIPES:id1,id2]
+    const match = remaining.match(/\[RECIPES:\s*([^\]]+)\]\s*$/);
+    if (!match) return { content: remaining, recipeIds: [], saveRecipe };
+    const content = remaining.slice(0, remaining.lastIndexOf('[RECIPES:')).trimEnd();
     const recipeIds = match[1]
       .split(',')
       .map((id) => id.trim())
       .filter((id) => recipes.some((r) => r.id === id));
-    return { content, recipeIds };
+    return { content, recipeIds, saveRecipe };
   }
 
   const handleSend = async () => {
@@ -250,7 +357,7 @@ export default function TchopAIScreen() {
 
       const response = await callClaude({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1024,
+        max_tokens: 2048,
         system: [{ type: 'text', text: buildSystemPrompt(), cache_control: { type: 'ephemeral' } }],
         messages: history,
       });
@@ -261,6 +368,7 @@ export default function TchopAIScreen() {
         role: 'assistant',
         content: parsed.content,
         recipeIds: parsed.recipeIds,
+        saveRecipe: parsed.saveRecipe,
       }]);
 
       // Increment free message counter for non-premium users
@@ -365,6 +473,7 @@ export default function TchopAIScreen() {
         role: 'assistant',
         content: parsed.content,
         recipeIds: parsed.recipeIds,
+        saveRecipe: parsed.saveRecipe,
       }]);
     } catch {
       setMessages((prev) => [...prev, {
@@ -430,6 +539,17 @@ export default function TchopAIScreen() {
               />
             ))}
           </View>
+        )}
+        {item.saveRecipe && (
+          <SaveRecipeButton
+            recipe={item.saveRecipe}
+            isDark={isDark}
+            colors={colors}
+            isFr={isFr}
+            onSave={addRecipe}
+            alreadySaved={userRecipes.some((r) => r.id === item.saveRecipe!.id)}
+            t={t}
+          />
         )}
       </View>
     );
