@@ -8,7 +8,8 @@ export type Region =
   | 'Adamaoua'
   | 'Extrême-Nord'
   | 'Nord-Ouest'
-  | 'Sud-Ouest';
+  | 'Sud-Ouest'
+  | 'TchopAI';
 
 export type Category =
   | 'Plat'

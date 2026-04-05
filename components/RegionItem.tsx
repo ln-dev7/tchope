@@ -15,6 +15,7 @@ const regionIcons: Record<Region, string> = {
   'Extrême-Nord': 'thermometer-outline',
   'Nord-Ouest': 'map-outline',
   'Sud-Ouest': 'boat-outline',
+  TchopAI: 'sparkles-outline',
 };
 
 type Props = {

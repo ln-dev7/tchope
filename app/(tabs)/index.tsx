@@ -7,7 +7,9 @@ import { useRouter } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
+import { useImagePrefetch } from '@/hooks/useImagePrefetch';
 import { useLicense } from '@/context/LicenseContext';
+import { useUserRecipes } from '@/context/UserRecipesContext';
 import FeaturedCard from '@/components/FeaturedCard';
 import RecipeCard from '@/components/RecipeCard';
 import RegionItem from '@/components/RegionItem';
@@ -40,7 +42,15 @@ export default function HomeScreen() {
   const recipes = useLocalizedRecipes();
   const { bottom } = useSafeAreaInsets();
   const { isPremium } = useLicense();
+  const { userRecipes } = useUserRecipes();
+  useImagePrefetch();
   const [showPlusModal, setShowPlusModal] = useState(false);
+
+  const hasTchopAIRecipes = userRecipes.some((r) => r.region === 'TchopAI');
+  const displayRegions = useMemo(
+    () => hasTchopAIRecipes ? [...ALL_REGIONS, 'TchopAI' as Region] : ALL_REGIONS,
+    [hasTchopAIRecipes],
+  );
 
   const featuredRecipes = useMemo(
     () => FEATURED_ORDER.map((id) => recipes.find((r) => r.id === id)).filter(Boolean) as typeof recipes,
@@ -229,7 +239,7 @@ export default function HomeScreen() {
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ paddingHorizontal: 24, gap: 16 }}>
-            {ALL_REGIONS.map((region) => (
+            {displayRegions.map((region) => (
               <RegionItem
                 key={region}
                 region={region}

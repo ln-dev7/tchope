@@ -7,8 +7,9 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
+import { useUserRecipes } from '@/context/UserRecipesContext';
 import RecipeCard from '@/components/RecipeCard';
-import type { Region } from '@/types';
+import type { Region, Recipe } from '@/types';
 
 export default function RecipesListScreen() {
   const { region, title } = useLocalSearchParams<{ region?: string; title?: string }>();
@@ -17,12 +18,18 @@ export default function RecipesListScreen() {
   const router = useRouter();
   const { bottom } = useSafeAreaInsets();
   const recipes = useLocalizedRecipes();
+  const { userRecipes } = useUserRecipes();
   const [query, setQuery] = useState('');
+
+  const allRecipes = useMemo(
+    () => [...recipes, ...userRecipes] as Recipe[],
+    [recipes, userRecipes],
+  );
 
   const filteredRecipes = useMemo(() => {
     let list = region
-      ? recipes.filter((r) => r.region === region)
-      : recipes;
+      ? allRecipes.filter((r) => r.region === region)
+      : allRecipes;
 
     if (query.trim()) {
       const q = query.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
