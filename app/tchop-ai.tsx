@@ -9,6 +9,7 @@ import {
   Platform,
   ActivityIndicator,
   Keyboard,
+  Modal,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -19,9 +20,12 @@ import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useSettings } from '@/context/SettingsContext';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
-import PremiumGate from '@/components/premium/PremiumGate';
+import { useLicense } from '@/context/LicenseContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
-import { callClaude } from '@/utils/api';
+import { callClaude, callClaudeLive } from '@/utils/api';
+import * as ImagePicker from 'expo-image-picker';
+import TchopePlusScreen from '@/components/premium/TchopePlusScreen';
 import RecipeImage from '@/components/RecipeImage';
 import type { Recipe } from '@/types';
 
@@ -169,6 +173,7 @@ export default function TchopAIScreen() {
     return () => { showSub.remove(); hideSub.remove(); };
   }, [bottom, keyboardPadding]);
 
+  const { isPremium } = useLicense();
   const [messages, setMessages] = useState<Message[]>([{
     id: 'welcome',
     role: 'assistant',
@@ -176,9 +181,22 @@ export default function TchopAIScreen() {
   }]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [freeMessagesUsed, setFreeMessagesUsed] = useState(0);
+  const [showPhotoModal, setShowPhotoModal] = useState(false);
+  const [showPlusModal, setShowPlusModal] = useState(false);
   const flatListRef = useRef<FlatList>(null);
 
   const isFr = settings.language === 'fr';
+  const FREE_MESSAGE_LIMIT = 2;
+  const freeMessagesLeft = FREE_MESSAGE_LIMIT - freeMessagesUsed;
+  const canSendFree = isPremium || freeMessagesUsed < FREE_MESSAGE_LIMIT;
+
+  // Load free message count
+  useEffect(() => {
+    AsyncStorage.getItem('tchope_free_messages').then((val) => {
+      if (val) setFreeMessagesUsed(parseInt(val, 10));
+    });
+  }, []);
 
   const buildSystemPrompt = useCallback(() => {
     const recipeIndex = recipes
@@ -202,6 +220,7 @@ export default function TchopAIScreen() {
   const handleSend = async () => {
     const text = input.trim();
     if (!text || loading) return;
+    if (!canSendFree) return;
     Keyboard.dismiss();
 
     if (!isConnected) {
@@ -240,6 +259,13 @@ export default function TchopAIScreen() {
         content: parsed.content,
         recipeIds: parsed.recipeIds,
       }]);
+
+      // Increment free message counter for non-premium users
+      if (!isPremium) {
+        const newCount = freeMessagesUsed + 1;
+        setFreeMessagesUsed(newCount);
+        AsyncStorage.setItem('tchope_free_messages', String(newCount));
+      }
     } catch {
       setMessages((prev) => [...prev, {
         id: (Date.now() + 1).toString(),
@@ -259,6 +285,72 @@ export default function TchopAIScreen() {
     }]);
     setInput('');
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  };
+
+  const handlePhotoPress = () => {
+    if (!isPremium) {
+      setShowPhotoModal(true);
+      return;
+    }
+    pickAndSendPhoto();
+  };
+
+  const pickAndSendPhoto = async () => {
+    try {
+      let result: ImagePicker.ImagePickerResult;
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status === 'granted') {
+        result = await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.5, base64: true });
+      } else {
+        result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.5, base64: true });
+      }
+      if (result.canceled || !result.assets[0]?.base64) return;
+
+      const base64Data = result.assets[0].base64;
+      const userMsg: Message = { id: Date.now().toString(), role: 'user', content: isFr ? '📷 Photo envoyée' : '📷 Photo sent' };
+      setMessages((prev) => [...prev, userMsg]);
+      setLoading(true);
+
+      const history = [...messages.filter((m) => m.id !== 'welcome'), userMsg].map((m) => ({
+        role: m.role,
+        content: m.content,
+      }));
+
+      // Replace last user message content with image block
+      const messagesWithImage = [
+        ...history.slice(0, -1),
+        {
+          role: 'user' as const,
+          content: [
+            { type: 'text' as const, text: isFr ? 'Analyse cette photo et dis-moi ce que tu en penses pour la cuisine camerounaise.' : 'Analyze this photo and tell me what you think for Cameroonian cooking.' },
+            { type: 'image' as const, source: { type: 'base64' as const, media_type: 'image/jpeg', data: base64Data } },
+          ],
+        },
+      ];
+
+      const response = await callClaudeLive({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1024,
+        system: [{ type: 'text', text: buildSystemPrompt(), cache_control: { type: 'ephemeral' } }],
+        messages: messagesWithImage,
+      });
+
+      const parsed = parseResponse(response);
+      setMessages((prev) => [...prev, {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: parsed.content,
+        recipeIds: parsed.recipeIds,
+      }]);
+    } catch {
+      setMessages((prev) => [...prev, {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: t('tchopaiError'),
+      }]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const renderMessage = ({ item }: { item: Message }) => {
@@ -406,10 +498,24 @@ export default function TchopAIScreen() {
           flexDirection: 'row',
           backgroundColor: colors.surface,
           borderRadius: 24,
-          paddingLeft: 16,
+          paddingLeft: 4,
           paddingRight: 4,
           alignItems: 'flex-end',
         }}>
+          <TouchableOpacity
+            onPress={handlePhotoPress}
+            disabled={loading}
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 20,
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: 4,
+              opacity: loading ? 0.4 : 1,
+            }}>
+            <Ionicons name="camera-outline" size={20} color={colors.textMuted} />
+          </TouchableOpacity>
           <TextInput
             value={input}
             onChangeText={setInput}
@@ -427,12 +533,12 @@ export default function TchopAIScreen() {
           />
           <TouchableOpacity
             onPress={handleSend}
-            disabled={!input.trim() || loading}
+            disabled={!input.trim() || loading || !canSendFree}
             style={{
               width: 40,
               height: 40,
               borderRadius: 20,
-              backgroundColor: input.trim() && !loading ? '#A855F7' : 'transparent',
+              backgroundColor: input.trim() && !loading && canSendFree ? '#A855F7' : 'transparent',
               alignItems: 'center',
               justifyContent: 'center',
               marginBottom: 4,
@@ -440,7 +546,7 @@ export default function TchopAIScreen() {
             <Ionicons
               name="send"
               size={18}
-              color={input.trim() && !loading ? '#FFFFFF' : colors.textMuted}
+              color={input.trim() && !loading && canSendFree ? '#FFFFFF' : colors.textMuted}
             />
           </TouchableOpacity>
         </View>
@@ -450,11 +556,94 @@ export default function TchopAIScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top', 'bottom']}>
-      <PremiumGate onClose={() => router.back()}>
-        <Animated.View style={{ flex: 1, marginBottom: keyboardPadding }}>
-          {chatContent}
-        </Animated.View>
-      </PremiumGate>
+      <Animated.View style={{ flex: 1, marginBottom: keyboardPadding }}>
+        {chatContent}
+
+        {/* Free messages limit reached */}
+        {!isPremium && !canSendFree && (
+          <View style={{
+            paddingHorizontal: 20,
+            paddingVertical: 16,
+            borderTopWidth: 1,
+            borderTopColor: colors.border,
+            gap: 12,
+          }}>
+            <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text, textAlign: 'center' }}>
+              {t('freeMessagesUsed')}
+            </Text>
+            <Text style={{ fontSize: 13, color: colors.textSecondary, textAlign: 'center', lineHeight: 18 }}>
+              {t('freeMessagesUpgrade')}
+            </Text>
+            <TouchableOpacity
+              onPress={() => setShowPlusModal(true)}
+              style={{
+                backgroundColor: colors.accent,
+                borderRadius: 16,
+                paddingVertical: 14,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+              }}
+            >
+              <Ionicons name="sparkles" size={16} color="#FFFFFF" />
+              <Text style={{ fontSize: 15, fontWeight: '700', color: '#FFFFFF' }}>
+                {t('upgradeToPremium')}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+      </Animated.View>
+
+      {/* TchopePlus modal */}
+      <Modal visible={showPlusModal} animationType="slide" presentationStyle="pageSheet">
+        <View style={{ flex: 1, backgroundColor: colors.background }}>
+          <TchopePlusScreen onClose={() => setShowPlusModal(false)} />
+        </View>
+      </Modal>
+
+      {/* Photo premium modal */}
+      <Modal visible={showPhotoModal} transparent animationType="fade">
+        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', paddingHorizontal: 32 }}>
+          <View style={{
+            backgroundColor: isDark ? colors.card : '#FFFFFF',
+            borderRadius: 24,
+            padding: 24,
+            gap: 16,
+            alignItems: 'center',
+          }}>
+            <View style={{
+              width: 56, height: 56, borderRadius: 28,
+              backgroundColor: isDark ? `${colors.accent}20` : `${colors.accent}10`,
+              alignItems: 'center', justifyContent: 'center',
+            }}>
+              <Ionicons name="camera" size={28} color={colors.accent} />
+            </View>
+            <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text, textAlign: 'center' }}>
+              {t('premiumRequired')}
+            </Text>
+            <Text style={{ fontSize: 14, color: colors.textSecondary, textAlign: 'center', lineHeight: 20 }}>
+              {isFr
+                ? "L'envoi de photos à TchopAI est réservé aux abonnés Tchopé Plus."
+                : 'Sending photos to TchopAI is available for Tchopé Plus subscribers.'}
+            </Text>
+            <TouchableOpacity
+              onPress={() => { setShowPhotoModal(false); setShowPlusModal(true); }}
+              style={{
+                backgroundColor: colors.accent, borderRadius: 16, paddingVertical: 14,
+                paddingHorizontal: 24, flexDirection: 'row', alignItems: 'center', gap: 8, width: '100%', justifyContent: 'center',
+              }}
+            >
+              <Ionicons name="sparkles" size={16} color="#FFFFFF" />
+              <Text style={{ fontSize: 15, fontWeight: '700', color: '#FFFFFF' }}>{t('upgradeToPremium')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setShowPhotoModal(false)}>
+              <Text style={{ fontSize: 14, color: colors.textMuted }}>{isFr ? 'Annuler' : 'Cancel'}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
