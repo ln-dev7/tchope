@@ -2,7 +2,7 @@
   "expo": {
     "name": "Tchope",
     "slug": "tchope",
-    "version": "1.3.1",
+    "version": "1.4.0",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
     "scheme": "tchope",
@@ -13,7 +13,9 @@
       "bundleIdentifier": "com.lndev.tchope",
       "infoPlist": {
         "NSSpeechRecognitionUsageDescription": "TchopAI Live utilise la reconnaissance vocale pour vous guider pendant la cuisine.",
-        "NSMicrophoneUsageDescription": "TchopAI Live utilise le micro pour écouter vos questions pendant la cuisine."
+        "NSMicrophoneUsageDescription": "TchopAI Live utilise le micro pour écouter vos questions pendant la cuisine.",
+        "NSCameraUsageDescription": "TchopAI utilise la caméra pour analyser vos plats et ingrédients.",
+        "NSPhotoLibraryUsageDescription": "TchopAI accède à votre galerie pour analyser vos photos de plats et ingrédients."
       }
     },
     "splash": {
@@ -36,6 +38,13 @@
     },
     "plugins": [
       "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "TchopAI accède à votre galerie pour analyser vos photos de plats et ingrédients.",
+          "cameraPermission": "TchopAI utilise la caméra pour analyser vos plats et ingrédients."
+        }
+      ],
       [
         "expo-splash-screen",
         {
