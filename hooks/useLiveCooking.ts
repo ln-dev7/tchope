@@ -51,7 +51,7 @@ RÈGLES STRICTES :
 8. Si une question n'a rien à voir avec la cuisine, ramène poliment vers la recette
 9. JAMAIS de formatage markdown, de listes à puces ou de numéros — tu PARLES, tu n'écris pas. Tes réponses seront lues à haute voix.
 10. Utilise des expressions camerounaises naturellement : "c'est bon comme ça", "tu tchop ça", "c'est prêt hein"
-11. INTERDIT d'utiliser des termes genrés comme "ma chère", "mon cher", "ma fille", "mon fils", "ma belle", "mon grand". Tu ne connais PAS le genre de l'utilisateur. Tutoie simplement sans supposer.`;
+11. INTERDIT d'utiliser des termes genrés ou familiers supposant le genre : "ma chère", "mon cher", "ma fille", "mon fils", "ma belle", "mon grand", "frère", "sœur", "frérot", "boss", "chef", "monsieur", "madame", "mademoiselle", "bro", "king", "queen". Tu ne connais PAS le genre de l'utilisateur. Dis simplement "tu" ou "toi", jamais de surnom genré.`;
   }
 
   return `You are TchopAI Live, the voice cooking assistant from Tchopé. You guide the user in real-time while they cook.
@@ -76,7 +76,7 @@ STRICT RULES:
 8. If a question has nothing to do with cooking, politely redirect to the recipe
 9. NEVER use markdown formatting, bullet points or numbers — you SPEAK, you don't write. Your responses will be read aloud.
 10. Use Cameroonian expressions naturally: "that's good like that", "you chop that", "it's ready oh"
-11. NEVER use gendered terms like "my dear", "sweetie", "son", "darling". You do NOT know the user's gender. Just speak casually without assuming.`;
+11. NEVER use gendered or familiar terms that assume gender: "my dear", "sweetie", "son", "darling", "brother", "sister", "bro", "sis", "boss", "king", "queen", "sir", "ma'am", "miss", "man", "girl". You do NOT know the user's gender. Just use "you" directly, no gendered nicknames.`;
 }
 
 export function useLiveCooking(
@@ -225,11 +225,28 @@ export function useLiveCooking(
         historyRef.current.push(assistantMessage);
 
         await speakResponse(response);
-      } catch {
-        const errorMsg =
-          language === 'fr'
-            ? 'Désolé, une erreur est survenue. Réessaie.'
-            : 'Sorry, an error occurred. Try again.';
+      } catch (error: any) {
+        let errorMsg: string;
+        const message = error?.message ?? '';
+
+        if (message.includes('Network') || message.includes('fetch')) {
+          errorMsg = language === 'fr'
+            ? 'Impossible de contacter le serveur. Vérifie ta connexion internet et réessaie.'
+            : 'Unable to reach the server. Check your internet connection and try again.';
+        } else if (message.includes('429') || message.includes('rate')) {
+          errorMsg = language === 'fr'
+            ? 'Le serveur est surchargé. Réessaie dans quelques secondes.'
+            : 'The server is overloaded. Try again in a few seconds.';
+        } else if (message.includes('5') && message.includes('API error')) {
+          errorMsg = language === 'fr'
+            ? 'Le serveur est temporairement indisponible. Réessaie plus tard.'
+            : 'The server is temporarily unavailable. Try again later.';
+        } else {
+          errorMsg = language === 'fr'
+            ? "TchopAI n'a pas pu répondre. Réessaie ta question."
+            : "TchopAI couldn't respond. Try asking again.";
+        }
+
         setSubtitle(errorMsg);
         setLiveState('idle');
       }
@@ -239,7 +256,25 @@ export function useLiveCooking(
 
   // Attach pending photo if user speaks right after taking one
   const sendWithOptionalPhoto = useCallback(
-    async (userContent: Message['content']) => {
+    async (userContent: Message['content'], imageBase64?: string) => {
+      // If an image is provided directly (e.g. from live camera mode), use it
+      if (imageBase64 && typeof userContent === 'string') {
+        pendingPhotoRef.current = null;
+        await sendToAI([
+          { type: 'text', text: userContent },
+          {
+            type: 'image',
+            source: {
+              type: 'base64',
+              media_type: 'image/jpeg',
+              data: imageBase64,
+            },
+          },
+        ]);
+        return;
+      }
+
+      // Otherwise, check for pending photo from manual capture
       const photo = pendingPhotoRef.current;
       if (photo && typeof userContent === 'string') {
         pendingPhotoRef.current = null;
@@ -262,6 +297,9 @@ export function useLiveCooking(
     [sendToAI],
   );
 
+  // Ref to hold an image to attach when speech result arrives (from live camera)
+  const liveCameraImageRef = useRef<string | null>(null);
+
   const handleSpeechResult = useCallback(
     (text: string) => {
       // Check for step navigation commands
@@ -270,10 +308,16 @@ export function useLiveCooking(
         setCurrentStep(stepCmd);
       }
 
-      sendWithOptionalPhoto(text);
+      const liveImage = liveCameraImageRef.current;
+      liveCameraImageRef.current = null;
+      sendWithOptionalPhoto(text, liveImage ?? undefined);
     },
     [detectStepCommand, sendWithOptionalPhoto],
   );
+
+  const setLiveCameraImage = useCallback((base64: string | null) => {
+    liveCameraImageRef.current = base64;
+  }, []);
 
   const startListening = useCallback(() => {
     if (!isConnected) return;
@@ -292,7 +336,13 @@ export function useLiveCooking(
 
       if (source === 'camera') {
         const { status } = await ImagePicker.requestCameraPermissionsAsync();
-        if (status !== 'granted') return;
+        if (status !== 'granted') {
+          const msg = language === 'fr'
+            ? "L'accès à la caméra a été refusé. Active-le dans les réglages pour envoyer des photos."
+            : 'Camera access was denied. Enable it in Settings to send photos.';
+          setSubtitle(msg);
+          return;
+        }
         result = await ImagePicker.launchCameraAsync({
           mediaTypes: ['images'],
           quality: 0.5,
@@ -300,7 +350,13 @@ export function useLiveCooking(
         });
       } else {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== 'granted') return;
+        if (status !== 'granted') {
+          const msg = language === 'fr'
+            ? "L'accès à la galerie a été refusé. Active-le dans les réglages pour choisir des photos."
+            : 'Gallery access was denied. Enable it in Settings to choose photos.';
+          setSubtitle(msg);
+          return;
+        }
         result = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ['images'],
           quality: 0.5,
@@ -308,7 +364,15 @@ export function useLiveCooking(
         });
       }
 
-      if (result.canceled || !result.assets[0]?.base64) return;
+      if (result.canceled) return;
+
+      if (!result.assets[0]?.base64) {
+        const msg = language === 'fr'
+          ? 'Impossible de charger la photo. Réessaie avec une autre image.'
+          : 'Unable to load the photo. Try again with another image.';
+        setSubtitle(msg);
+        return;
+      }
 
       interruptSpeaking();
 
@@ -332,8 +396,15 @@ export function useLiveCooking(
           },
         },
       ]);
-    } catch {
-      // User cancelled or error
+    } catch (error: any) {
+      const message = error?.message ?? '';
+      // Don't show error if user just cancelled the picker
+      if (message.includes('cancel') || message.includes('Cancel')) return;
+
+      const msg = language === 'fr'
+        ? 'Impossible de charger la photo. Réessaie avec une autre image.'
+        : 'Unable to load the photo. Try again with another image.';
+      setSubtitle(msg);
     }
   }, [language, interruptSpeaking, sendToAI]);
 
@@ -371,5 +442,6 @@ export function useLiveCooking(
     getHistory: () => historyRef.current,
     requestPermissions: speech.requestPermissions,
     checkPermissions: speech.checkPermissions,
+    setLiveCameraImage,
   };
 }
