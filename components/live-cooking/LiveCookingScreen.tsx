@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, Alert, Linking, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, StyleSheet, Alert, Linking, TouchableOpacity, Modal } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 
 import { Ionicons } from '@expo/vector-icons';
@@ -50,6 +50,8 @@ export default function LiveCookingScreen({
   } = useLiveCooking(recipe, initialStep, settings.language);
 
   const isFr = settings.language === 'fr';
+  const { bottom } = useSafeAreaInsets();
+  const [showSourceModal, setShowSourceModal] = useState(false);
 
   // Check permissions on mount
   useEffect(() => {
@@ -89,7 +91,12 @@ export default function LiveCookingScreen({
 
   const handlePhoto = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    takePhoto();
+    setShowSourceModal(true);
+  }, []);
+
+  const handlePhotoSource = useCallback((source: 'camera' | 'gallery') => {
+    setShowSourceModal(false);
+    takePhoto(source);
   }, [takePhoto]);
 
   const handleEnd = useCallback(() => {
@@ -260,6 +267,61 @@ export default function LiveCookingScreen({
           />
         </SafeAreaView>
       </SafeAreaView>
+
+      {/* Photo source picker modal */}
+      <Modal visible={showSourceModal} transparent animationType="fade">
+        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end', paddingHorizontal: 16, paddingBottom: bottom + 16 }}>
+          <View style={{
+            backgroundColor: isDark ? colors.card : '#FFFFFF',
+            borderRadius: 20,
+            overflow: 'hidden',
+            marginBottom: 8,
+          }}>
+            <TouchableOpacity
+              onPress={() => handlePhotoSource('camera')}
+              style={{
+                paddingVertical: 16,
+                alignItems: 'center',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                gap: 10,
+                borderBottomWidth: 1,
+                borderBottomColor: colors.border,
+              }}>
+              <Ionicons name="camera-outline" size={20} color={colors.accent} />
+              <Text style={{ fontSize: 16, fontWeight: '600', color: colors.accent }}>
+                {isFr ? 'Prendre une photo' : 'Take a photo'}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => handlePhotoSource('gallery')}
+              style={{
+                paddingVertical: 16,
+                alignItems: 'center',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                gap: 10,
+              }}>
+              <Ionicons name="images-outline" size={20} color={colors.accent} />
+              <Text style={{ fontSize: 16, fontWeight: '600', color: colors.accent }}>
+                {isFr ? 'Choisir dans la galerie' : 'Choose from gallery'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity
+            onPress={() => setShowSourceModal(false)}
+            style={{
+              backgroundColor: isDark ? colors.card : '#FFFFFF',
+              borderRadius: 20,
+              paddingVertical: 16,
+              alignItems: 'center',
+            }}>
+            <Text style={{ fontSize: 16, fontWeight: '600', color: colors.textMuted }}>
+              {isFr ? 'Annuler' : 'Cancel'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
     </View>
   );
 }

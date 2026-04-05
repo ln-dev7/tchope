@@ -286,19 +286,21 @@ export function useLiveCooking(
     speech.stopListening();
   }, [speech.stopListening]);
 
-  const takePhoto = useCallback(async () => {
+  const takePhoto = useCallback(async (source: 'camera' | 'gallery' = 'camera') => {
     try {
-      // Try camera first, fall back to photo library (camera unavailable on simulators)
       let result: ImagePicker.ImagePickerResult;
 
-      const { status } = await ImagePicker.requestCameraPermissionsAsync();
-      if (status === 'granted') {
+      if (source === 'camera') {
+        const { status } = await ImagePicker.requestCameraPermissionsAsync();
+        if (status !== 'granted') return;
         result = await ImagePicker.launchCameraAsync({
           mediaTypes: ['images'],
           quality: 0.5,
           base64: true,
         });
       } else {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') return;
         result = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ['images'],
           quality: 0.5,
