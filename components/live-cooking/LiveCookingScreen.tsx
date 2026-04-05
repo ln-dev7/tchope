@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, Alert, Linking, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, StyleSheet, Alert, Linking, TouchableOpacity, Modal, ScrollView } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 
@@ -45,6 +45,7 @@ export default function LiveCookingScreen({
     stopListening,
     takePhoto,
     endSession,
+    getHistory,
     requestPermissions,
     checkPermissions,
   } = useLiveCooking(recipe, initialStep, settings.language);
@@ -52,6 +53,7 @@ export default function LiveCookingScreen({
   const isFr = settings.language === 'fr';
   const { bottom } = useSafeAreaInsets();
   const [showSourceModal, setShowSourceModal] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   // Check permissions on mount
   useEffect(() => {
@@ -211,6 +213,7 @@ export default function LiveCookingScreen({
         <LiveCookingHeader
           recipeName={recipe.name}
           onBack={handleEnd}
+          onHistory={() => setShowHistory(true)}
           isDark={isDark}
           colors={colors}
         />
@@ -267,6 +270,61 @@ export default function LiveCookingScreen({
           />
         </SafeAreaView>
       </SafeAreaView>
+
+      {/* History modal */}
+      <Modal visible={showHistory} animationType="slide" presentationStyle="pageSheet">
+        <View style={{ flex: 1, backgroundColor: colors.background }}>
+          <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: colors.border, gap: 12 }}>
+              <TouchableOpacity
+                onPress={() => setShowHistory(false)}
+                style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' }}
+              >
+                <Ionicons name="close" size={20} color={colors.text} />
+              </TouchableOpacity>
+              <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text, flex: 1 }}>
+                {isFr ? 'Historique' : 'History'}
+              </Text>
+            </View>
+            <ScrollView
+              contentContainerStyle={{ padding: 16, gap: 12, paddingBottom: 40 }}
+              showsVerticalScrollIndicator={false}
+            >
+              {getHistory().length === 0 ? (
+                <Text style={{ fontSize: 14, color: colors.textMuted, textAlign: 'center', marginTop: 40 }}>
+                  {isFr ? 'Aucun message pour le moment' : 'No messages yet'}
+                </Text>
+              ) : (
+                getHistory().map((msg, i) => {
+                  const isUser = msg.role === 'user';
+                  const text = typeof msg.content === 'string'
+                    ? msg.content
+                    : msg.content.find((c) => c.type === 'text')?.text ?? (isFr ? '📷 Photo envoyée' : '📷 Photo sent');
+                  return (
+                    <View
+                      key={i}
+                      style={{
+                        alignSelf: isUser ? 'flex-end' : 'flex-start',
+                        maxWidth: '82%',
+                        backgroundColor: isUser ? colors.accent : (isDark ? '#2A2A2A' : '#F3F0EF'),
+                        borderRadius: 18,
+                        borderBottomRightRadius: isUser ? 6 : 18,
+                        borderBottomLeftRadius: isUser ? 18 : 6,
+                        paddingHorizontal: 14,
+                        paddingVertical: 10,
+                      }}
+                    >
+                      <Text style={{ fontSize: 14, lineHeight: 20, color: isUser ? '#FFFFFF' : colors.text }}>
+                        {text}
+                      </Text>
+                    </View>
+                  );
+                })
+              )}
+            </ScrollView>
+          </SafeAreaView>
+        </View>
+      </Modal>
 
       {/* Photo source picker modal */}
       <Modal visible={showSourceModal} transparent animationType="fade">

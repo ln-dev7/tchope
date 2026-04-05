@@ -368,6 +368,7 @@ export function useLiveCooking(
     takePhoto,
     endSession,
     goToStep,
+    getHistory: () => historyRef.current,
     requestPermissions: speech.requestPermissions,
     checkPermissions: speech.checkPermissions,
   };

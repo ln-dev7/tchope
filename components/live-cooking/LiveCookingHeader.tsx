@@ -5,9 +5,11 @@ import { Ionicons } from '@expo/vector-icons';
 type Props = {
   recipeName: string;
   onBack: () => void;
+  onHistory?: () => void;
   isDark: boolean;
   colors: {
     text: string;
+    textMuted: string;
     surface: string;
     accent: string;
     border: string;
@@ -17,6 +19,7 @@ type Props = {
 export default function LiveCookingHeader({
   recipeName,
   onBack,
+  onHistory,
   isDark,
   colors,
 }: Props) {
@@ -36,6 +39,14 @@ export default function LiveCookingHeader({
           {recipeName}
         </Text>
       </View>
+      {onHistory && (
+        <TouchableOpacity
+          onPress={onHistory}
+          style={[styles.backButton, { backgroundColor: colors.surface }]}
+        >
+          <Ionicons name="chatbubbles-outline" size={18} color={colors.textMuted} />
+        </TouchableOpacity>
+      )}
       <View
         style={[
           styles.badge,
