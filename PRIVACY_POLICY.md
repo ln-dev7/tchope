@@ -1,6 +1,6 @@
 # Politique de Confidentialité — Tchopé
 
-**Dernière mise à jour : 4 avril 2026**
+**Dernière mise à jour : 5 avril 2026**
 **Développeur : LNDEV — [lndev.me](https://lndev.me)**
 
 ---
@@ -24,11 +24,20 @@ Tchopé **ne collecte, ne transmet et ne stocke aucune donnée personnelle** sur
 
 ## 3. Caméra et Photos
 
-Tchopé demande l'accès à votre caméra et/ou à votre galerie photo **uniquement** lorsque vous choisissez d'ajouter une photo à une recette personnelle. Cette permission est :
+Tchopé demande l'accès à votre caméra et/ou à votre galerie photo dans deux cas :
 
+### a) Recettes personnelles
+Lorsque vous choisissez d'ajouter une photo à une recette personnelle :
 - **Optionnelle** : vous pouvez créer des recettes sans ajouter de photo
 - **Ponctuelle** : l'accès n'est demandé qu'au moment où vous appuyez sur le bouton d'ajout de photo
 - **Locale** : les photos sélectionnées ou prises sont stockées uniquement sur votre appareil. Elles ne sont jamais envoyées, partagées ou uploadées vers un serveur
+
+### b) TchopAI (analyse photo)
+Lorsque vous envoyez une photo à TchopAI pour analyser un plat ou des ingrédients (fonctionnalité réservée aux abonnés Tchopé Plus) :
+- **Optionnelle** : vous pouvez utiliser TchopAI sans envoyer de photo
+- **Ponctuelle** : l'accès n'est demandé qu'au moment où vous appuyez sur le bouton photo dans le chat
+- **Transmise à l'API Claude** : la photo est envoyée à l'API Claude (Anthropic) pour analyse. Anthropic traite l'image uniquement pour générer une réponse et ne la conserve pas. Consultez la [politique de confidentialité d'Anthropic](https://www.anthropic.com/privacy) pour plus de détails
+- **Non stockée** : la photo n'est pas sauvegardée dans l'application après l'envoi. Elle est supprimée de la mémoire dès la réponse reçue
 
 ## 4. Microphone et Reconnaissance vocale
 
@@ -87,7 +96,7 @@ Pour toute question concernant cette politique de confidentialité :
 
 # Privacy Policy — Tchopé
 
-**Last updated: April 4, 2026**
+**Last updated: April 5, 2026**
 **Developer: LNDEV — [lndev.me](https://lndev.me)**
 
 ---
@@ -111,11 +120,20 @@ Tchopé **does not collect, transmit, or store any personal data** on a remote s
 
 ## 3. Camera and Photos
 
-Tchopé requests access to your camera and/or photo library **only** when you choose to add a photo to a personal recipe. This permission is:
+Tchopé requests access to your camera and/or photo library in two cases:
 
+### a) Personal Recipes
+When you choose to add a photo to a personal recipe:
 - **Optional**: you can create recipes without adding a photo
 - **On-demand**: access is only requested when you tap the photo button
 - **Local**: selected or captured photos are stored exclusively on your device. They are never sent, shared, or uploaded to any server
+
+### b) TchopAI (photo analysis)
+When you send a photo to TchopAI to analyze a dish or ingredients (feature reserved for Tchopé Plus subscribers):
+- **Optional**: you can use TchopAI without sending a photo
+- **On-demand**: access is only requested when you tap the photo button in the chat
+- **Sent to Claude API**: the photo is sent to the Claude API (Anthropic) for analysis. Anthropic processes the image solely to generate a response and does not retain it. See [Anthropic's privacy policy](https://www.anthropic.com/privacy) for more details
+- **Not stored**: the photo is not saved in the application after sending. It is cleared from memory once the response is received
 
 ## 4. Microphone and Speech Recognition
 
