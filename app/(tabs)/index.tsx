@@ -7,7 +7,6 @@ import { useRouter } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
-import { useImagePrefetch } from '@/hooks/useImagePrefetch';
 import { useLicense } from '@/context/LicenseContext';
 import { useUserRecipes } from '@/context/UserRecipesContext';
 import FeaturedCard from '@/components/FeaturedCard';
@@ -43,7 +42,6 @@ export default function HomeScreen() {
   const { bottom } = useSafeAreaInsets();
   const { isPremium } = useLicense();
   const { userRecipes } = useUserRecipes();
-  useImagePrefetch();
   const [showPlusModal, setShowPlusModal] = useState(false);
 
   const hasTchopAIRecipes = userRecipes.some((r) => r.region === 'TchopAI');

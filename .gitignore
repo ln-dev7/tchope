@@ -52,6 +52,9 @@ app-example
 
 .idea/
 
+# Local recipe images (downloaded separately, not in repo)
+assets/images/recipes/
+
 #AI
 
 CLAUDE.md

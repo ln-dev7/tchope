@@ -2,7 +2,6 @@ import React, { useState, useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 import { getRecipeImage } from '@/constants/images';
-import { getLocalImage } from '@/constants/images.local';
 import type { Category } from '@/types';
 
 type Props = {
@@ -51,16 +50,13 @@ function LogoPlaceholder({ category, isDark }: { category: Category; isDark?: bo
 }
 
 /**
- * Fallback chain: remote URL → local WebP → category placeholder + logo
+ * Fallback chain: remote URL → category placeholder + logo
  *
  * 1. Tries the remote URL first (expo-image caches it automatically)
- * 2. On error, falls back to the bundled local WebP image
- * 3. If both fail (or for user recipes without photo), shows the
- *    category-colored placeholder with the app logo
+ * 2. On error, shows the category-colored placeholder with the app logo
  */
 export default function RecipeImage({ recipeId, category, imageUri, style, borderRadius = 24, isDark }: Props) {
   const [showLogo, setShowLogo] = useState(true);
-  const [useLocal, setUseLocal] = useState(false);
 
   const isUserWithoutPhoto = !imageUri && recipeId.startsWith('user-');
 
@@ -69,14 +65,8 @@ export default function RecipeImage({ recipeId, category, imageUri, style, borde
   }, []);
 
   const handleError = useCallback(() => {
-    if (!useLocal && !imageUri) {
-      // Remote failed → try local
-      setUseLocal(true);
-    } else {
-      // Local also failed (or user image failed) → show logo
-      setShowLogo(true);
-    }
-  }, [useLocal, imageUri]);
+    setShowLogo(true);
+  }, []);
 
   // User recipe without photo -> logo only
   if (isUserWithoutPhoto) {
@@ -87,29 +77,21 @@ export default function RecipeImage({ recipeId, category, imageUri, style, borde
     );
   }
 
-  // Determine image source based on current fallback state
-  let imageSource;
-  if (imageUri) {
-    imageSource = { uri: imageUri };
-  } else if (useLocal) {
-    imageSource = getLocalImage(recipeId, category);
-  } else {
-    imageSource = { uri: getRecipeImage(recipeId, category) };
-  }
+  const imageSource = imageUri
+    ? { uri: imageUri }
+    : { uri: getRecipeImage(recipeId, category) };
 
   return (
     <View style={[{ overflow: 'hidden', borderRadius, backgroundColor: isDark ? '#1A1A1A' : '#F5F5F5' }, style]}>
       {showLogo && <LogoPlaceholder category={category} isDark={isDark} />}
-      {imageSource && (
-        <Image
-          source={imageSource}
-          style={[StyleSheet.absoluteFill]}
-          contentFit="cover"
-          transition={300}
-          onLoad={handleLoad}
-          onError={handleError}
-        />
-      )}
+      <Image
+        source={imageSource}
+        style={[StyleSheet.absoluteFill]}
+        contentFit="cover"
+        transition={300}
+        onLoad={handleLoad}
+        onError={handleError}
+      />
     </View>
   );
 }
