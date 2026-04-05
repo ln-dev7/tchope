@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 import { getRecipeImage } from '@/constants/images';
+import { getLocalImage } from '@/constants/images.local';
 import type { Category } from '@/types';
 
 type Props = {
@@ -49,11 +50,36 @@ function LogoPlaceholder({ category, isDark }: { category: Category; isDark?: bo
   );
 }
 
+/**
+ * Fallback chain: remote URL → local WebP → category placeholder + logo
+ *
+ * 1. Tries the remote URL first (expo-image caches it automatically)
+ * 2. On error, falls back to the bundled local WebP image
+ * 3. If both fail (or for user recipes without photo), shows the
+ *    category-colored placeholder with the app logo
+ */
 export default function RecipeImage({ recipeId, category, imageUri, style, borderRadius = 24, isDark }: Props) {
   const [showLogo, setShowLogo] = useState(true);
+  const [useLocal, setUseLocal] = useState(false);
 
-  // User recipe without photo (id starts with "user-") -> app logo
-  if (!imageUri && recipeId.startsWith('user-')) {
+  const isUserWithoutPhoto = !imageUri && recipeId.startsWith('user-');
+
+  const handleLoad = useCallback(() => {
+    setShowLogo(false);
+  }, []);
+
+  const handleError = useCallback(() => {
+    if (!useLocal && !imageUri) {
+      // Remote failed → try local
+      setUseLocal(true);
+    } else {
+      // Local also failed (or user image failed) → show logo
+      setShowLogo(true);
+    }
+  }, [useLocal, imageUri]);
+
+  // User recipe without photo -> logo only
+  if (isUserWithoutPhoto) {
     return (
       <View style={[{ overflow: 'hidden', borderRadius }, style]}>
         <LogoPlaceholder category={category} isDark={isDark} />
@@ -61,21 +87,29 @@ export default function RecipeImage({ recipeId, category, imageUri, style, borde
     );
   }
 
-  const imageSource = imageUri
-    ? { uri: imageUri }
-    : { uri: getRecipeImage(recipeId, category) };
+  // Determine image source based on current fallback state
+  let imageSource;
+  if (imageUri) {
+    imageSource = { uri: imageUri };
+  } else if (useLocal) {
+    imageSource = getLocalImage(recipeId, category);
+  } else {
+    imageSource = { uri: getRecipeImage(recipeId, category) };
+  }
 
   return (
     <View style={[{ overflow: 'hidden', borderRadius, backgroundColor: isDark ? '#1A1A1A' : '#F5F5F5' }, style]}>
       {showLogo && <LogoPlaceholder category={category} isDark={isDark} />}
-      <Image
-        source={imageSource}
-        style={[StyleSheet.absoluteFill]}
-        contentFit="cover"
-        transition={300}
-        onLoad={() => setShowLogo(false)}
-        onError={() => setShowLogo(true)}
-      />
+      {imageSource && (
+        <Image
+          source={imageSource}
+          style={[StyleSheet.absoluteFill]}
+          contentFit="cover"
+          transition={300}
+          onLoad={handleLoad}
+          onError={handleError}
+        />
+      )}
     </View>
   );
 }
