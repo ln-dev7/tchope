@@ -171,7 +171,7 @@ export default function CookbookScreen() {
               <View style={{ gap: 16 }}>
                 {userRecipes.map((recipe) => (
                   <View key={recipe.id} style={{ position: 'relative' }}>
-                    <RecipeCard recipe={recipe} />
+                    <RecipeCard recipe={recipe} titlePaddingRight={80} />
                     <View style={{ position: 'absolute', top: 12, right: 12, flexDirection: 'row', gap: 8 }}>
                       <TouchableOpacity
                         onPress={() => router.push(`/add-recipe?edit=${recipe.id}` as any)}

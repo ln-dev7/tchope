@@ -9,9 +9,10 @@ import type { Recipe } from '@/types';
 
 type Props = {
   recipe: Recipe;
+  titlePaddingRight?: number;
 };
 
-export default function RecipeCard({ recipe }: Props) {
+export default function RecipeCard({ recipe, titlePaddingRight }: Props) {
   const { colors, isDark } = useTheme();
   const router = useRouter();
 
@@ -32,10 +33,12 @@ export default function RecipeCard({ recipe }: Props) {
       {/* Info */}
       <View style={{ flex: 1, gap: 4 }}>
         <Text
+          numberOfLines={2}
           style={{
             fontSize: 18,
             fontWeight: '600',
             color: colors.text,
+            ...(titlePaddingRight ? { paddingRight: titlePaddingRight } : {}),
           }}>
           {recipe.name}
         </Text>
