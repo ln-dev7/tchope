@@ -27,7 +27,7 @@ export type Recipe = {
   id: string;
   name: string;
   description: string;
-  image: any | null;
+  image: unknown | null;
   region: Region;
   category: Category;
   duration: number;
