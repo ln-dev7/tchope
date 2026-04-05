@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, Modal } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -11,6 +11,7 @@ import { useLicense } from '@/context/LicenseContext';
 import FeaturedCard from '@/components/FeaturedCard';
 import RecipeCard from '@/components/RecipeCard';
 import RegionItem from '@/components/RegionItem';
+import TchopePlusScreen from '@/components/premium/TchopePlusScreen';
 import type { Region } from '@/types';
 
 const ALL_REGIONS: Region[] = [
@@ -39,6 +40,7 @@ export default function HomeScreen() {
   const recipes = useLocalizedRecipes();
   const { bottom } = useSafeAreaInsets();
   const { isPremium } = useLicense();
+  const [showPlusModal, setShowPlusModal] = useState(false);
 
   const featuredRecipes = useMemo(
     () => FEATURED_ORDER.map((id) => recipes.find((r) => r.id === id)).filter(Boolean) as typeof recipes,
@@ -181,7 +183,7 @@ export default function HomeScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={() => router.push('/tchop-ai' as any)}
+              onPress={() => setShowPlusModal(true)}
               activeOpacity={0.85}
               style={{
                 flex: 1,
@@ -297,6 +299,12 @@ export default function HomeScreen() {
           </View>
         </View>
       </ScrollView>
+
+      <Modal visible={showPlusModal} animationType="slide" presentationStyle="pageSheet">
+        <View style={{ flex: 1, backgroundColor: colors.background }}>
+          <TchopePlusScreen onClose={() => setShowPlusModal(false)} />
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }

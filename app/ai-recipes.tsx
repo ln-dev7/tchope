@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Keyboard,
+  Modal,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -24,6 +25,7 @@ import { searchByIngredients, isValidIngredient, getMissingIngredients } from '@
 import { callClaude } from '@/utils/api';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 import { useLicense } from '@/context/LicenseContext';
+import TchopePlusScreen from '@/components/premium/TchopePlusScreen';
 import type { Recipe } from '@/types';
 
 type SearchResult = {
@@ -170,6 +172,7 @@ export default function AIRecipesScreen() {
   const isFr = settings.language === 'fr';
   const isConnected = useNetworkStatus();
   const { isPremium } = useLicense();
+  const [showPlusModal, setShowPlusModal] = useState(false);
   const aiAvailable = !!process.env.EXPO_PUBLIC_API_URL && isConnected;
 
   const knownIngredients = useMemo(() => {
@@ -259,7 +262,7 @@ export default function AIRecipesScreen() {
     Keyboard.dismiss();
     if (!freeText.trim()) return;
     if (!isPremium) {
-      router.push('/tchop-ai' as any);
+      setShowPlusModal(true);
       return;
     }
     if (!aiAvailable) {
@@ -729,6 +732,12 @@ export default function AIRecipesScreen() {
           )}
         </ScrollView>
       </KeyboardAvoidingView>
+
+      <Modal visible={showPlusModal} animationType="slide" presentationStyle="pageSheet">
+        <View style={{ flex: 1, backgroundColor: colors.background }}>
+          <TchopePlusScreen onClose={() => setShowPlusModal(false)} />
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }

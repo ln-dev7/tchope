@@ -9,6 +9,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  Modal,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -19,6 +20,7 @@ import { Image } from 'expo-image';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLicense } from '@/context/LicenseContext';
+import TchopePlusScreen from '@/components/premium/TchopePlusScreen';
 import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
 import { useSettings } from '@/context/SettingsContext';
 import { useMealPlanner, type MealPlan, type DayPlan } from '@/context/MealPlannerContext';
@@ -207,6 +209,7 @@ export default function PlannerScreen() {
 
   const isConnected = useNetworkStatus();
   const { isPremium } = useLicense();
+  const [showPlusModal, setShowPlusModal] = useState(false);
   const [preferences, setPreferences] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [showSaved, setShowSaved] = useState(false);
@@ -221,7 +224,7 @@ export default function PlannerScreen() {
   }, [recipes]);
 
   const handleGenerate = useCallback(async () => {
-    if (!isPremium) { router.push('/tchop-ai' as any); return; }
+    if (!isPremium) { setShowPlusModal(true); return; }
     if (!isConnected) { Alert.alert('Tchopé', t('plannerNoConnection')); return; }
     setIsGenerating(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -253,7 +256,7 @@ export default function PlannerScreen() {
 
   const handleAdjust = useCallback(async () => {
     if (!currentPlan || !adjustText.trim()) return;
-    if (!isPremium) { router.push('/tchop-ai' as any); return; }
+    if (!isPremium) { setShowPlusModal(true); return; }
     if (!isConnected) { Alert.alert('Tchopé', t('plannerNoConnection')); return; }
     setIsAdjusting(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -578,6 +581,12 @@ export default function PlannerScreen() {
           )}
         </ScrollView>
       </KeyboardAvoidingView>
+
+      <Modal visible={showPlusModal} animationType="slide" presentationStyle="pageSheet">
+        <View style={{ flex: 1, backgroundColor: colors.background }}>
+          <TchopePlusScreen onClose={() => setShowPlusModal(false)} />
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
