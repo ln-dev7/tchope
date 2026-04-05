@@ -11,6 +11,7 @@ import {
   Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 
@@ -38,6 +39,7 @@ export default function TchopePlusScreen({ onClose }: { onClose?: () => void }) 
   const { activateLicense } = useLicense();
   const { toast } = useToast();
   const router = useRouter();
+  const { top } = useSafeAreaInsets();
   const [licenseKey, setLicenseKey] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -161,7 +163,7 @@ export default function TchopePlusScreen({ onClose }: { onClose?: () => void }) 
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <ScrollView
-          contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingVertical: 16 }}
+          contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingTop: top + 8, paddingBottom: 16 }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
@@ -251,7 +253,7 @@ export default function TchopePlusScreen({ onClose }: { onClose?: () => void }) 
   // ── Info screen (default) ──
   return (
     <ScrollView
-      contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingVertical: 16 }}
+      contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingTop: top + 8, paddingBottom: 16 }}
       showsVerticalScrollIndicator={false}
     >
       {/* Close button */}
