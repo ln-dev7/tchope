@@ -1,6 +1,6 @@
 // ── Tchopé Plus pricing (edit here, reflects everywhere) ──
-export const PLUS_MONTHLY_PRICE_VALUE = 1500;
-export const PLUS_ANNUAL_PRICE_VALUE = 15000;
+export const PLUS_MONTHLY_PRICE_VALUE = 2000;
+export const PLUS_ANNUAL_PRICE_VALUE = 20000;
 export const PLUS_MONTHLY_PRICE = `${PLUS_MONTHLY_PRICE_VALUE.toLocaleString('fr-FR')} FCFA`;
 export const PLUS_ANNUAL_PRICE = `${PLUS_ANNUAL_PRICE_VALUE.toLocaleString('fr-FR')} FCFA`;
 export const PLUS_DEVICE_LIMIT = 2;
