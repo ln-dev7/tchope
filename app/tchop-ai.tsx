@@ -26,6 +26,7 @@ import { useImageQuota } from '@/hooks/useImageQuota';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
 import { callClaude, callClaudeLive, fetchRecipeUrl } from '@/utils/api';
+import { getChatHistory, saveChat, deleteChat, clearAllChats, MAX_SAVED_CHATS, type SavedChat } from '@/utils/chatHistory';
 import * as ImagePicker from 'expo-image-picker';
 import TchopePlusScreen from '@/components/premium/TchopePlusScreen';
 import RecipeImage from '@/components/RecipeImage';
@@ -281,6 +282,9 @@ export default function TchopAIScreen() {
   const [freeMessagesUsed, setFreeMessagesUsed] = useState(0);
   const [showPhotoModal, setShowPhotoModal] = useState(false);
   const [showPlusModal, setShowPlusModal] = useState(false);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [chatHistoryList, setChatHistoryList] = useState<SavedChat[]>([]);
+  const chatIdRef = useRef<string>(Date.now().toString());
   const flatListRef = useRef<FlatList>(null);
 
   const isFr = settings.language === 'fr';
@@ -293,6 +297,27 @@ export default function TchopAIScreen() {
       if (val) setFreeMessagesUsed(parseInt(val, 10));
     });
   }, []);
+
+  // Auto-save current chat when messages change (skip if only welcome message)
+  useEffect(() => {
+    const realMessages = messages.filter((m) => m.id !== 'welcome');
+    if (realMessages.length === 0) return;
+
+    const firstUserMsg = realMessages.find((m) => m.role === 'user');
+    const title = firstUserMsg
+      ? firstUserMsg.content.slice(0, 50) + (firstUserMsg.content.length > 50 ? '...' : '')
+      : 'Chat';
+
+    saveChat({
+      id: chatIdRef.current,
+      title,
+      messages: messages
+        .filter((m) => m.id !== 'welcome')
+        .map((m) => ({ id: m.id, role: m.role, content: m.content })),
+      createdAt: chatIdRef.current,
+      updatedAt: new Date().toISOString(),
+    });
+  }, [messages]);
 
   const buildSystemPrompt = useCallback(() => {
     const recipeIndex = recipes
@@ -411,7 +436,8 @@ export default function TchopAIScreen() {
     }
   };
 
-  const handleReset = () => {
+  const handleNewChat = () => {
+    chatIdRef.current = Date.now().toString();
     setMessages([{
       id: 'welcome',
       role: 'assistant',
@@ -419,6 +445,47 @@ export default function TchopAIScreen() {
     }]);
     setInput('');
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  };
+
+  const handleOpenHistory = async () => {
+    const history = await getChatHistory();
+    setChatHistoryList(history);
+    setShowHistoryModal(true);
+  };
+
+  const handleLoadChat = (chat: SavedChat) => {
+    chatIdRef.current = chat.id;
+    setMessages([
+      { id: 'welcome', role: 'assistant', content: t('tchopaiWelcome') },
+      ...chat.messages,
+    ]);
+    setShowHistoryModal(false);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  };
+
+  const handleDeleteChat = async (chatId: string) => {
+    await deleteChat(chatId);
+    setChatHistoryList((prev) => prev.filter((c) => c.id !== chatId));
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  };
+
+  const handleClearAllHistory = () => {
+    Alert.alert(
+      t('deleteAllHistoryConfirm'),
+      t('deleteAllHistoryDesc'),
+      [
+        { text: t('cancel'), style: 'cancel' },
+        {
+          text: t('delete'),
+          style: 'destructive',
+          onPress: async () => {
+            await clearAllChats();
+            setChatHistoryList([]);
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          },
+        },
+      ],
+    );
   };
 
   const [showSourceModal, setShowSourceModal] = useState(false);
@@ -623,7 +690,7 @@ export default function TchopAIScreen() {
           </Text>
         </View>
         <TouchableOpacity
-          onPress={handleReset}
+          onPress={handleNewChat}
           disabled={messages.length <= 1}
           style={{
             width: 36,
@@ -634,7 +701,19 @@ export default function TchopAIScreen() {
             justifyContent: 'center',
             opacity: messages.length <= 1 ? 0.4 : 1,
           }}>
-          <Ionicons name="refresh" size={18} color={colors.text} />
+          <Ionicons name="create-outline" size={18} color={colors.text} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={handleOpenHistory}
+          style={{
+            width: 36,
+            height: 36,
+            borderRadius: 18,
+            backgroundColor: colors.surface,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <Ionicons name="time-outline" size={18} color={colors.text} />
         </TouchableOpacity>
       </View>
 
@@ -883,6 +962,121 @@ export default function TchopAIScreen() {
               <Text style={{ fontSize: 14, color: colors.textMuted }}>{isFr ? 'Annuler' : 'Cancel'}</Text>
             </TouchableOpacity>
           </View>
+        </View>
+      </Modal>
+
+      {/* Chat history modal */}
+      <Modal visible={showHistoryModal} animationType="slide" presentationStyle="pageSheet">
+        <View style={{ flex: 1, backgroundColor: colors.background }}>
+          <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+            {/* History header */}
+            <View style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              paddingHorizontal: 20,
+              paddingVertical: 12,
+              borderBottomWidth: 1,
+              borderBottomColor: colors.border,
+              gap: 12,
+            }}>
+              <TouchableOpacity
+                onPress={() => setShowHistoryModal(false)}
+                style={{
+                  width: 40, height: 40, borderRadius: 20,
+                  backgroundColor: colors.surface,
+                  alignItems: 'center', justifyContent: 'center',
+                }}>
+                <Ionicons name="close" size={20} color={colors.text} />
+              </TouchableOpacity>
+              <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text, flex: 1 }}>
+                {t('chatHistory')}
+              </Text>
+              {chatHistoryList.length > 0 && (
+                <TouchableOpacity onPress={handleClearAllHistory}>
+                  <Text style={{ fontSize: 14, fontWeight: '600', color: '#E74C3C' }}>
+                    {t('deleteAllHistory')}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </View>
+
+            {/* Limit info */}
+            <View style={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: 4 }}>
+              <Text style={{ fontSize: 12, color: colors.textMuted, textAlign: 'center' }}>
+                {t('chatHistoryLimit').replace('{count}', String(MAX_SAVED_CHATS))}
+              </Text>
+            </View>
+
+            {/* Chat list */}
+            {chatHistoryList.length === 0 ? (
+              <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+                <Ionicons name="chatbubbles-outline" size={48} color={colors.textMuted} />
+                <Text style={{ fontSize: 15, color: colors.textMuted }}>
+                  {t('chatHistoryEmpty')}
+                </Text>
+              </View>
+            ) : (
+              <FlatList
+                data={chatHistoryList}
+                keyExtractor={(item) => item.id}
+                contentContainerStyle={{ padding: 16, gap: 8 }}
+                renderItem={({ item }) => {
+                  const date = new Date(item.updatedAt);
+                  const now = new Date();
+                  const isToday = date.toDateString() === now.toDateString();
+                  const yesterday = new Date(now);
+                  yesterday.setDate(yesterday.getDate() - 1);
+                  const isYesterday = date.toDateString() === yesterday.toDateString();
+                  const dateStr = isToday
+                    ? t('today')
+                    : isYesterday
+                      ? t('yesterday')
+                      : date.toLocaleDateString(isFr ? 'fr-FR' : 'en-US', { day: 'numeric', month: 'short' });
+                  const timeStr = date.toLocaleTimeString(isFr ? 'fr-FR' : 'en-US', { hour: '2-digit', minute: '2-digit' });
+                  const msgCount = item.messages.filter((m) => m.role !== 'info').length;
+
+                  return (
+                    <TouchableOpacity
+                      onPress={() => handleLoadChat(item)}
+                      activeOpacity={0.7}
+                      style={{
+                        backgroundColor: isDark ? '#2A2A2A' : '#FFFFFF',
+                        borderRadius: 16,
+                        padding: 14,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: 12,
+                        borderWidth: 1,
+                        borderColor: isDark ? '#3A3A3A' : '#E8E5E4',
+                      }}
+                    >
+                      <View style={{
+                        width: 40, height: 40, borderRadius: 20,
+                        backgroundColor: isDark ? 'rgba(168,85,247,0.15)' : 'rgba(168,85,247,0.1)',
+                        alignItems: 'center', justifyContent: 'center',
+                      }}>
+                        <Ionicons name="chatbubble-outline" size={18} color="#A855F7" />
+                      </View>
+                      <View style={{ flex: 1 }}>
+                        <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text }} numberOfLines={1}>
+                          {item.title}
+                        </Text>
+                        <Text style={{ fontSize: 12, color: colors.textMuted, marginTop: 2 }}>
+                          {dateStr} · {timeStr} · {msgCount} msg
+                        </Text>
+                      </View>
+                      <TouchableOpacity
+                        onPress={() => handleDeleteChat(item.id)}
+                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                      >
+                        <Ionicons name="trash-outline" size={18} color={colors.textMuted} />
+                      </TouchableOpacity>
+                    </TouchableOpacity>
+                  );
+                }}
+              />
+            )}
+          </SafeAreaView>
         </View>
       </Modal>
     </SafeAreaView>

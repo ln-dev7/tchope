@@ -363,7 +363,7 @@ export const translations = {
 
     // TchopAI chatbot
     tchopaiTitle: "TchopAI",
-    tchopaiSubtitle: "Votre assistant culinaire camerounais",
+    tchopaiSubtitle: "Votre assistant culinaire",
     tchopaiPlaceholder: "Posez-moi une question...",
     tchopaiWelcome: "Salut ! Je suis TchopAI, votre assistant culinaire camerounais. Posez-moi vos questions sur les recettes, les ingrédients, les techniques de cuisine camerounaise et plus encore !",
     tchopaiError: "Désolé, une erreur s'est produite. Réessayez.",
@@ -371,6 +371,19 @@ export const translations = {
     addToCookbook: "Ajouter au Cookbook",
     recipeAddedToCookbook: "Recette ajoutée à ton Cookbook !",
     recipeAlreadyAdded: "Déjà ajouté",
+
+    // TchopAI Chat history
+    chatHistory: "Historique",
+    chatHistoryEmpty: "Aucune conversation sauvegardée",
+    chatHistoryLimit: "Les {count} dernières conversations sont conservées",
+    newChat: "Nouvelle conversation",
+    deleteAllHistory: "Tout supprimer",
+    deleteAllHistoryConfirm: "Supprimer tout l'historique ?",
+    deleteAllHistoryDesc: "Cette action est irréversible.",
+    delete: "Supprimer",
+    cancel: "Annuler",
+    today: "Aujourd'hui",
+    yesterday: "Hier",
 
     // TchopAI Live
     tchopAILive: "TchopAI Live",
@@ -824,6 +837,19 @@ export const translations = {
     addToCookbook: "Add to Cookbook",
     recipeAddedToCookbook: "Recipe added to your Cookbook!",
     recipeAlreadyAdded: "Already added",
+
+    // TchopAI Chat history
+    chatHistory: "History",
+    chatHistoryEmpty: "No saved conversations",
+    chatHistoryLimit: "The last {count} conversations are kept",
+    newChat: "New conversation",
+    deleteAllHistory: "Delete all",
+    deleteAllHistoryConfirm: "Delete all history?",
+    deleteAllHistoryDesc: "This action cannot be undone.",
+    delete: "Delete",
+    cancel: "Cancel",
+    today: "Today",
+    yesterday: "Yesterday",
 
     // TchopAI Live
     tchopAILive: "TchopAI Live",
