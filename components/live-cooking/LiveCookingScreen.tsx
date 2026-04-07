@@ -59,6 +59,7 @@ export default function LiveCookingScreen({
   const imageQuota = useImageQuota();
   const [showSourceModal, setShowSourceModal] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [showQuotaInfo, setShowQuotaInfo] = useState(false);
 
   // Live Camera mode state
   const [mode, setMode] = useState<'audio' | 'camera'>('audio');
@@ -315,48 +316,63 @@ export default function LiveCookingScreen({
           </View>
         )}
 
-        {/* Image quota banner + Mode switch — hidden while speaking/listening */}
+        {/* Quota badge + Mode switch on same line — hidden while speaking/listening */}
         {liveState === 'idle' && (
-          <>
-            <View style={styles.quotaBannerRow}>
-              <Ionicons name="camera-outline" size={14} color={colors.textMuted} />
-              <Text style={[styles.quotaBannerText, {
-                color: imageQuota.remaining <= 3 ? '#E74C3C' : colors.textMuted,
-              }]}>
-                {imageQuota.remaining}/{imageQuota.limit} {t('imageQuota')}
+          <View style={styles.topBadgeRow}>
+            {/* Photo quota badge — tap for info */}
+            <TouchableOpacity
+              onPress={() => setShowQuotaInfo(true)}
+              activeOpacity={0.7}
+              style={[
+                styles.quotaBadge,
+                {
+                  backgroundColor: isDark ? colors.surface : '#F3F0EF',
+                  borderColor: imageQuota.remaining <= 3 ? '#E74C3C' : colors.border,
+                },
+              ]}
+            >
+              <Ionicons
+                name="camera-outline"
+                size={13}
+                color={imageQuota.remaining <= 3 ? '#E74C3C' : colors.textMuted}
+              />
+              <Text style={[
+                styles.quotaBadgeText,
+                { color: imageQuota.remaining <= 3 ? '#E74C3C' : colors.textMuted },
+              ]}>
+                {imageQuota.remaining}/{imageQuota.limit}
               </Text>
-            </View>
+            </TouchableOpacity>
 
-            <View style={styles.modeSwitchRow}>
-              <TouchableOpacity
-                onPress={handleModeSwitch}
-                style={[
-                  styles.modeSwitchPill,
-                  {
-                    backgroundColor: isDark
-                      ? (mode === 'camera' ? `${colors.accent}25` : colors.surface)
-                      : (mode === 'camera' ? `${colors.accent}12` : '#F3F0EF'),
-                    borderColor: mode === 'camera' ? colors.accent : colors.border,
-                  },
-                ]}
+            {/* Mode switch pill */}
+            <TouchableOpacity
+              onPress={handleModeSwitch}
+              style={[
+                styles.modeSwitchPill,
+                {
+                  backgroundColor: isDark
+                    ? (mode === 'camera' ? `${colors.accent}25` : colors.surface)
+                    : (mode === 'camera' ? `${colors.accent}12` : '#F3F0EF'),
+                  borderColor: mode === 'camera' ? colors.accent : colors.border,
+                },
+              ]}
+            >
+              <Ionicons
+                name={mode === 'camera' ? 'videocam' : 'videocam-outline'}
+                size={16}
+                color={mode === 'camera' ? colors.accent : colors.textMuted}
+              />
+              <Text
+                style={{
+                  fontSize: 13,
+                  fontWeight: '600',
+                  color: mode === 'camera' ? colors.accent : colors.textMuted,
+                }}
               >
-                <Ionicons
-                  name={mode === 'camera' ? 'videocam' : 'videocam-outline'}
-                  size={16}
-                  color={mode === 'camera' ? colors.accent : colors.textMuted}
-                />
-                <Text
-                  style={{
-                    fontSize: 13,
-                    fontWeight: '600',
-                    color: mode === 'camera' ? colors.accent : colors.textMuted,
-                  }}
-                >
-                  {mode === 'camera' ? t('liveCameraMode') : t('audioOnlyMode')}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </>
+                {mode === 'camera' ? t('liveCameraMode') : t('audioOnlyMode')}
+              </Text>
+            </TouchableOpacity>
+          </View>
         )}
 
         {/* Center area: VoiceOrb or Camera Preview */}
@@ -530,6 +546,50 @@ export default function LiveCookingScreen({
           </TouchableOpacity>
         </View>
       </Modal>
+
+      {/* Photo quota info modal */}
+      <Modal visible={showQuotaInfo} transparent animationType="fade">
+        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', paddingHorizontal: 32 }}>
+          <View style={{
+            backgroundColor: isDark ? colors.card : '#FFFFFF',
+            borderRadius: 24,
+            padding: 24,
+            gap: 16,
+            alignItems: 'center',
+          }}>
+            <View style={{
+              width: 56, height: 56, borderRadius: 28,
+              backgroundColor: isDark ? `${colors.accent}20` : `${colors.accent}10`,
+              alignItems: 'center', justifyContent: 'center',
+            }}>
+              <Ionicons name="camera" size={28} color={colors.accent} />
+            </View>
+            <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text, textAlign: 'center' }}>
+              {isFr ? 'Quota de photos' : 'Photo quota'}
+            </Text>
+            <Text style={{ fontSize: 14, color: colors.textSecondary, textAlign: 'center', lineHeight: 20 }}>
+              {isFr
+                ? `Tu peux envoyer ${imageQuota.limit} photos par jour pour que TchopAI analyse ta préparation en temps réel.\n\nIl te reste ${imageQuota.remaining} photo${imageQuota.remaining > 1 ? 's' : ''} aujourd'hui. Le compteur se réinitialise automatiquement chaque jour à minuit.`
+                : `You can send ${imageQuota.limit} photos per day for TchopAI to analyze your cooking in real-time.\n\nYou have ${imageQuota.remaining} photo${imageQuota.remaining > 1 ? 's' : ''} remaining today. The counter resets automatically every day at midnight.`}
+            </Text>
+            <TouchableOpacity
+              onPress={() => setShowQuotaInfo(false)}
+              style={{
+                backgroundColor: colors.accent,
+                borderRadius: 16,
+                paddingVertical: 14,
+                paddingHorizontal: 24,
+                width: '100%',
+                alignItems: 'center',
+              }}
+            >
+              <Text style={{ fontSize: 15, fontWeight: '700', color: '#FFFFFF' }}>
+                {isFr ? 'Compris' : 'Got it'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -579,20 +639,26 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
   },
-  quotaBannerRow: {
+  topBadgeRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
+    gap: 10,
     paddingTop: 10,
+    marginBottom: 12,
   },
-  quotaBannerText: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  modeSwitchRow: {
+  quotaBadge: {
+    flexDirection: 'row',
     alignItems: 'center',
-    paddingTop: 6,
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 16,
+    borderWidth: 1,
+  },
+  quotaBadgeText: {
+    fontSize: 13,
+    fontWeight: '700',
   },
   modeSwitchPill: {
     flexDirection: 'row',
