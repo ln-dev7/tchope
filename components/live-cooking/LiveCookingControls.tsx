@@ -39,7 +39,10 @@ export default function LiveCookingControls({
 }: Props) {
   const isListening = state === 'listening';
   const isThinking = state === 'thinking';
-  const micDisabled = isThinking;
+  const isSpeaking = state === 'speaking';
+  // Disable mic and photo when AI is processing or speaking
+  const micDisabled = isThinking || isSpeaking;
+  const photoDisabled = isThinking || isSpeaking;
 
   return (
     <View style={styles.container}>
@@ -47,14 +50,14 @@ export default function LiveCookingControls({
       {mode === 'audio' ? (
         <TouchableOpacity
           onPress={onPhoto}
-          disabled={isThinking}
+          disabled={photoDisabled}
           style={[
             styles.sideButton,
             {
               backgroundColor: isDark ? colors.surface : '#FFFFFF',
               borderWidth: isDark ? 0 : 1,
               borderColor: colors.border,
-              opacity: isThinking ? 0.4 : 1,
+              opacity: photoDisabled ? 0.4 : 1,
             },
           ]}
         >
