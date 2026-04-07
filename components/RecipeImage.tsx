@@ -77,9 +77,10 @@ export default function RecipeImage({ recipeId, category, imageUri, style, borde
     );
   }
 
-  const imageSource = imageUri
-    ? { uri: imageUri }
-    : { uri: getRecipeImage(recipeId, category) };
+  const resolvedImage = imageUri ? imageUri : getRecipeImage(recipeId, category);
+  const imageSource = typeof resolvedImage === 'number'
+    ? resolvedImage
+    : { uri: resolvedImage };
 
   return (
     <View style={[{ overflow: 'hidden', borderRadius, backgroundColor: isDark ? '#1A1A1A' : '#F5F5F5' }, style]}>

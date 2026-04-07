@@ -53,7 +53,7 @@ app-example
 .idea/
 
 # Local recipe images (downloaded separately, not in repo)
-assets/images/recipes/
+assets/images/recipes_draft/
 
 #AI
 

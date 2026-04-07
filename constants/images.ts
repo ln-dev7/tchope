@@ -1,4 +1,5 @@
 import type { Category } from '@/types';
+import { localRecipeImages } from './localImages';
 
 // Wikimedia Commons images (CC license) - authentic Cameroonian dish photos
 // Pexels/Unsplash used as fallbacks when no Wikimedia image exists
@@ -367,9 +368,9 @@ export const categoryFallbacks: Record<Category, string> = {
 };
 
 /**
- * Get the image URL for a recipe by its id and category.
- * Returns a specific image if available, otherwise a category fallback.
+ * Get the image source for a recipe by its id and category.
+ * Returns a local require (number) for home page recipes, or a remote URL (string) otherwise.
  */
-export function getRecipeImage(id: string, category: Category): string {
-  return recipeImages[id] ?? categoryFallbacks[category];
+export function getRecipeImage(id: string, category: Category): string | number {
+  return localRecipeImages[id] ?? recipeImages[id] ?? categoryFallbacks[category];
 }
