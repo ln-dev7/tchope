@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { AppState } from 'react-native';
 import {
   getImageQuota,
   canSendImage,
@@ -17,6 +18,16 @@ export function useImageQuota() {
 
   useEffect(() => {
     refresh();
+  }, [refresh]);
+
+  // Refresh quota when app comes back to foreground (handles day change)
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        refresh();
+      }
+    });
+    return () => sub.remove();
   }, [refresh]);
 
   const remaining = Math.max(0, limit - used);
