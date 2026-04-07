@@ -46,6 +46,7 @@ export default function LiveCookingScreen({
     isConnected,
     startListening,
     stopListening,
+    flushResult,
     takePhoto,
     endSession,
     getHistory,
@@ -135,15 +136,12 @@ export default function LiveCookingScreen({
   }, [isConnected, startListening]);
 
   const handleMicRelease = useCallback(async () => {
-    // In live camera mode, capture a snapshot automatically before stopping
+    // Stop speech recognition first (buffers the result, doesn't send yet)
+    stopListening();
+
+    // In live camera mode, capture the photo before flushing
     if (mode === 'camera' && cameraRef.current) {
-      if (!imageQuota.canSend) {
-        // Quota reached — skip photo, send voice only
-        Alert.alert(
-          isFr ? 'Limite atteinte' : 'Limit reached',
-          t('imageQuotaReached'),
-        );
-      } else {
+      if (imageQuota.canSend) {
         try {
           const photo = await cameraRef.current.takePictureAsync({
             quality: 0.5,
@@ -156,15 +154,14 @@ export default function LiveCookingScreen({
             await imageQuota.increment();
           }
         } catch {
-          Alert.alert(
-            isFr ? 'Photo non capturée' : 'Photo not captured',
-            t('errorPhotoCapture'),
-          );
+          // Photo capture failed — will send voice only
         }
       }
     }
-    stopListening();
-  }, [mode, stopListening, setLiveCameraImage, isFr, t, imageQuota]);
+
+    // Now send the buffered speech result + photo (if any) to the AI
+    flushResult();
+  }, [mode, stopListening, flushResult, setLiveCameraImage, imageQuota]);
 
   const handlePhoto = useCallback(() => {
     if (!imageQuota.canSend) {
@@ -371,6 +368,21 @@ export default function LiveCookingScreen({
               >
                 {mode === 'camera' ? t('liveCameraMode') : t('audioOnlyMode')}
               </Text>
+              {mode === 'camera' && (
+                <View style={{
+                  position: 'absolute',
+                  top: -6,
+                  right: -8,
+                  backgroundColor: colors.accent,
+                  borderRadius: 6,
+                  paddingHorizontal: 4,
+                  paddingVertical: 1,
+                }}>
+                  <Text style={{ fontSize: 8, fontWeight: '800', color: '#FFFFFF' }}>
+                    BETA
+                  </Text>
+                </View>
+              )}
             </TouchableOpacity>
           </View>
         )}

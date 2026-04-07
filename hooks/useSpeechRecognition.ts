@@ -41,7 +41,8 @@ export function useSpeechRecognition(lang: 'fr-FR' | 'en-US') {
     setTranscript(text);
     if (event.isFinal && text.trim()) {
       onResultRef.current?.(text.trim());
-      setTranscript('');
+      // Don't clear transcript — in continuous mode the text stays visible
+      // until the next interim result or until stop() is called
     }
   });
 
@@ -71,7 +72,7 @@ export function useSpeechRecognition(lang: 'fr-FR' | 'en-US') {
       SpeechModule.start({
         lang,
         interimResults: true,
-        continuous: false,
+        continuous: true,
         volumeChangeEventOptions: { enabled: true, intervalMillis: 100 },
         contextualStrings: [
           'Tchopé', 'ndolé', 'eru', 'koki', 'achu',

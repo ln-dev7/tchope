@@ -118,15 +118,18 @@ export function useLiveCooking(
           rate: 0.95,
           onDone: () => {
             isSpeakingRef.current = false;
+            setSubtitle('');
             setLiveState('idle');
             resolve();
           },
           onStopped: () => {
             isSpeakingRef.current = false;
+            setSubtitle('');
             resolve();
           },
           onError: () => {
             isSpeakingRef.current = false;
+            setSubtitle('');
             setLiveState('idle');
             resolve();
           },
@@ -300,6 +303,9 @@ export function useLiveCooking(
   // Ref to hold an image to attach when speech result arrives (from live camera)
   const liveCameraImageRef = useRef<string | null>(null);
 
+  // Buffer: accumulate speech segments, only send when flushResult is called (on mic release)
+  const pendingResultRef = useRef<string>('');
+
   const handleSpeechResult = useCallback(
     (text: string) => {
       // Check for step navigation commands
@@ -308,12 +314,36 @@ export function useLiveCooking(
         setCurrentStep(stepCmd);
       }
 
-      const liveImage = liveCameraImageRef.current;
-      liveCameraImageRef.current = null;
-      sendWithOptionalPhoto(text, liveImage ?? undefined);
+      // Accumulate segments (continuous mode sends isFinal per phrase)
+      pendingResultRef.current = (pendingResultRef.current + ' ' + text).trim();
     },
-    [detectStepCommand, sendWithOptionalPhoto],
+    [detectStepCommand],
   );
+
+  // Called by the screen after mic release (and photo capture if camera mode)
+  // to actually send the buffered speech result + optional photo to the AI
+  const flushResult = useCallback(() => {
+    // Use accumulated final segments, or fall back to the last interim transcript
+    // (covers the case where stop() was called before any isFinal was received)
+    const text = (pendingResultRef.current || userTranscript).trim();
+    pendingResultRef.current = '';
+
+    if (!text) {
+      // No speech was captured — go back to idle
+      setLiveState('idle');
+      return;
+    }
+
+    // Check for step navigation commands on the final text
+    const stepCmd = detectStepCommand(text);
+    if (stepCmd !== null) {
+      setCurrentStep(stepCmd);
+    }
+
+    const liveImage = liveCameraImageRef.current;
+    liveCameraImageRef.current = null;
+    sendWithOptionalPhoto(text, liveImage ?? undefined);
+  }, [sendWithOptionalPhoto, userTranscript, detectStepCommand]);
 
   const setLiveCameraImage = useCallback((base64: string | null) => {
     liveCameraImageRef.current = base64;
@@ -322,6 +352,7 @@ export function useLiveCooking(
   const startListening = useCallback(() => {
     if (!isConnected) return;
     interruptSpeaking();
+    pendingResultRef.current = '';
     setLiveState('listening');
     speech.startListening(handleSpeechResult);
   }, [isConnected, interruptSpeaking, speech.startListening, handleSpeechResult]);
@@ -436,6 +467,7 @@ export function useLiveCooking(
     isConnected,
     startListening,
     stopListening,
+    flushResult,
     takePhoto,
     endSession,
     goToStep,
