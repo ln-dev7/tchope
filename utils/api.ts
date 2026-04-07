@@ -75,6 +75,21 @@ export async function callClaudeLive(params: ClaudeRequest): Promise<string> {
   return data.content?.[0]?.text ?? '';
 }
 
+export async function fetchRecipeUrl(url: string): Promise<string | null> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/fetch-recipe-url`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url }),
+    });
+    if (!response.ok) return null;
+    const data = await response.json();
+    return data.content ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export async function callClaude(params: ClaudeRequest): Promise<string> {
   const key = await hashKey(params);
 

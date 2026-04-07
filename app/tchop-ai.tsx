@@ -25,7 +25,7 @@ import { useLicense } from '@/context/LicenseContext';
 import { useImageQuota } from '@/hooks/useImageQuota';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
-import { callClaude, callClaudeLive } from '@/utils/api';
+import { callClaude, callClaudeLive, fetchRecipeUrl } from '@/utils/api';
 import * as ImagePicker from 'expo-image-picker';
 import TchopePlusScreen from '@/components/premium/TchopePlusScreen';
 import RecipeImage from '@/components/RecipeImage';
@@ -58,8 +58,9 @@ TON STYLE :
 - N'utilise JAMAIS de formatage markdown (pas de **, pas de #, pas de -, pas de listes numérotées). Écris en texte brut uniquement, comme dans une conversation SMS
 
 LIMITES STRICTES :
-- Tu ne réponds QU'aux questions liées à la cuisine camerounaise, aux recettes, à la nourriture africaine en général, et aux fonctionnalités de l'app Tchopé
-- Si on te pose une question hors sujet (politique, code, maths, etc.), réponds poliment que tu es spécialisé en cuisine camerounaise et redirige la conversation
+- Tu ne réponds QU'aux questions liées à la cuisine, aux recettes, à la nourriture et aux fonctionnalités de l'app Tchopé
+- Ta spécialité est la cuisine camerounaise, mais tu acceptes aussi les recettes internationales qui font partie du quotidien camerounais (riz basmati, spaghettis, couscous, etc.) ou que l'utilisateur veut cuisiner. Ne refuse JAMAIS une recette sous prétexte qu'elle n'est pas camerounaise — au Cameroun on mange de tout ! Si la recette n'est pas camerounaise, donne-la quand même et propose éventuellement un accompagnement ou une touche camerounaise.
+- Si on te pose une question hors sujet (politique, code, maths, etc.), réponds poliment que tu es spécialisé en cuisine et redirige la conversation
 - Ne génère JAMAIS de contenu inapproprié
 
 RECETTES LIÉES (OBLIGATOIRE) :
@@ -71,6 +72,9 @@ Règles :
 - Pas d'espaces dans la liste des IDs
 - Maximum 4 recettes
 - TOUJOURS inclure cette ligne quand tu parles de recettes de l'app
+
+ANALYSE DE LIENS :
+Si l'utilisateur envoie un lien/URL de recette, le contenu de la page sera extrait et ajouté à son message. Analyse ce contenu pour répondre à sa question (résumer la recette, donner des conseils, l'ajouter au cookbook, etc.). Si le contenu ne semble pas être une recette valide, dis-le poliment.
 
 AJOUT DE RECETTE AU COOKBOOK :
 Quand l'utilisateur te demande d'ajouter une recette à son cookbook (qu'il te donne les détails, qu'il mentionne une recette connue, ou qu'il te donne un lien/description d'internet), tu DOIS générer la recette complète au format JSON sur la DERNIÈRE ligne de ta réponse :
@@ -109,8 +113,9 @@ YOUR STYLE:
 - NEVER use markdown formatting (no **, no #, no -, no numbered lists). Write in plain text only, like in an SMS conversation
 
 STRICT LIMITS:
-- ONLY answer questions related to Cameroonian cuisine, recipes, African food in general, and Tchopé app features
-- If asked about off-topic subjects (politics, code, math, etc.), politely say you specialize in Cameroonian cooking and redirect the conversation
+- ONLY answer questions related to cooking, recipes, food and Tchopé app features
+- Your specialty is Cameroonian cuisine, but you also accept international recipes that are part of everyday Cameroonian life (basmati rice, spaghetti, couscous, etc.) or that the user wants to cook. NEVER refuse a recipe just because it's not Cameroonian — in Cameroon we eat everything! If the recipe is not Cameroonian, give it anyway and optionally suggest a Cameroonian side dish or twist.
+- If asked about off-topic subjects (politics, code, math, etc.), politely say you specialize in cooking and redirect the conversation
 - NEVER generate inappropriate content
 
 RELATED RECIPES (MANDATORY):
@@ -122,6 +127,9 @@ Rules:
 - No spaces in the ID list
 - Maximum 4 recipes
 - ALWAYS include this line when you talk about recipes from the app
+
+LINK ANALYSIS:
+If the user sends a recipe link/URL, the page content will be extracted and added to their message. Analyze this content to answer their question (summarize the recipe, give tips, add it to the cookbook, etc.). If the content doesn't seem to be a valid recipe, politely say so.
 
 ADD RECIPE TO COOKBOOK:
 When the user asks you to add a recipe to their cookbook (whether they give you details, mention a known recipe, or give you a link/description from the internet), you MUST generate the full recipe in JSON format on the LAST line of your response:
@@ -269,6 +277,7 @@ export default function TchopAIScreen() {
   }]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState('');
   const [freeMessagesUsed, setFreeMessagesUsed] = useState(0);
   const [showPhotoModal, setShowPhotoModal] = useState(false);
   const [showPlusModal, setShowPlusModal] = useState(false);
@@ -276,7 +285,6 @@ export default function TchopAIScreen() {
 
   const isFr = settings.language === 'fr';
   const FREE_MESSAGE_LIMIT = 2;
-  const freeMessagesLeft = FREE_MESSAGE_LIMIT - freeMessagesUsed;
   const canSendFree = isPremium || freeMessagesUsed < FREE_MESSAGE_LIMIT;
 
   // Load free message count
@@ -347,10 +355,24 @@ export default function TchopAIScreen() {
     setMessages((prev) => [...prev, userMsg]);
     setInput('');
     setLoading(true);
+    setLoadingMessage(isFr ? 'TchopAI réfléchit...' : 'TchopAI is thinking...');
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
     try {
-      const history = [...messages.filter((m) => m.id !== 'welcome' && m.role !== 'info'), userMsg].map((m) => ({
+      // Detect URL in message and fetch content
+      const urlMatch = text.match(/https?:\/\/[^\s]+/i);
+      let enrichedText = text;
+      if (urlMatch) {
+        setLoadingMessage(isFr ? 'Analyse du lien en cours...' : 'Analyzing link...');
+        const urlContent = await fetchRecipeUrl(urlMatch[0]);
+        if (urlContent) {
+          enrichedText = `${text}\n\n[Contenu extrait du lien :\n${urlContent}]`;
+        }
+        setLoadingMessage(isFr ? 'Préparation de la réponse...' : 'Preparing response...');
+      }
+
+      const enrichedMsg = { ...userMsg, content: enrichedText };
+      const history = [...messages.filter((m) => m.id !== 'welcome' && m.role !== 'info'), enrichedMsg].map((m) => ({
         role: m.role,
         content: m.content,
       }));
@@ -385,6 +407,7 @@ export default function TchopAIScreen() {
       }]);
     } finally {
       setLoading(false);
+      setLoadingMessage('');
     }
   };
 
@@ -442,6 +465,7 @@ export default function TchopAIScreen() {
       const quotaMsg: Message = { id: `quota-${Date.now()}`, role: 'info', content: quotaInfo };
       setMessages((prev) => [...prev, userMsg, quotaMsg]);
       setLoading(true);
+      setLoadingMessage(isFr ? 'Analyse de la photo...' : 'Analyzing photo...');
 
       const history = [...messages.filter((m) => m.id !== 'welcome' && m.role !== 'info'), userMsg].map((m) => ({
         role: m.role,
@@ -483,6 +507,7 @@ export default function TchopAIScreen() {
       }]);
     } finally {
       setLoading(false);
+      setLoadingMessage('');
     }
   };
 
@@ -635,8 +660,14 @@ export default function TchopAIScreen() {
             borderBottomLeftRadius: 6,
             paddingHorizontal: 16,
             paddingVertical: 12,
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 10,
           }}>
-            <ActivityIndicator size="small" color={colors.textSecondary} />
+            <ActivityIndicator size="small" color={colors.accent} />
+            <Text style={{ fontSize: 13, color: colors.textSecondary, fontStyle: 'italic' }}>
+              {loadingMessage || (isFr ? 'TchopAI réfléchit...' : 'TchopAI is thinking...')}
+            </Text>
           </View>
         </View>
       )}
