@@ -52,13 +52,11 @@ export default function LiveSubtitles({
     }
   }, [displayText]);
 
-  // Fade out subtitles after AI stops speaking
+  // Hide subtitles immediately when AI stops speaking
   useEffect(() => {
-    if (state === 'idle' && subtitle && !userTranscript) {
-      opacity.value = withDelay(
-        4000,
-        withTiming(0, { duration: 500 }),
-      );
+    if (state === 'idle') {
+      opacity.value = withTiming(0, { duration: 300 });
+      translateY.value = withTiming(10, { duration: 300 });
     }
   }, [state]);
 
