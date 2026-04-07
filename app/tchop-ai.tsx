@@ -288,13 +288,21 @@ export default function TchopAIScreen() {
   const flatListRef = useRef<FlatList>(null);
 
   const isFr = settings.language === 'fr';
-  const FREE_MESSAGE_LIMIT = 2;
+  const FREE_MESSAGE_LIMIT = 3;
   const canSendFree = isPremium || freeMessagesUsed < FREE_MESSAGE_LIMIT;
 
-  // Load free message count
+  // Load free message count (reset daily)
   useEffect(() => {
-    AsyncStorage.getItem('tchope_free_messages').then((val) => {
-      if (val) setFreeMessagesUsed(parseInt(val, 10));
+    const today = new Date().toISOString().slice(0, 10);
+    AsyncStorage.getItem('tchope_free_messages_date').then(async (savedDate) => {
+      if (savedDate !== today) {
+        await AsyncStorage.setItem('tchope_free_messages', '0');
+        await AsyncStorage.setItem('tchope_free_messages_date', today);
+        setFreeMessagesUsed(0);
+      } else {
+        const val = await AsyncStorage.getItem('tchope_free_messages');
+        if (val) setFreeMessagesUsed(parseInt(val, 10));
+      }
     });
   }, []);
 
@@ -420,9 +428,10 @@ export default function TchopAIScreen() {
 
       // Increment free message counter for non-premium users
       if (!isPremium) {
-        const newCount = freeMessagesUsed + 1;
+        const current = await AsyncStorage.getItem('tchope_free_messages');
+        const newCount = (current ? parseInt(current, 10) : 0) + 1;
+        await AsyncStorage.setItem('tchope_free_messages', String(newCount));
         setFreeMessagesUsed(newCount);
-        AsyncStorage.setItem('tchope_free_messages', String(newCount));
       }
     } catch {
       setMessages((prev) => [...prev, {
@@ -834,10 +843,10 @@ export default function TchopAIScreen() {
             gap: 12,
           }}>
             <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text, textAlign: 'center' }}>
-              {t('freeMessagesUsed')}
+              {t('freeMessagesUsed').replace('{limit}', String(FREE_MESSAGE_LIMIT))}
             </Text>
             <Text style={{ fontSize: 13, color: colors.textSecondary, textAlign: 'center', lineHeight: 18 }}>
-              {t('freeMessagesUpgrade')}
+              {t('freeMessagesUpgrade').replace('{limit}', String(FREE_MESSAGE_LIMIT))}
             </Text>
             <TouchableOpacity
               onPress={() => setShowPlusModal(true)}
