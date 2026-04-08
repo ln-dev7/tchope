@@ -52,7 +52,8 @@ export default function TimerScreen() {
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
-  const { timer: recipeTimer, isPaused: recipePaused, isTimerRunning: recipeTimerRunning, pauseTimer: pauseRecipeTimer, resumeTimer: resumeRecipeTimer, stopTimer: stopRecipeTimer } = useTimer();
+  const { timers: globalTimers, isTimerRunning: recipeTimerRunning, pauseTimer: pauseRecipeTimer, resumeTimer: resumeRecipeTimer, stopTimer: stopRecipeTimer } = useTimer();
+  const recipeTimerList = Array.from(globalTimers.values());
 
   // Local timers (multiple)
   const [timers, setTimers] = useState<LocalTimer[]>([]);
@@ -488,12 +489,13 @@ export default function TimerScreen() {
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingBottom: 120 }}
         showsVerticalScrollIndicator={false}>
-        {/* Recipe Timer Banner */}
-        {recipeTimerRunning && (
+        {/* Recipe Timer Banners */}
+        {recipeTimerList.map((entry) => (
           <View
+            key={entry.id}
             style={{
               marginHorizontal: 20,
-              marginBottom: 16,
+              marginBottom: 8,
               padding: 16,
               borderRadius: 20,
               backgroundColor: isDark ? '#2A1800' : '#FFF3E0',
@@ -516,8 +518,8 @@ export default function TimerScreen() {
                 <Text style={{ fontSize: 13, fontWeight: '600', color: colors.textSecondary }}>
                   {t('timerRecipeTimer')}
                 </Text>
-                <Text style={{ fontSize: 15, fontWeight: '700', color: colors.text }}>
-                  {recipeTimer.recipeName}
+                <Text style={{ fontSize: 15, fontWeight: '700', color: colors.text }} numberOfLines={1}>
+                  {entry.recipeName}
                 </Text>
               </View>
               <Text
@@ -527,12 +529,12 @@ export default function TimerScreen() {
                   color: colors.accent,
                   fontVariant: ['tabular-nums'],
                 }}>
-                {formatTime(recipeTimer.remainingSeconds)}
+                {formatTime(entry.remainingSeconds)}
               </Text>
             </View>
             <View style={{ flexDirection: 'row', gap: 8, marginTop: 12 }}>
               <TouchableOpacity
-                onPress={() => (recipePaused ? resumeRecipeTimer() : pauseRecipeTimer())}
+                onPress={() => (entry.isPaused ? resumeRecipeTimer(entry.id) : pauseRecipeTimer(entry.id))}
                 style={{
                   flex: 1,
                   height: 38,
@@ -543,13 +545,13 @@ export default function TimerScreen() {
                   flexDirection: 'row',
                   gap: 6,
                 }}>
-                <Ionicons name={recipePaused ? 'play' : 'pause'} size={16} color={colors.accent} />
+                <Ionicons name={entry.isPaused ? 'play' : 'pause'} size={16} color={colors.accent} />
                 <Text style={{ fontSize: 13, fontWeight: '600', color: colors.accent }}>
-                  {recipePaused ? t('timerResume') : t('timerPause')}
+                  {entry.isPaused ? t('timerResume') : t('timerPause')}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={stopRecipeTimer}
+                onPress={() => stopRecipeTimer(entry.id)}
                 style={{
                   height: 38,
                   paddingHorizontal: 16,
@@ -562,7 +564,7 @@ export default function TimerScreen() {
               </TouchableOpacity>
             </View>
           </View>
-        )}
+        ))}
 
         {/* Picker / Active Timer Display */}
         {showPicker ? (

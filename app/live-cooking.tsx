@@ -19,12 +19,12 @@ export default function LiveCookingRoute() {
   const recipes = useLocalizedRecipes();
   const { userRecipes } = useUserRecipes();
   const { isPremium } = useLicense();
-  const { isTimerRunning, stopTimer } = useTimer();
+  const { isTimerRunning, stopAllTimers } = useTimer();
 
   // Stop any active timer when launching Live cooking
   React.useEffect(() => {
     if (isTimerRunning) {
-      stopTimer();
+      stopAllTimers();
     }
   }, []);
 
