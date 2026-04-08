@@ -24,11 +24,12 @@ type TimerState = {
   recipeName: string;
   totalSeconds: number;
   remainingSeconds: number;
+  stepIndex?: number;
 };
 
 type TimerContextType = {
   timer: TimerState;
-  startTimer: (recipeId: string, recipeName: string, durationMinutes: number) => void;
+  startTimer: (recipeId: string, recipeName: string, durationSeconds: number, stepIndex?: number) => void;
   stopTimer: () => void;
   pauseTimer: () => void;
   resumeTimer: () => void;
@@ -118,13 +119,17 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     return () => sub.remove();
   }, [timer.isRunning]);
 
-  // Timer done
+  // Timer done — alert + redirect to cooking mode step if not already there
   useEffect(() => {
     if (timer.totalSeconds > 0 && timer.remainingSeconds === 0 && !timer.isRunning) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      if (pathname !== '/cooking-mode' && timer.recipeId) {
+        const stepParam = timer.stepIndex != null ? `&step=${timer.stepIndex}` : '';
+        router.push(`/cooking-mode?id=${timer.recipeId}${stepParam}` as any);
+      }
       Alert.alert('Tchopé', `${timer.recipeName} ${t('timerDone')}`);
     }
-  }, [timer.remainingSeconds, timer.isRunning, timer.recipeName, timer.totalSeconds, t]);
+  }, [timer.remainingSeconds, timer.isRunning, timer.recipeName, timer.totalSeconds, timer.recipeId, timer.stepIndex, t, pathname, router]);
 
   // Pulse animation
   useEffect(() => {
@@ -162,14 +167,13 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     Notifications.requestPermissionsAsync();
   }, []);
 
-  const startTimer = useCallback((recipeId: string, recipeName: string, durationMinutes: number) => {
+  const startTimer = useCallback((recipeId: string, recipeName: string, durationSeconds: number, stepIndex?: number) => {
     if (intervalRef.current) clearInterval(intervalRef.current);
-    const totalSeconds = durationMinutes * 60;
-    endTimeRef.current = Date.now() + totalSeconds * 1000;
-    setTimer({ isRunning: true, recipeId, recipeName, totalSeconds, remainingSeconds: totalSeconds });
+    endTimeRef.current = Date.now() + durationSeconds * 1000;
+    setTimer({ isRunning: true, recipeId, recipeName, totalSeconds: durationSeconds, remainingSeconds: durationSeconds, stepIndex });
     setMinimized(false);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    scheduleNotification(recipeName, totalSeconds);
+    scheduleNotification(recipeName, durationSeconds);
   }, [scheduleNotification]);
 
   const pauseTimer = useCallback(() => {
@@ -194,7 +198,7 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     endTimeRef.current = 0;
     pausedRemainingRef.current = 0;
     setIsPaused(false);
-    setTimer({ isRunning: false, recipeId: '', recipeName: '', totalSeconds: 0, remainingSeconds: 0 });
+    setTimer({ isRunning: false, recipeId: '', recipeName: '', totalSeconds: 0, remainingSeconds: 0, stepIndex: undefined });
     cancelNotification();
   }, [cancelNotification]);
 
@@ -205,7 +209,8 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
 
   const handleGoToCookingMode = () => {
     if (timer.recipeId) {
-      router.push(`/cooking-mode?id=${timer.recipeId}` as any);
+      const stepParam = timer.stepIndex != null ? `&step=${timer.stepIndex}` : '';
+      router.push(`/cooking-mode?id=${timer.recipeId}${stepParam}` as any);
     }
   };
 
@@ -218,7 +223,7 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
           style={{
             position: 'absolute',
             bottom: 110,
-            right: 20,
+            left: 20,
             transform: [{ scale: pulseAnim }],
             zIndex: 9999,
           }}>
