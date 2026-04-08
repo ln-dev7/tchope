@@ -48,20 +48,20 @@ const SLIDES: Slide[] = [
     emoji: '👨‍🍳',
   },
   {
-    icon: 'calendar',
-    iconBg: 'rgba(34,197,94,0.12)',
-    iconColor: '#22C55E',
+    icon: 'sparkles',
+    iconBg: 'rgba(168,85,247,0.12)',
+    iconColor: '#A855F7',
     titleKey: 'onboarding3Title',
     descKey: 'onboarding3Desc',
     emoji: '🤖',
   },
   {
-    icon: 'heart',
-    iconBg: 'rgba(231,76,60,0.12)',
-    iconColor: '#E74C3C',
+    icon: 'shield-checkmark',
+    iconBg: 'rgba(34,197,94,0.12)',
+    iconColor: '#22C55E',
     titleKey: 'onboarding4Title',
     descKey: 'onboarding4Desc',
-    emoji: '📖',
+    emoji: '🔒',
   },
 ];
 
