@@ -8,6 +8,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
 import { useUserRecipes } from '@/hooks/useUserRecipes';
 import { useLicense } from '@/context/LicenseContext';
+import { useTimer } from '@/context/TimerContext';
 import LiveCookingScreen from '@/components/live-cooking/LiveCookingScreen';
 import LiveExplainScreen from '@/components/premium/LiveExplainScreen';
 
@@ -18,6 +19,14 @@ export default function LiveCookingRoute() {
   const recipes = useLocalizedRecipes();
   const { userRecipes } = useUserRecipes();
   const { isPremium } = useLicense();
+  const { isTimerRunning, stopTimer } = useTimer();
+
+  // Stop any active timer when launching Live cooking
+  React.useEffect(() => {
+    if (isTimerRunning) {
+      stopTimer();
+    }
+  }, []);
 
   const recipe =
     recipes.find((r) => r.id === id) ?? userRecipes.find((r) => r.id === id);

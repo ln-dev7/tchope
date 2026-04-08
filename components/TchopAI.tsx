@@ -10,7 +10,9 @@ export default function TchopAIButton() {
   const pathname = usePathname();
   const router = useRouter();
 
-  if (pathname === '/onboarding' || pathname === '/tchop-ai' || pathname === '/live-cooking') return null;
+  const routesToExclude = ['/onboarding', '/tchop-ai', '/live-cooking', '/cooking-mode'];
+
+  if (routesToExclude.includes(pathname)) return null;
 
   return (
     <TouchableOpacity

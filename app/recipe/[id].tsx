@@ -116,7 +116,8 @@ export default function RecipeDetailScreen() {
   };
 
   const handleStartCooking = () => {
-    startTimer(recipe.id, recipe.name, recipe.duration);
+    // Timer global commenté — le timer est maintenant intégré aux étapes de cuisine
+    // startTimer(recipe.id, recipe.name, recipe.duration);
     router.push(`/cooking-mode?id=${recipe.id}` as any);
   };
 
@@ -303,27 +304,6 @@ export default function RecipeDetailScreen() {
                 {t('startLiveCooking')}
               </Text>
             </TouchableOpacity>
-            {getRecipeVideos(recipe.id) && (
-              <TouchableOpacity
-                onPress={() => router.push(`/recipe-videos?id=${recipe.id}&name=${encodeURIComponent(recipe.name)}` as any)}
-                activeOpacity={0.85}
-                style={{
-                  backgroundColor: isDark ? 'rgba(255,0,0,0.08)' : 'rgba(255,0,0,0.05)',
-                  borderRadius: 20,
-                  paddingVertical: 14,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 8,
-                  borderWidth: 1.5,
-                  borderColor: isDark ? 'rgba(255,0,0,0.2)' : 'rgba(255,0,0,0.15)',
-                }}>
-                <Ionicons name="logo-youtube" size={18} color="#FF0000" />
-                <Text style={{ fontSize: 14, fontWeight: '700', color: colors.text }}>
-                  {t('videoRecipe')}
-                </Text>
-              </TouchableOpacity>
-            )}
             <TouchableOpacity
               onPress={handleStartCooking}
               disabled={isTimerRunning}
@@ -346,6 +326,27 @@ export default function RecipeDetailScreen() {
                 {isTimerRunning ? 'Timer...' : t('startCooking')}
               </Text>
             </TouchableOpacity>
+            {getRecipeVideos(recipe.id) && (
+              <TouchableOpacity
+                onPress={() => router.push(`/recipe-videos?id=${recipe.id}&name=${encodeURIComponent(recipe.name)}` as any)}
+                activeOpacity={0.85}
+                style={{
+                  backgroundColor: isDark ? 'rgba(255,0,0,0.08)' : 'rgba(255,0,0,0.05)',
+                  borderRadius: 20,
+                  paddingVertical: 14,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 8,
+                  borderWidth: 1.5,
+                  borderColor: isDark ? 'rgba(255,0,0,0.2)' : 'rgba(255,0,0,0.15)',
+                }}>
+                <Ionicons name="logo-youtube" size={18} color="#FF0000" />
+                <Text style={{ fontSize: 14, fontWeight: '700', color: colors.text }}>
+                  {t('videoRecipe')}
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
 
           {/* Tab Switcher */}
