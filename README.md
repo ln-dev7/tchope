@@ -1,3 +1,5 @@
+<!-- Ce projet est sous licence GPL-3.0. Voir le fichier LICENSE pour plus de détails. -->
+
 # Tchopé 🇨🇲
 
 Application mobile de recettes camerounaises. Découvrez, cuisinez et partagez les saveurs authentiques du Cameroun.

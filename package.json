@@ -2,6 +2,7 @@
   "name": "tchope",
   "main": "./index",
   "version": "1.0.0",
+  "license": "GPL-3.0",
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
