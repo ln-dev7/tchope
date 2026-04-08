@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   View,
@@ -32,14 +32,42 @@ function formatTime(seconds: number): string {
   return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 }
 
+function parseTimeFromStep(step: string): number | null {
+  const lower = step.toLowerCase();
+  // "Xh", "X heures", "Xh30", "X heures et Y minutes", "X hours"
+  const hourMatch = lower.match(/(\d+)\s*(?:h(?:eures?)?|hours?)(?:\s*(?:et\s*)?(\d+)\s*(?:min(?:utes?)?)?)?/);
+  if (hourMatch) {
+    let seconds = parseInt(hourMatch[1]) * 3600;
+    if (hourMatch[2]) seconds += parseInt(hourMatch[2]) * 60;
+    return seconds;
+  }
+  // "X minutes", "X min"
+  const minMatch = lower.match(/(\d+)\s*(?:min(?:utes?)?)/);
+  if (minMatch) return parseInt(minMatch[1]) * 60;
+  // "X secondes", "X sec", "X seconds"
+  const secMatch = lower.match(/(\d+)\s*(?:sec(?:ondes?|onds?)?)/);
+  if (secMatch) return parseInt(secMatch[1]);
+  return null;
+}
+
+function formatDuration(totalSeconds: number): string {
+  const h = Math.floor(totalSeconds / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  const s = totalSeconds % 60;
+  if (h > 0 && m > 0) return `${h}h${m.toString().padStart(2, '0')}`;
+  if (h > 0) return `${h}h`;
+  if (m > 0) return `${m} min`;
+  return `${s}s`;
+}
+
 export default function CookingModeScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, step: stepParam } = useLocalSearchParams<{ id: string; step?: string }>();
   const { colors } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
   const recipes = useLocalizedRecipes();
   const { userRecipes } = useUserRecipes();
-  const { timer, pauseTimer, resumeTimer, stopTimer, isPaused } = useTimer();
+  const { timer, startTimer, pauseTimer, resumeTimer, stopTimer, isPaused } = useTimer();
   const { toast } = useToast();
   const { settings } = useSettings();
 
@@ -47,11 +75,15 @@ export default function CookingModeScreen() {
   const steps = recipe?.steps ?? [];
   const totalSteps = steps.length;
 
-  const [currentStep, setCurrentStep] = useState(0);
+  const initialStep = stepParam && totalSteps > 0 ? Math.min(parseInt(stepParam, 10), totalSteps - 1) : 0;
+  const [currentStep, setCurrentStep] = useState(initialStep);
   const [voiceEnabled, setVoiceEnabled] = useState<boolean | null>(null);
   const [listHeight, setListHeight] = useState(0);
+  const [customMinutes, setCustomMinutes] = useState(5);
+  const [showCustomTimer, setShowCustomTimer] = useState<number | null>(null);
   const flatListRef = useRef<FlatList>(null);
   const isFr = settings.language === 'fr';
+  const stepTimes = useMemo(() => steps.map(parseTimeFromStep), [steps]);
 
   // Load saved voice preference
   useEffect(() => {
@@ -170,6 +202,88 @@ export default function CookingModeScreen() {
         }}>
         {item}
       </Text>
+
+      {/* Timer controls — only when no timer is running */}
+      {!hasTimer && (
+        showCustomTimer === index ? (
+          /* Picker mode (adjustable +/- minutes) */
+          <View style={{ alignItems: 'center', marginTop: 24, gap: 12 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
+              <TouchableOpacity
+                onPress={() => setCustomMinutes((m) => Math.max(1, m - 1))}
+                style={{
+                  width: 40, height: 40, borderRadius: 20,
+                  backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center',
+                }}>
+                <Ionicons name="remove" size={20} color={colors.text} />
+              </TouchableOpacity>
+              <Text style={{ fontSize: 24, fontWeight: '800', color: colors.text, fontVariant: ['tabular-nums'], minWidth: 70, textAlign: 'center' }}>
+                {customMinutes} min
+              </Text>
+              <TouchableOpacity
+                onPress={() => setCustomMinutes((m) => Math.min(180, m + 1))}
+                style={{
+                  width: 40, height: 40, borderRadius: 20,
+                  backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center',
+                }}>
+                <Ionicons name="add" size={20} color={colors.text} />
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity
+              onPress={() => {
+                startTimer(id!, `${recipe!.name} — ${t('steps')} ${index + 1}`, customMinutes * 60, index);
+                setShowCustomTimer(null);
+              }}
+              style={{
+                flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
+                backgroundColor: colors.accent, borderRadius: 16, paddingVertical: 12, paddingHorizontal: 24,
+              }}>
+              <Ionicons name="timer-outline" size={18} color="#FFFFFF" />
+              <Text style={{ fontSize: 14, fontWeight: '700', color: '#FFFFFF' }}>
+                {t('startStepTimer')}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        ) : stepTimes[index] != null ? (
+          /* Auto-detected time: quick start + adjust */
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 24 }}>
+            <TouchableOpacity
+              onPress={() => startTimer(id!, `${recipe!.name} — ${t('steps')} ${index + 1}`, stepTimes[index]!, index)}
+              style={{
+                flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
+                backgroundColor: colors.accent + '15', borderRadius: 16,
+                paddingVertical: 14, paddingHorizontal: 24,
+              }}>
+              <Ionicons name="timer-outline" size={20} color={colors.accent} />
+              <Text style={{ fontSize: 15, fontWeight: '700', color: colors.accent }}>
+                {t('startStepTimer')} ({formatDuration(stepTimes[index]!)})
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => { setShowCustomTimer(index); setCustomMinutes(Math.ceil(stepTimes[index]! / 60)); }}
+              style={{
+                width: 40, height: 40, borderRadius: 20,
+                backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center',
+              }}>
+              <Ionicons name="pencil" size={16} color={colors.textSecondary} />
+            </TouchableOpacity>
+          </View>
+        ) : (
+          /* No detected time: "Add timer" button */
+          <TouchableOpacity
+            onPress={() => { setShowCustomTimer(index); setCustomMinutes(5); }}
+            style={{
+              flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
+              marginTop: 24, alignSelf: 'center', paddingVertical: 10, paddingHorizontal: 20,
+              borderRadius: 16, backgroundColor: colors.surface,
+            }}>
+            <Ionicons name="timer-outline" size={18} color={colors.textSecondary} />
+            <Text style={{ fontSize: 14, fontWeight: '600', color: colors.textSecondary }}>
+              {t('addTimer')}
+            </Text>
+          </TouchableOpacity>
+        )
+      )}
     </View>
   );
 
@@ -273,21 +387,35 @@ export default function CookingModeScreen() {
               onViewableItemsChanged={onViewableItemsChanged}
               viewabilityConfig={viewabilityConfig}
               getItemLayout={(_, index) => ({ length: SCREEN_WIDTH, offset: SCREEN_WIDTH * index, index })}
+              extraData={`${hasTimer}-${showCustomTimer}-${customMinutes}`}
+              initialScrollIndex={initialStep}
             />
           )}
-        </View>
 
-        {/* Inline Timer */}
-        {hasTimer && (
-          <View
-            style={{
-              marginHorizontal: 24,
-              marginBottom: 8,
-              backgroundColor: isDone ? '#0A6A1D' : isPaused ? '#6B5B00' : '#914700',
-              borderRadius: 20,
-              padding: 16,
-              gap: 10,
-            }}>
+          {/* Inline Timer — absolute to avoid layout shift */}
+          {hasTimer && (
+            <View
+              style={{
+                position: 'absolute',
+                bottom: 8,
+                left: 24,
+                right: 24,
+                backgroundColor: isDone ? '#0A6A1D' : isPaused ? '#6B5B00' : '#914700',
+                borderRadius: 20,
+                padding: 16,
+                gap: 10,
+              }}>
+            {/* Step origin label when on a different step */}
+            {timer.stepIndex != null && timer.stepIndex !== currentStep && (
+              <TouchableOpacity
+                onPress={() => goToStep(timer.stepIndex!)}
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                <Ionicons name="return-up-back" size={14} color="rgba(255,255,255,0.7)" />
+                <Text style={{ fontSize: 12, fontWeight: '600', color: 'rgba(255,255,255,0.7)' }}>
+                  {t('stepTimer')} {timer.stepIndex + 1}
+                </Text>
+              </TouchableOpacity>
+            )}
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                 <Ionicons
@@ -315,7 +443,7 @@ export default function CookingModeScreen() {
                   </TouchableOpacity>
                 )}
                 <TouchableOpacity
-                  onPress={() => { stopTimer(); router.back(); }}
+                  onPress={() => stopTimer()}
                   style={{
                     height: 40,
                     borderRadius: 20,
@@ -338,6 +466,7 @@ export default function CookingModeScreen() {
             )}
           </View>
         )}
+        </View>
 
         {/* Bottom navigation */}
         <SafeAreaView edges={['bottom']}>

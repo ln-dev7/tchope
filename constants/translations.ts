@@ -337,7 +337,9 @@ export const translations = {
     finishCooking: "Terminer",
     cookingComplete: "Cuisine terminée !",
     cookingCompleteMessage: "Bravo ! Vous avez terminé la recette.",
-    stepTimer: "Timer pour cette étape",
+    stepTimer: "Timer de l'étape",
+    startStepTimer: "Lancer le timer",
+    addTimer: "Ajouter un timer",
     voiceReadingOn: "Lecture vocale activée",
     voiceReadingOff: "Lecture vocale désactivée",
 
@@ -381,7 +383,6 @@ export const translations = {
     deleteAllHistoryConfirm: "Supprimer tout l'historique ?",
     deleteAllHistoryDesc: "Cette action est irréversible.",
     delete: "Supprimer",
-    cancel: "Annuler",
     today: "Aujourd'hui",
     yesterday: "Hier",
 
@@ -564,7 +565,6 @@ export const translations = {
     addStep: "Add a Step",
     addPhoto: "Add a Photo",
     save: "Save",
-    cancel: "Cancel",
     ingredientName: "Ingredient Name",
     quantity: "Quantity",
     stepDescription: "Step Description",
@@ -803,7 +803,9 @@ export const translations = {
     finishCooking: "Finish",
     cookingComplete: "Cooking complete!",
     cookingCompleteMessage: "Well done! You've finished the recipe.",
-    stepTimer: "Timer for this step",
+    stepTimer: "Timer for step",
+    startStepTimer: "Start timer",
+    addTimer: "Add a timer",
     voiceReadingOn: "Voice reading enabled",
     voiceReadingOff: "Voice reading disabled",
 
