@@ -58,6 +58,7 @@ export default function TimerScreen() {
   // Local timers (multiple)
   const [timers, setTimers] = useState<LocalTimer[]>([]);
   const [activeTimerId, setActiveTimerId] = useState<string | null>(null);
+  const scrollRef = useRef<ScrollView>(null);
 
   // Duration picker state
   const [pickerHours, setPickerHours] = useState(0);
@@ -486,8 +487,9 @@ export default function TimerScreen() {
       </View>
 
       <ScrollView
+        ref={scrollRef}
         style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: 120 }}
+        contentContainerStyle={{ paddingBottom: 180 }}
         showsVerticalScrollIndicator={false}>
         {/* Recipe Timer Banners */}
         {recipeTimerList.map((entry) => (
@@ -648,6 +650,7 @@ export default function TimerScreen() {
                       setPickerMinutes(m);
                       setPickerSeconds(s);
                       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      scrollRef.current?.scrollTo({ y: 0, animated: true });
                     }}
                     style={{
                       paddingHorizontal: 16,
@@ -683,6 +686,7 @@ export default function TimerScreen() {
                       setPickerMinutes(m);
                       setPickerSeconds(s);
                       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      scrollRef.current?.scrollTo({ y: 0, animated: true });
                     }}
                     style={{
                       flexDirection: 'row',
