@@ -18,6 +18,22 @@ Notifications.setNotificationHandler({
   }),
 });
 
+// --- Types ---
+
+export type TimerEntry = {
+  id: string;
+  recipeId: string;
+  recipeName: string;
+  stepIndex?: number;
+  totalSeconds: number;
+  remainingSeconds: number;
+  isRunning: boolean;
+  isPaused: boolean;
+  endTime: number;
+  notificationId?: string;
+};
+
+// Backward-compat shape for consumers that read the single "timer" property
 type TimerState = {
   isRunning: boolean;
   recipeId: string;
@@ -28,28 +44,39 @@ type TimerState = {
 };
 
 type TimerContextType = {
-  timer: TimerState;
+  timers: Map<string, TimerEntry>;
   startTimer: (recipeId: string, recipeName: string, durationSeconds: number, stepIndex?: number) => void;
-  stopTimer: () => void;
-  pauseTimer: () => void;
-  resumeTimer: () => void;
-  isPaused: boolean;
+  stopTimer: (timerId: string) => void;
+  pauseTimer: (timerId: string) => void;
+  resumeTimer: (timerId: string) => void;
+  stopAllTimers: () => void;
+  getTimersForRecipe: (recipeId: string) => TimerEntry[];
   isTimerRunning: boolean;
+  // Backward compat
+  timer: TimerState;
+  isPaused: boolean;
 };
 
+const emptyTimer: TimerState = { isRunning: false, recipeId: '', recipeName: '', totalSeconds: 0, remainingSeconds: 0 };
+
 const TimerContext = createContext<TimerContextType>({
-  timer: { isRunning: false, recipeId: '', recipeName: '', totalSeconds: 0, remainingSeconds: 0 },
+  timers: new Map(),
   startTimer: () => {},
   stopTimer: () => {},
   pauseTimer: () => {},
   resumeTimer: () => {},
-  isPaused: false,
+  stopAllTimers: () => {},
+  getTimersForRecipe: () => [],
   isTimerRunning: false,
+  timer: emptyTimer,
+  isPaused: false,
 });
 
 export function useTimer() {
   return useContext(TimerContext);
 }
+
+// --- Helpers ---
 
 function formatTime(seconds: number): string {
   const h = Math.floor(seconds / 3600);
@@ -64,20 +91,30 @@ function truncateName(name: string, maxLength = 20): string {
   return name.slice(0, maxLength) + '...';
 }
 
+function makeTimerId(recipeId: string, stepIndex?: number): string {
+  return `${recipeId}-${stepIndex ?? 'global'}`;
+}
+
+/** Return the timer with the least remaining time. Priority: running > paused > done. */
+function pickWidgetTimer(timers: Map<string, TimerEntry>): TimerEntry | null {
+  const all = Array.from(timers.values());
+  const running = all.filter((t) => t.isRunning).sort((a, b) => a.remainingSeconds - b.remainingSeconds);
+  if (running.length > 0) return running[0];
+  const paused = all.filter((t) => t.isPaused).sort((a, b) => a.remainingSeconds - b.remainingSeconds);
+  if (paused.length > 0) return paused[0];
+  const done = all.filter((t) => t.totalSeconds > 0 && t.remainingSeconds === 0);
+  if (done.length > 0) return done[0];
+  return null;
+}
+
+// --- Provider ---
+
 export function TimerProvider({ children }: { children: React.ReactNode }) {
-  const [timer, setTimer] = useState<TimerState>({
-    isRunning: false,
-    recipeId: '',
-    recipeName: '',
-    totalSeconds: 0,
-    remainingSeconds: 0,
-  });
+  const [timers, setTimers] = useState<Map<string, TimerEntry>>(new Map());
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const endTimeRef = useRef<number>(0);
+  const completedRef = useRef<Set<string>>(new Set());
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const [minimized, setMinimized] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
-  const pausedRemainingRef = useRef<number>(0);
   const router = useRouter();
   const pathname = usePathname();
   const { settings } = useSettings();
@@ -86,69 +123,11 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     [settings.language],
   );
 
-  // Countdown based on real clock
-  useEffect(() => {
-    if (timer.isRunning && timer.remainingSeconds > 0) {
-      intervalRef.current = setInterval(() => {
-        const remaining = Math.max(0, Math.round((endTimeRef.current - Date.now()) / 1000));
-        setTimer((prev) => {
-          if (remaining <= 0) {
-            return { ...prev, remainingSeconds: 0, isRunning: false };
-          }
-          return { ...prev, remainingSeconds: remaining };
-        });
-      }, 1000);
-    }
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, [timer.isRunning]);
+  // --- Notifications (per-timer) ---
 
-  // Sync timer when app comes back from background
-  useEffect(() => {
-    const sub = AppState.addEventListener('change', (state) => {
-      if (state === 'active' && timer.isRunning && endTimeRef.current > 0) {
-        const remaining = Math.max(0, Math.round((endTimeRef.current - Date.now()) / 1000));
-        if (remaining <= 0) {
-          setTimer((prev) => ({ ...prev, remainingSeconds: 0, isRunning: false }));
-        } else {
-          setTimer((prev) => ({ ...prev, remainingSeconds: remaining }));
-        }
-      }
-    });
-    return () => sub.remove();
-  }, [timer.isRunning]);
-
-  // Timer done — alert + redirect to cooking mode step if not already there
-  useEffect(() => {
-    if (timer.totalSeconds > 0 && timer.remainingSeconds === 0 && !timer.isRunning) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      if (pathname !== '/cooking-mode' && timer.recipeId) {
-        const stepParam = timer.stepIndex != null ? `&step=${timer.stepIndex}` : '';
-        router.push(`/cooking-mode?id=${timer.recipeId}${stepParam}` as any);
-      }
-      Alert.alert('Tchopé', `${timer.recipeName} ${t('timerDone')}`);
-    }
-  }, [timer.remainingSeconds, timer.isRunning, timer.recipeName, timer.totalSeconds, timer.recipeId, timer.stepIndex, t, pathname, router]);
-
-  // Pulse animation
-  useEffect(() => {
-    if (timer.isRunning) {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(pulseAnim, { toValue: 1.05, duration: 1000, useNativeDriver: true }),
-          Animated.timing(pulseAnim, { toValue: 1, duration: 1000, useNativeDriver: true }),
-        ])
-      ).start();
-    } else {
-      pulseAnim.setValue(1);
-    }
-  }, [timer.isRunning, pulseAnim]);
-
-  const scheduleNotification = useCallback(async (recipeName: string, seconds: number) => {
-    await Notifications.cancelAllScheduledNotificationsAsync();
-    if (seconds <= 0) return;
-    await Notifications.scheduleNotificationAsync({
+  const scheduleTimerNotification = useCallback(async (recipeName: string, seconds: number): Promise<string> => {
+    if (seconds <= 0) return '';
+    const identifier = await Notifications.scheduleNotificationAsync({
       content: {
         title: 'Tchopé 🍳',
         body: `${recipeName} ${t('timerDone')}`,
@@ -156,69 +135,229 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
       },
       trigger: { type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL, seconds, repeats: false },
     });
+    return identifier;
   }, [t]);
 
-  const cancelNotification = useCallback(async () => {
-    await Notifications.cancelAllScheduledNotificationsAsync();
+  const cancelTimerNotification = useCallback(async (notificationId?: string) => {
+    if (notificationId) {
+      try { await Notifications.cancelScheduledNotificationAsync(notificationId); } catch {}
+    }
   }, []);
 
-  // Request notification permissions on mount
+  useEffect(() => { Notifications.requestPermissionsAsync(); }, []);
+
+  // --- Single interval: tick all running timers ---
+
   useEffect(() => {
-    Notifications.requestPermissionsAsync();
+    const hasActive = Array.from(timers.values()).some((e) => e.isRunning);
+    if (hasActive) {
+      intervalRef.current = setInterval(() => {
+        setTimers((prev) => {
+          const next = new Map(prev);
+          let changed = false;
+          for (const [id, entry] of next) {
+            if (!entry.isRunning) continue;
+            const remaining = Math.max(0, Math.round((entry.endTime - Date.now()) / 1000));
+            if (remaining !== entry.remainingSeconds) {
+              changed = true;
+              if (remaining <= 0) {
+                next.set(id, { ...entry, remainingSeconds: 0, isRunning: false });
+              } else {
+                next.set(id, { ...entry, remainingSeconds: remaining });
+              }
+            }
+          }
+          return changed ? next : prev;
+        });
+      }, 1000);
+    }
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+  }, [timers]);
+
+  // --- App state sync ---
+
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        setTimers((prev) => {
+          const next = new Map(prev);
+          let changed = false;
+          for (const [id, entry] of next) {
+            if (!entry.isRunning) continue;
+            const remaining = Math.max(0, Math.round((entry.endTime - Date.now()) / 1000));
+            if (remaining !== entry.remainingSeconds) {
+              changed = true;
+              next.set(id, remaining <= 0
+                ? { ...entry, remainingSeconds: 0, isRunning: false }
+                : { ...entry, remainingSeconds: remaining });
+            }
+          }
+          return changed ? next : prev;
+        });
+      }
+    });
+    return () => sub.remove();
   }, []);
+
+  // --- Timer completion detection ---
+
+  useEffect(() => {
+    for (const [id, entry] of timers) {
+      if (entry.totalSeconds > 0 && entry.remainingSeconds === 0 && !entry.isRunning && !entry.isPaused && !completedRef.current.has(id)) {
+        completedRef.current.add(id);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        if (pathname !== '/cooking-mode' && entry.recipeId) {
+          const stepParam = entry.stepIndex != null ? `&step=${entry.stepIndex}` : '';
+          router.push(`/cooking-mode?id=${entry.recipeId}${stepParam}` as any);
+        }
+        Alert.alert('Tchopé', `${entry.recipeName} ${t('timerDone')}`);
+      }
+    }
+  }, [timers, t, pathname, router]);
+
+  // --- Pulse animation ---
+
+  useEffect(() => {
+    const anyRunning = Array.from(timers.values()).some((e) => e.isRunning);
+    if (anyRunning) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, { toValue: 1.02, duration: 1000, useNativeDriver: true }),
+          Animated.timing(pulseAnim, { toValue: 1, duration: 1000, useNativeDriver: true }),
+        ])
+      ).start();
+    } else {
+      pulseAnim.setValue(1);
+    }
+  }, [timers, pulseAnim]);
+
+  // --- Actions ---
 
   const startTimer = useCallback((recipeId: string, recipeName: string, durationSeconds: number, stepIndex?: number) => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    endTimeRef.current = Date.now() + durationSeconds * 1000;
-    setTimer({ isRunning: true, recipeId, recipeName, totalSeconds: durationSeconds, remainingSeconds: durationSeconds, stepIndex });
+    const id = makeTimerId(recipeId, stepIndex);
+    // Stop existing timer with same id if any
+    setTimers((prev) => {
+      const existing = prev.get(id);
+      if (existing?.notificationId) cancelTimerNotification(existing.notificationId);
+      const next = new Map(prev);
+      next.set(id, {
+        id, recipeId, recipeName, stepIndex,
+        totalSeconds: durationSeconds,
+        remainingSeconds: durationSeconds,
+        isRunning: true,
+        isPaused: false,
+        endTime: Date.now() + durationSeconds * 1000,
+      });
+      return next;
+    });
+    completedRef.current.delete(id);
     setMinimized(false);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    scheduleNotification(recipeName, durationSeconds);
-  }, [scheduleNotification]);
+    scheduleTimerNotification(recipeName, durationSeconds).then((notifId) => {
+      if (notifId) {
+        setTimers((prev) => {
+          const entry = prev.get(id);
+          if (!entry) return prev;
+          const next = new Map(prev);
+          next.set(id, { ...entry, notificationId: notifId });
+          return next;
+        });
+      }
+    });
+  }, [cancelTimerNotification, scheduleTimerNotification]);
 
-  const pauseTimer = useCallback(() => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    pausedRemainingRef.current = Math.max(0, Math.round((endTimeRef.current - Date.now()) / 1000));
-    setIsPaused(true);
-    setTimer((prev) => ({ ...prev, isRunning: false }));
+  const stopTimer = useCallback((timerId: string) => {
+    setTimers((prev) => {
+      const entry = prev.get(timerId);
+      if (!entry) return prev;
+      if (entry.notificationId) cancelTimerNotification(entry.notificationId);
+      const next = new Map(prev);
+      next.delete(timerId);
+      return next;
+    });
+    completedRef.current.delete(timerId);
+  }, [cancelTimerNotification]);
+
+  const pauseTimer = useCallback((timerId: string) => {
+    setTimers((prev) => {
+      const entry = prev.get(timerId);
+      if (!entry || !entry.isRunning) return prev;
+      if (entry.notificationId) cancelTimerNotification(entry.notificationId);
+      const remaining = Math.max(0, Math.round((entry.endTime - Date.now()) / 1000));
+      const next = new Map(prev);
+      next.set(timerId, { ...entry, isRunning: false, isPaused: true, remainingSeconds: remaining });
+      return next;
+    });
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    cancelNotification();
-  }, [cancelNotification]);
+  }, [cancelTimerNotification]);
 
-  const resumeTimer = useCallback(() => {
-    endTimeRef.current = Date.now() + pausedRemainingRef.current * 1000;
-    setIsPaused(false);
-    setTimer((prev) => ({ ...prev, isRunning: true, remainingSeconds: pausedRemainingRef.current }));
+  const resumeTimer = useCallback((timerId: string) => {
+    setTimers((prev) => {
+      const entry = prev.get(timerId);
+      if (!entry || !entry.isPaused) return prev;
+      const newEndTime = Date.now() + entry.remainingSeconds * 1000;
+      const next = new Map(prev);
+      next.set(timerId, { ...entry, isRunning: true, isPaused: false, endTime: newEndTime });
+      return next;
+    });
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    scheduleNotification(timer.recipeName, pausedRemainingRef.current);
-  }, [scheduleNotification, timer.recipeName]);
+    // Re-schedule notification
+    const entry = timers.get(timerId);
+    if (entry) {
+      scheduleTimerNotification(entry.recipeName, entry.remainingSeconds).then((notifId) => {
+        if (notifId) {
+          setTimers((prev) => {
+            const e = prev.get(timerId);
+            if (!e) return prev;
+            const next = new Map(prev);
+            next.set(timerId, { ...e, notificationId: notifId });
+            return next;
+          });
+        }
+      });
+    }
+  }, [timers, scheduleTimerNotification]);
 
-  const stopTimer = useCallback(() => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    endTimeRef.current = 0;
-    pausedRemainingRef.current = 0;
-    setIsPaused(false);
-    setTimer({ isRunning: false, recipeId: '', recipeName: '', totalSeconds: 0, remainingSeconds: 0, stepIndex: undefined });
-    cancelNotification();
-  }, [cancelNotification]);
+  const stopAllTimers = useCallback(() => {
+    for (const entry of timers.values()) {
+      if (entry.notificationId) cancelTimerNotification(entry.notificationId);
+    }
+    setTimers(new Map());
+    completedRef.current.clear();
+  }, [timers, cancelTimerNotification]);
 
-  const progress = timer.totalSeconds > 0 ? (timer.totalSeconds - timer.remainingSeconds) / timer.totalSeconds : 0;
-  const isTimerRunning = timer.isRunning || isPaused || (timer.totalSeconds > 0 && timer.remainingSeconds === 0);
-  const isDone = timer.totalSeconds > 0 && timer.remainingSeconds === 0 && !timer.isRunning && !isPaused;
+  const getTimersForRecipe = useCallback((recipeId: string): TimerEntry[] => {
+    return Array.from(timers.values()).filter((e) => e.recipeId === recipeId);
+  }, [timers]);
+
+  // --- Derived (backward compat) ---
+
+  const allTimers = Array.from(timers.values());
+  const isTimerRunning = allTimers.length > 0;
+  const widgetTimer = pickWidgetTimer(timers);
+  const timer: TimerState = widgetTimer
+    ? { isRunning: widgetTimer.isRunning, recipeId: widgetTimer.recipeId, recipeName: widgetTimer.recipeName, totalSeconds: widgetTimer.totalSeconds, remainingSeconds: widgetTimer.remainingSeconds, stepIndex: widgetTimer.stepIndex }
+    : emptyTimer;
+  const isPaused = widgetTimer?.isPaused ?? false;
+
   const isOnCookingMode = pathname === '/cooking-mode';
+  const widgetDone = widgetTimer ? widgetTimer.totalSeconds > 0 && widgetTimer.remainingSeconds === 0 && !widgetTimer.isRunning && !widgetTimer.isPaused : false;
+  const widgetProgress = widgetTimer && widgetTimer.totalSeconds > 0 ? (widgetTimer.totalSeconds - widgetTimer.remainingSeconds) / widgetTimer.totalSeconds : 0;
+  const activeCount = allTimers.length;
 
   const handleGoToCookingMode = () => {
-    if (timer.recipeId) {
-      const stepParam = timer.stepIndex != null ? `&step=${timer.stepIndex}` : '';
-      router.push(`/cooking-mode?id=${timer.recipeId}${stepParam}` as any);
+    if (widgetTimer?.recipeId) {
+      const stepParam = widgetTimer.stepIndex != null ? `&step=${widgetTimer.stepIndex}` : '';
+      router.push(`/cooking-mode?id=${widgetTimer.recipeId}${stepParam}` as any);
     }
   };
 
   return (
-    <TimerContext.Provider value={{ timer, startTimer, stopTimer, pauseTimer, resumeTimer, isPaused, isTimerRunning }}>
+    <TimerContext.Provider value={{ timers, startTimer, stopTimer, pauseTimer, resumeTimer, stopAllTimers, getTimersForRecipe, isTimerRunning, timer, isPaused }}>
       {children}
 
-      {isTimerRunning && !isOnCookingMode && (
+      {/* Floating widget — shows the timer with least remaining time */}
+      {isTimerRunning && !isOnCookingMode && widgetTimer && (
         <Animated.View
           style={{
             position: 'absolute',
@@ -231,7 +370,7 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
             activeOpacity={0.9}
             onPress={() => setMinimized(!minimized)}
             style={{
-              backgroundColor: isDone ? '#0A6A1D' : isPaused ? '#6B5B00' : '#914700',
+              backgroundColor: widgetDone ? '#0A6A1D' : widgetTimer.isPaused ? '#6B5B00' : '#914700',
               borderRadius: minimized ? 32 : 24,
               padding: minimized ? 14 : 16,
               minWidth: minimized ? 64 : 200,
@@ -244,95 +383,70 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
             }}>
             {minimized ? (
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                <Ionicons name={isDone ? 'checkmark-circle' : isPaused ? 'pause-circle' : 'timer-outline'} size={18} color="#FFFFFF" />
+                <Ionicons name={widgetDone ? 'checkmark-circle' : widgetTimer.isPaused ? 'pause-circle' : 'timer-outline'} size={18} color="#FFFFFF" />
                 <Text style={{ fontSize: 16, fontWeight: '700', color: '#FFFFFF', fontVariant: ['tabular-nums'] }}>
-                  {isDone ? '!' : formatTime(timer.remainingSeconds)}
+                  {widgetDone ? '!' : formatTime(widgetTimer.remainingSeconds)}
                 </Text>
+                {activeCount > 1 && (
+                  <View style={{ backgroundColor: 'rgba(255,255,255,0.3)', borderRadius: 10, paddingHorizontal: 6, paddingVertical: 1 }}>
+                    <Text style={{ fontSize: 11, fontWeight: '700', color: '#FFFFFF' }}>+{activeCount - 1}</Text>
+                  </View>
+                )}
                 <Ionicons name="chevron-up" size={16} color="rgba(255,255,255,0.7)" />
               </View>
             ) : (
               <View style={{ gap: 8, alignItems: 'center', width: '100%' }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                  <Ionicons name={isDone ? 'checkmark-circle' : isPaused ? 'pause-circle' : 'timer-outline'} size={16} color="#FFFFFF" />
-                  <Text style={{ fontSize: 13, fontWeight: '600', color: 'rgba(255,255,255,0.8)' }}>
-                    {isPaused ? `${truncateName(timer.recipeName)} (${t('timerPaused')})` : truncateName(timer.recipeName)}
+                  <Ionicons name={widgetDone ? 'checkmark-circle' : widgetTimer.isPaused ? 'pause-circle' : 'timer-outline'} size={16} color="#FFFFFF" />
+                  <Text style={{ fontSize: 13, fontWeight: '600', color: 'rgba(255,255,255,0.8)' }} numberOfLines={1}>
+                    {widgetTimer.isPaused ? `${truncateName(widgetTimer.recipeName)} (${t('timerPaused')})` : truncateName(widgetTimer.recipeName)}
                   </Text>
+                  {activeCount > 1 && (
+                    <View style={{ backgroundColor: 'rgba(255,255,255,0.3)', borderRadius: 10, paddingHorizontal: 6, paddingVertical: 1 }}>
+                      <Text style={{ fontSize: 11, fontWeight: '700', color: '#FFFFFF' }}>+{activeCount - 1}</Text>
+                    </View>
+                  )}
                 </View>
                 <Text style={{ fontSize: 28, fontWeight: '800', color: '#FFFFFF', fontVariant: ['tabular-nums'] }}>
-                  {isDone ? t('timerReady') : formatTime(timer.remainingSeconds)}
+                  {widgetDone ? t('timerReady') : formatTime(widgetTimer.remainingSeconds)}
                 </Text>
-                {!isDone && (
+                {!widgetDone && (
                   <View style={{ width: '100%', height: 4, backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: 2 }}>
-                    <View style={{ width: `${progress * 100}%`, height: 4, backgroundColor: '#FFFFFF', borderRadius: 2 }} />
+                    <View style={{ width: `${widgetProgress * 100}%`, height: 4, backgroundColor: '#FFFFFF', borderRadius: 2 }} />
                   </View>
                 )}
-                {!isDone && (
+                {!widgetDone && (
                   <View style={{ flexDirection: 'row', gap: 8, marginTop: 4 }}>
                     <TouchableOpacity
-                      onPress={(e) => { e.stopPropagation(); if (isPaused) { resumeTimer(); } else { pauseTimer(); } }}
-                      style={{
-                        width: 36,
-                        height: 36,
-                        borderRadius: 18,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        backgroundColor: 'rgba(255,255,255,0.25)',
-                      }}>
-                      <Ionicons name={isPaused ? 'play' : 'pause'} size={18} color="#FFFFFF" />
+                      onPress={(e) => { e.stopPropagation(); if (widgetTimer.isPaused) resumeTimer(widgetTimer.id); else pauseTimer(widgetTimer.id); }}
+                      style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.25)' }}>
+                      <Ionicons name={widgetTimer.isPaused ? 'play' : 'pause'} size={18} color="#FFFFFF" />
                     </TouchableOpacity>
                     <TouchableOpacity
-                      onPress={(e) => { e.stopPropagation(); stopTimer(); }}
-                      style={{
-                        width: 36,
-                        height: 36,
-                        borderRadius: 18,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        backgroundColor: 'rgba(255,255,255,0.15)',
-                      }}>
+                      onPress={(e) => { e.stopPropagation(); stopTimer(widgetTimer.id); }}
+                      style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.15)' }}>
                       <Ionicons name="stop" size={18} color="#FFFFFF" />
                     </TouchableOpacity>
-                    {timer.recipeId && (
+                    {widgetTimer.recipeId && (
                       <TouchableOpacity
                         onPress={(e) => { e.stopPropagation(); handleGoToCookingMode(); }}
-                        style={{
-                          width: 36,
-                          height: 36,
-                          borderRadius: 18,
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          backgroundColor: 'rgba(255,255,255,0.15)',
-                        }}>
+                        style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.15)' }}>
                         <Ionicons name="chevron-forward" size={18} color="#FFFFFF" />
                       </TouchableOpacity>
                     )}
                   </View>
                 )}
-                {isDone && (
+                {widgetDone && (
                   <View style={{ flexDirection: 'row', gap: 8, marginTop: 4 }}>
                     <TouchableOpacity
-                      onPress={(e) => { e.stopPropagation(); stopTimer(); }}
-                      style={{
-                        paddingHorizontal: 16,
-                        height: 36,
-                        borderRadius: 18,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        backgroundColor: 'rgba(255,255,255,0.2)',
-                      }}>
+                      onPress={(e) => { e.stopPropagation(); stopTimer(widgetTimer.id); }}
+                      style={{ paddingHorizontal: 16, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.2)' }}>
                       <Text style={{ fontSize: 12, fontWeight: '600', color: '#FFFFFF' }}>{t('timerClose')}</Text>
                     </TouchableOpacity>
-                    {timer.recipeId && (
+                    {widgetTimer.recipeId && (
                       <TouchableOpacity
                         onPress={(e) => { e.stopPropagation(); handleGoToCookingMode(); }}
-                        style={{
-                          width: 36,
-                          height: 36,
-                          borderRadius: 18,
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          backgroundColor: 'rgba(255,255,255,0.15)',
-                        }}>
+                        style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.15)' }}>
                         <Ionicons name="chevron-forward" size={18} color="#FFFFFF" />
                       </TouchableOpacity>
                     )}
