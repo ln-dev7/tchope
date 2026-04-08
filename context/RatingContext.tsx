@@ -19,11 +19,18 @@ type RatingState = {
 type RatingContextType = {
   trackRecipeView: () => void;
   requestRating: () => void;
+  openStoreListing: () => void;
 };
+
+const STORE_URL = Platform.select({
+  ios: 'https://apps.apple.com/app/id<YOUR_APP_ID>', // TODO: replace with real App Store ID
+  android: 'https://play.google.com/store/apps/details?id=com.lndev.tchope',
+}) as string;
 
 const RatingContext = createContext<RatingContextType>({
   trackRecipeView: () => {},
   requestRating: () => {},
+  openStoreListing: () => {},
 });
 
 export function useRating() {
@@ -75,20 +82,25 @@ export function RatingProvider({ children }: { children: React.ReactNode }) {
     }
   }, [timer.isRunning, trackRecipeView]);
 
+  const openStoreListing = useCallback(async () => {
+    try {
+      await Linking.openURL(STORE_URL);
+    } catch {
+      // Silently fail if URL can't be opened
+    }
+    await saveState({ hasRated: true, dismissCount: ratingState.dismissCount });
+  }, [saveState, ratingState.dismissCount]);
+
   const requestRating = useCallback(async () => {
     const available = await StoreReview.isAvailableAsync();
     if (available) {
       await StoreReview.requestReview();
     } else {
-      // Fallback: open store page
-      const storeUrl = Platform.select({
-        ios: 'https://tchope.lndev.me',
-        android: 'https://play.google.com/store/apps/details?id=com.lndev.tchope',
-      });
-      if (storeUrl) Linking.openURL(storeUrl);
+      await openStoreListing();
+      return;
     }
     await saveState({ hasRated: true, dismissCount: ratingState.dismissCount });
-  }, [saveState, ratingState.dismissCount]);
+  }, [saveState, ratingState.dismissCount, openStoreListing]);
 
   const handleRate = async () => {
     setShowModal(false);
@@ -101,7 +113,7 @@ export function RatingProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <RatingContext.Provider value={{ trackRecipeView, requestRating }}>
+    <RatingContext.Provider value={{ trackRecipeView, requestRating, openStoreListing }}>
       {children}
       <Modal visible={showModal} transparent animationType="fade" onRequestClose={handleDismiss}>
         <View
