@@ -733,7 +733,7 @@ export default function AIRecipesScreen() {
         </ScrollView>
       </KeyboardAvoidingView>
 
-      <Modal visible={showPlusModal} animationType="slide" presentationStyle="pageSheet">
+      <Modal visible={showPlusModal} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setShowPlusModal(false)}>
         <View style={{ flex: 1, backgroundColor: colors.background }}>
           <TchopePlusScreen onClose={() => setShowPlusModal(false)} />
         </View>

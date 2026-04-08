@@ -871,14 +871,14 @@ export default function TchopAIScreen() {
       </Animated.View>
 
       {/* TchopePlus modal */}
-      <Modal visible={showPlusModal} animationType="slide" presentationStyle="pageSheet">
+      <Modal visible={showPlusModal} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setShowPlusModal(false)}>
         <View style={{ flex: 1, backgroundColor: colors.background }}>
           <TchopePlusScreen onClose={() => setShowPlusModal(false)} />
         </View>
       </Modal>
 
       {/* Photo source picker modal */}
-      <Modal visible={showSourceModal} transparent animationType="fade">
+      <Modal visible={showSourceModal} transparent animationType="fade" onRequestClose={() => setShowSourceModal(false)}>
         <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end', paddingHorizontal: 16, paddingBottom: bottom + 16 }}>
           <View style={{
             backgroundColor: isDark ? colors.card : '#FFFFFF',
@@ -933,7 +933,7 @@ export default function TchopAIScreen() {
       </Modal>
 
       {/* Photo premium modal */}
-      <Modal visible={showPhotoModal} transparent animationType="fade">
+      <Modal visible={showPhotoModal} transparent animationType="fade" onRequestClose={() => setShowPhotoModal(false)}>
         <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', paddingHorizontal: 32 }}>
           <View style={{
             backgroundColor: isDark ? colors.card : '#FFFFFF',
@@ -975,7 +975,7 @@ export default function TchopAIScreen() {
       </Modal>
 
       {/* Chat history modal */}
-      <Modal visible={showHistoryModal} animationType="slide" presentationStyle="pageSheet">
+      <Modal visible={showHistoryModal} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setShowHistoryModal(false)}>
         <View style={{ flex: 1, backgroundColor: colors.background }}>
           <SafeAreaView style={{ flex: 1 }} edges={['top']}>
             {/* History header */}

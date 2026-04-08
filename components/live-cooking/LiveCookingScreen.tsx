@@ -450,7 +450,7 @@ export default function LiveCookingScreen({
       </SafeAreaView>
 
       {/* History modal */}
-      <Modal visible={showHistory} animationType="slide" presentationStyle="pageSheet">
+      <Modal visible={showHistory} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setShowHistory(false)}>
         <View style={{ flex: 1, backgroundColor: colors.background }}>
           <SafeAreaView style={{ flex: 1 }} edges={['top']}>
             <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: colors.border, gap: 12 }}>
@@ -505,7 +505,7 @@ export default function LiveCookingScreen({
       </Modal>
 
       {/* Photo source picker modal */}
-      <Modal visible={showSourceModal} transparent animationType="fade">
+      <Modal visible={showSourceModal} transparent animationType="fade" onRequestClose={() => setShowSourceModal(false)}>
         <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end', paddingHorizontal: 16, paddingBottom: bottom + 16 }}>
           <View style={{
             backgroundColor: isDark ? colors.card : '#FFFFFF',
@@ -560,7 +560,7 @@ export default function LiveCookingScreen({
       </Modal>
 
       {/* Photo quota info modal */}
-      <Modal visible={showQuotaInfo} transparent animationType="fade">
+      <Modal visible={showQuotaInfo} transparent animationType="fade" onRequestClose={() => setShowQuotaInfo(false)}>
         <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', paddingHorizontal: 32 }}>
           <View style={{
             backgroundColor: isDark ? colors.card : '#FFFFFF',
