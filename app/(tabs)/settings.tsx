@@ -343,6 +343,37 @@ export default function SettingsScreen() {
           <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
         </TouchableOpacity>
 
+        {/* Timer */}
+        <TouchableOpacity
+          onPress={() => router.push('/timer' as any)}
+          activeOpacity={0.8}
+          style={{
+            backgroundColor: colors.surface,
+            borderRadius: 32,
+            padding: 20,
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 16,
+          }}>
+          <View
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 20,
+              backgroundColor: isDark ? 'rgba(234,88,12,0.15)' : 'rgba(234,88,12,0.08)',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <Ionicons name="timer-outline" size={20} color="#EA580C" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }}>
+              {t('timerPageTitle')}
+            </Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+        </TouchableOpacity>
+
         {/* Data */}
         <View style={{ gap: 16 }}>
           <Text
