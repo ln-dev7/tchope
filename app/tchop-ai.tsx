@@ -28,9 +28,12 @@ import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
 import { callClaude, callClaudeLive, fetchRecipeUrl } from '@/utils/api';
 import { getChatHistory, saveChat, deleteChat, clearAllChats, MAX_SAVED_CHATS, type SavedChat } from '@/utils/chatHistory';
 import * as ImagePicker from 'expo-image-picker';
+import * as ClipboardModule from 'expo-clipboard';
 import TchopePlusScreen from '@/components/premium/TchopePlusScreen';
 import RecipeImage from '@/components/RecipeImage';
 import { useUserRecipes } from '@/context/UserRecipesContext';
+import { useFavorites } from '@/context/FavoritesContext';
+import { useMealPlanner } from '@/context/MealPlannerContext';
 import type { Recipe, UserRecipe } from '@/types';
 
 type Message = {
@@ -243,6 +246,8 @@ export default function TchopAIScreen() {
   const isConnected = useNetworkStatus();
   const recipes = useLocalizedRecipes();
   const { addRecipe, userRecipes } = useUserRecipes();
+  const { favorites } = useFavorites();
+  const { currentPlan } = useMealPlanner();
   const router = useRouter();
   const { bottom } = useSafeAreaInsets();
 
@@ -277,6 +282,7 @@ export default function TchopAIScreen() {
     content: t('tchopaiWelcome'),
   }]);
   const [input, setInput] = useState('');
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
   const [freeMessagesUsed, setFreeMessagesUsed] = useState(0);
@@ -328,12 +334,123 @@ export default function TchopAIScreen() {
   }, [messages]);
 
   const buildSystemPrompt = useCallback(() => {
-    const recipeIndex = recipes
+    const allRecipes = [...recipes, ...userRecipes];
+    const recipeIndex = allRecipes
       .map((r) => `- [${r.id}] ${r.name} (${r.region}, ${r.category}, ${r.duration}min, ${r.difficulty}) : ${r.ingredients.map((i) => i.name).join(', ')}`)
       .join('\n');
     const template = isFr ? SYSTEM_PROMPT_FR : SYSTEM_PROMPT_EN;
-    return template.replace('{RECIPES}', recipeIndex);
-  }, [recipes, isFr]);
+    let prompt = template.replace('{RECIPES}', recipeIndex);
+
+    // --- Dynamic user context ---
+    const sections: string[] = [];
+
+    // Cookbook = favorites + user-created recipes
+    const favNames = favorites
+      .map((fid) => allRecipes.find((r) => r.id === fid)?.name)
+      .filter(Boolean);
+    const userRecipeNames = userRecipes.map((r) => r.name);
+    if (favNames.length > 0 || userRecipeNames.length > 0) {
+      const parts: string[] = [];
+      if (favNames.length > 0) {
+        parts.push(isFr
+          ? `Favoris (${favNames.length}) : ${favNames.join(', ')}`
+          : `Favorites (${favNames.length}): ${favNames.join(', ')}`);
+      }
+      if (userRecipeNames.length > 0) {
+        parts.push(isFr
+          ? `Recettes créées (${userRecipeNames.length}) : ${userRecipeNames.join(', ')}`
+          : `Created recipes (${userRecipeNames.length}): ${userRecipeNames.join(', ')}`);
+      }
+      sections.push(isFr
+        ? `COOKBOOK DE L'UTILISATEUR (ce sont les recettes dans son cookbook, tu y as accès) :\n${parts.join('\n')}`
+        : `USER'S COOKBOOK (these are the recipes in their cookbook, you have access to them):\n${parts.join('\n')}`);
+    }
+
+    // Meal plan
+    if (currentPlan) {
+      const dayLines: string[] = [];
+      const sortedDates = Object.keys(currentPlan.days).sort();
+      const dayNames = isFr
+        ? ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam']
+        : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      for (const date of sortedDates) {
+        const day = currentPlan.days[date];
+        const d = new Date(date + 'T00:00:00');
+        const dayName = dayNames[d.getDay()];
+        const meals = day.meals
+          .map((m) => {
+            const recipe = allRecipes.find((r) => r.id === m.recipeId);
+            return recipe ? `${m.label}: ${recipe.name}` : null;
+          })
+          .filter(Boolean)
+          .join(', ');
+        if (meals) dayLines.push(`${dayName} ${date.slice(5)} — ${meals}`);
+      }
+      if (dayLines.length > 0) {
+        // Build shopping list from plan
+        const ingredientMap = new Map<string, Set<string>>();
+        for (const date of sortedDates) {
+          for (const meal of currentPlan.days[date].meals) {
+            const recipe = allRecipes.find((r) => r.id === meal.recipeId);
+            if (recipe) {
+              for (const ing of recipe.ingredients) {
+                const key = ing.name.toLowerCase();
+                if (!ingredientMap.has(key)) ingredientMap.set(key, new Set());
+                ingredientMap.get(key)!.add(ing.quantity);
+              }
+            }
+          }
+        }
+        const shoppingLines = Array.from(ingredientMap.entries())
+          .map(([name, quantities]) => `${name} (${Array.from(quantities).join(' + ')})`)
+          .join(', ');
+
+        sections.push(isFr
+          ? `PLAN DE REPAS ACTUEL (${currentPlan.startDate} au ${currentPlan.endDate}) :\n${dayLines.join('\n')}${currentPlan.preferences ? `\nPréférences : ${currentPlan.preferences}` : ''}\n\nLISTE DE COURSES DU PLAN :\n${shoppingLines}`
+          : `CURRENT MEAL PLAN (${currentPlan.startDate} to ${currentPlan.endDate}):\n${dayLines.join('\n')}${currentPlan.preferences ? `\nPreferences: ${currentPlan.preferences}` : ''}\n\nSHOPPING LIST FROM PLAN:\n${shoppingLines}`);
+      }
+    }
+
+    // App features knowledge
+    sections.push(isFr
+      ? `FONCTIONNALITÉS DE L'APP TCHOPÉ :
+L'app contient plus de 100 recettes camerounaises authentiques des 10 régions du Cameroun.
+Écrans principaux : Accueil (recettes par région, mises en avant), Recherche (par nom, catégorie, niveau de piment, ingrédients), Planificateur de repas (plan hebdomadaire, génération IA, échange de repas, export PDF), Cookbook (favoris et recettes créées), Paramètres (thème, langue, notifications).
+Autres fonctionnalités : Mode cuisine (étape par étape avec timer intégré, lecture vocale), TchopAI Live (assistant vocal temps réel pendant la cuisine, premium), Recherche par ingrédients disponibles (premium), Liste de courses (auto-générée depuis le plan, cocher les items, partager), Page minuteur (timers multiples, préréglages cuisine), Ajout de recettes personnelles, Vidéos de recettes YouTube.
+Catégories : Plat, Sauce, Grillade, Boisson, Dessert, Entrée, Accompagnement.
+Niveaux de piment : Doux, Moyen, Extra Piquant.
+Difficulté : Facile, Moyen, Difficile.
+Régions : Littoral, Ouest, Centre, Sud, Nord, Est, Adamaoua, Extrême-Nord, Nord-Ouest, Sud-Ouest.
+Tu peux guider l'utilisateur vers n'importe quelle fonctionnalité en lui expliquant comment y accéder.`
+      : `TCHOPÉ APP FEATURES:
+The app contains 100+ authentic Cameroonian recipes from all 10 regions.
+Main screens: Home (recipes by region, featured), Search (by name, category, spice level, ingredients), Meal Planner (weekly plan, AI generation, meal swaps, PDF export), Cookbook (favorites and created recipes), Settings (theme, language, notifications).
+Other features: Cooking Mode (step-by-step with built-in timer, voice reading), TchopAI Live (real-time voice assistant during cooking, premium), Search by available ingredients (premium), Shopping List (auto-generated from plan, check items, share), Timer page (multiple timers, cooking presets), Custom recipe creation, YouTube recipe videos.
+Categories: Plat, Sauce, Grillade, Boisson, Dessert, Entrée, Accompagnement.
+Spice levels: Mild, Medium, Extra Hot.
+Difficulty: Easy, Medium, Hard.
+Regions: Littoral, Ouest, Centre, Sud, Nord, Est, Adamaoua, Extrême-Nord, Nord-Ouest, Sud-Ouest.
+You can guide the user to any feature by explaining how to access it.`);
+
+    if (sections.length > 0) {
+      prompt += '\n\n' + sections.join('\n\n');
+    }
+
+    return prompt;
+  }, [recipes, userRecipes, favorites, currentPlan, isFr]);
+
+  function stripMarkdown(text: string): string {
+    return text
+      .replace(/\*\*(.+?)\*\*/g, '$1')    // **bold**
+      .replace(/\*(.+?)\*/g, '$1')         // *italic*
+      .replace(/__(.+?)__/g, '$1')         // __bold__
+      .replace(/_(.+?)_/g, '$1')           // _italic_
+      .replace(/~~(.+?)~~/g, '$1')         // ~~strike~~
+      .replace(/`(.+?)`/g, '$1')           // `code`
+      .replace(/^#{1,6}\s+/gm, '')         // # headings
+      .replace(/^[\-\*]\s+/gm, '• ')       // - list → bullet
+      .replace(/^\d+\.\s+/gm, '• ');       // 1. list → bullet
+  }
 
   function parseResponse(text: string): { content: string; recipeIds: string[]; saveRecipe?: UserRecipe } {
     let remaining = text;
@@ -359,13 +476,13 @@ export default function TchopAIScreen() {
 
     // Parse [RECIPES:id1,id2]
     const match = remaining.match(/\[RECIPES:\s*([^\]]+)\]\s*$/);
-    if (!match) return { content: remaining, recipeIds: [], saveRecipe };
+    if (!match) return { content: stripMarkdown(remaining), recipeIds: [], saveRecipe };
     const content = remaining.slice(0, remaining.lastIndexOf('[RECIPES:')).trimEnd();
     const recipeIds = match[1]
       .split(',')
       .map((id) => id.trim())
       .filter((id) => recipes.some((r) => r.id === id));
-    return { content, recipeIds, saveRecipe };
+    return { content: stripMarkdown(content), recipeIds, saveRecipe };
   }
 
   const handleSend = async () => {
@@ -628,6 +745,23 @@ export default function TchopAIScreen() {
             {item.content}
           </Text>
         </View>
+        {!isUser && item.id !== 'welcome' && (
+          <TouchableOpacity
+            onPress={() => {
+              ClipboardModule.setStringAsync(item.content);
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              setCopiedId(item.id);
+              setTimeout(() => setCopiedId((prev) => prev === item.id ? null : prev), 1500);
+            }}
+            style={{ alignSelf: 'flex-start', marginTop: 4, paddingHorizontal: 8, paddingVertical: 4, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <Ionicons name={copiedId === item.id ? 'checkmark' : 'copy-outline'} size={14} color={copiedId === item.id ? colors.green : colors.textMuted} />
+            {copiedId === item.id && (
+              <Text style={{ fontSize: 11, color: colors.green, fontWeight: '600' }}>
+                {isFr ? 'Copié' : 'Copied'}
+              </Text>
+            )}
+          </TouchableOpacity>
+        )}
         {linkedRecipes.length > 0 && (
           <View style={{ gap: 6, marginTop: 8 }}>
             {linkedRecipes.map((recipe) => (
