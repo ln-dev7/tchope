@@ -509,7 +509,7 @@ export default function SettingsScreen() {
 
         {/* Support */}
         <TouchableOpacity
-          onPress={() => Linking.openURL('https://ecaefmew.mychariow.shop/prd_3cu1s0')}
+          onPress={() => Linking.openURL('https://lndev.mychariow.shop/prd_3cu1s0')}
           activeOpacity={0.85}
           style={{
             borderRadius: 32,
