@@ -19,6 +19,7 @@ import { NotesProvider } from '@/context/NotesContext';
 import { useTheme } from '@/hooks/useTheme';
 import NetworkBanner from '@/components/NetworkBanner';
 import UpdateModal from '@/components/UpdateModal';
+import WhatsNewModal from '@/components/WhatsNewModal';
 import TchopAI from '@/components/TchopAI';
 import { ONBOARDING_KEY } from './onboarding';
 
@@ -73,6 +74,7 @@ function InnerLayout() {
       </Stack>
       <NetworkBanner />
       <UpdateModal />
+      <WhatsNewModal />
       <TchopAI />
       <StatusBar style={isDark ? 'light' : 'dark'} />
     </ThemeProvider>

@@ -499,6 +499,19 @@ export const translations = {
     formatChecklist: "Case à cocher",
     formatParagraph: "Paragraphe",
     notesCount: "{count} note(s)",
+
+    // What's new modal
+    whatsNewLabel: "Nouveauté",
+    whatsNewTitle: "Tes Notes sont arrivées",
+    whatsNewDescription: "Garde tes idées, astuces et pense-bêtes à portée de main, directement dans Tchopé.",
+    whatsNewFeature1Title: "Crée tes notes en un instant",
+    whatsNewFeature1Desc: "Titres, sous-titres, puces, listes numérotées et cases à cocher.",
+    whatsNewFeature2Title: "Retrouve-les facilement",
+    whatsNewFeature2Desc: "Toutes tes notes sont rangées dans le Cookbook, triées par dernière modification.",
+    whatsNewFeature3Title: "TchopAI les connaît",
+    whatsNewFeature3Desc: "Demande à TchopAI de créer ou de retrouver une note pour toi.",
+    whatsNewCta: "Découvrir mes notes",
+    whatsNewLater: "Plus tard",
   },
 
   en: {
@@ -990,6 +1003,19 @@ export const translations = {
     formatChecklist: "Checklist",
     formatParagraph: "Paragraph",
     notesCount: "{count} note(s)",
+
+    // What's new modal
+    whatsNewLabel: "What's new",
+    whatsNewTitle: "Your Notes are here",
+    whatsNewDescription: "Keep your ideas, tips and reminders at hand, right inside Tchopé.",
+    whatsNewFeature1Title: "Create notes in a snap",
+    whatsNewFeature1Desc: "Headings, subheadings, bullets, numbered lists and checkboxes.",
+    whatsNewFeature2Title: "Find them easily",
+    whatsNewFeature2Desc: "All your notes live in your Cookbook, sorted by last update.",
+    whatsNewFeature3Title: "TchopAI knows them",
+    whatsNewFeature3Desc: "Ask TchopAI to create or find a note for you.",
+    whatsNewCta: "Discover my notes",
+    whatsNewLater: "Later",
   },
 } as const;
 
