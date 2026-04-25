@@ -1,7 +1,7 @@
 {
   "name": "tchope",
   "main": "./index",
-  "version": "1.4.5",
+  "version": "1.5.0",
   "license": "GPL-3.0",
   "scripts": {
     "start": "expo start",
