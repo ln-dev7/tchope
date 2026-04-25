@@ -7,6 +7,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useUserRecipes } from '@/hooks/useUserRecipes';
+import { useNotes } from '@/context/NotesContext';
 import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
 import RecipeGridCard from '@/components/RecipeGridCard';
 import RecipeCard from '@/components/RecipeCard';
@@ -24,6 +25,7 @@ export default function CookbookScreen() {
   const recipes = useLocalizedRecipes();
   const { favorites } = useFavorites();
   const { userRecipes, deleteRecipe } = useUserRecipes();
+  const { notes } = useNotes();
   const [activeTab, setActiveTab] = useState<Tab>('myRecipes');
   const [activeFilter, setActiveFilter] = useState<Filter>('all');
 
@@ -92,6 +94,44 @@ export default function CookbookScreen() {
             <Ionicons name="add" size={24} color="#FFFFFF" />
           </TouchableOpacity>
         </View>
+
+        {/* Notes shortcut */}
+        <TouchableOpacity
+          onPress={() => router.push('/notes' as any)}
+          activeOpacity={0.8}
+          style={{
+            backgroundColor: isDark ? colors.card : '#FFFFFF',
+            borderRadius: 18,
+            padding: 16,
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 12,
+            borderWidth: 1,
+            borderColor: colors.border,
+          }}>
+          <View
+            style={{
+              width: 44,
+              height: 44,
+              borderRadius: 14,
+              backgroundColor: `${colors.accent}15`,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <Ionicons name="document-text-outline" size={22} color={colors.accent} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 16, fontWeight: '700', color: colors.text }}>
+              {t('myNotes')}
+            </Text>
+            <Text style={{ fontSize: 12, color: colors.textMuted, marginTop: 2 }}>
+              {notes.length === 0
+                ? t('notesSubtitle')
+                : t('notesCount').replace('{count}', String(notes.length))}
+            </Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+        </TouchableOpacity>
 
         {/* Tabs */}
         <View

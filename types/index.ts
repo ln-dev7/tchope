@@ -63,3 +63,26 @@ export type Settings = {
   language: 'fr' | 'en';
   notifications: NotificationPreferences;
 };
+
+export type NoteBlockType =
+  | 'paragraph'
+  | 'heading1'
+  | 'heading2'
+  | 'bullet'
+  | 'numbered'
+  | 'checklist';
+
+export type NoteBlock = {
+  id: string;
+  type: NoteBlockType;
+  content: string;
+  checked?: boolean;
+};
+
+export type Note = {
+  id: string;
+  title: string;
+  blocks: NoteBlock[];
+  createdAt: string;
+  updatedAt: string;
+};
