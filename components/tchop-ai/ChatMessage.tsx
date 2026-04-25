@@ -3,10 +3,12 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import * as ClipboardModule from 'expo-clipboard';
-import type { Recipe, UserRecipe } from '@/types';
+import type { Recipe, UserRecipe, Note } from '@/types';
 import type { Message } from './types';
 import MiniRecipeCard from './MiniRecipeCard';
+import MiniNoteCard from './MiniNoteCard';
 import SaveRecipeButton from './SaveRecipeButton';
+import SaveNoteButton from './SaveNoteButton';
 
 type Props = {
   item: Message;
@@ -15,16 +17,19 @@ type Props = {
   isFr: boolean;
   recipes: Recipe[];
   userRecipes: UserRecipe[];
+  notes: Note[];
   copiedId: string | null;
   setCopiedId: (id: string | null) => void;
   onRecipePress: (id: string) => void;
+  onNotePress: (id: string) => void;
   onSaveRecipe: (r: UserRecipe) => void;
+  onSaveNote: (n: Note) => void;
   t: (k: any) => string;
 };
 
 export default function ChatMessage({
-  item, colors, isDark, isFr, recipes, userRecipes,
-  copiedId, setCopiedId, onRecipePress, onSaveRecipe, t,
+  item, colors, isDark, isFr, recipes, userRecipes, notes,
+  copiedId, setCopiedId, onRecipePress, onNotePress, onSaveRecipe, onSaveNote, t,
 }: Props) {
   if (item.role === 'info') {
     return (
@@ -40,6 +45,9 @@ export default function ChatMessage({
   const linkedRecipes = (item.recipeIds ?? [])
     .map((id) => recipes.find((r) => r.id === id))
     .filter(Boolean) as Recipe[];
+  const linkedNotes = (item.noteIds ?? [])
+    .map((id) => notes.find((n) => n.id === id))
+    .filter(Boolean) as Note[];
 
   return (
     <View style={{
@@ -95,6 +103,20 @@ export default function ChatMessage({
           ))}
         </View>
       )}
+      {linkedNotes.length > 0 && (
+        <View style={{ gap: 6, marginTop: 8 }}>
+          {linkedNotes.map((note) => (
+            <MiniNoteCard
+              key={note.id}
+              note={note}
+              isDark={isDark}
+              colors={colors}
+              onPress={() => onNotePress(note.id)}
+              untitledLabel={t('untitledNote')}
+            />
+          ))}
+        </View>
+      )}
       {item.saveRecipe && (
         <SaveRecipeButton
           recipe={item.saveRecipe}
@@ -102,6 +124,16 @@ export default function ChatMessage({
           colors={colors}
           onSave={onSaveRecipe}
           alreadySaved={userRecipes.some((r) => r.id === item.saveRecipe!.id)}
+          t={t}
+        />
+      )}
+      {item.saveNote && (
+        <SaveNoteButton
+          note={item.saveNote}
+          isDark={isDark}
+          colors={colors}
+          onSave={onSaveNote}
+          alreadySaved={notes.some((n) => n.id === item.saveNote!.id)}
           t={t}
         />
       )}

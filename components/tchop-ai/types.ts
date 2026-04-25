@@ -1,4 +1,4 @@
-import type { UserRecipe } from '@/types';
+import type { UserRecipe, Note } from '@/types';
 
 export type Message = {
   id: string;
@@ -6,4 +6,6 @@ export type Message = {
   content: string;
   recipeIds?: string[];
   saveRecipe?: UserRecipe;
+  noteIds?: string[];
+  saveNote?: Note;
 };

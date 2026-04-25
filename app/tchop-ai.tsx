@@ -28,6 +28,7 @@ import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
 import { useUserRecipes } from '@/context/UserRecipesContext';
 import { useFavorites } from '@/context/FavoritesContext';
 import { useMealPlanner } from '@/context/MealPlannerContext';
+import { useNotes } from '@/context/NotesContext';
 import { callClaude, callClaudeLive, fetchRecipeUrl } from '@/utils/api';
 import { getChatHistory, saveChat, deleteChat, clearAllChats, MAX_SAVED_CHATS, type SavedChat } from '@/utils/chatHistory';
 import TchopePlusScreen from '@/components/premium/TchopePlusScreen';
@@ -47,6 +48,7 @@ export default function TchopAIScreen() {
   const { addRecipe, userRecipes } = useUserRecipes();
   const { favorites } = useFavorites();
   const { currentPlan } = useMealPlanner();
+  const { notes, addNote } = useNotes();
   const router = useRouter();
   const { bottom } = useSafeAreaInsets();
   const { isPremium } = useLicense();
@@ -130,8 +132,8 @@ export default function TchopAIScreen() {
 
   // --- Build prompt ---
   const getSystemPrompt = useCallback(() => {
-    return buildSystemPrompt(recipes, userRecipes, favorites, currentPlan, isFr);
-  }, [recipes, userRecipes, favorites, currentPlan, isFr]);
+    return buildSystemPrompt(recipes, userRecipes, favorites, currentPlan, isFr, notes);
+  }, [recipes, userRecipes, favorites, currentPlan, isFr, notes]);
 
   // --- Send message ---
   const handleSend = async () => {
@@ -174,10 +176,10 @@ export default function TchopAIScreen() {
         messages: history,
       });
 
-      const parsed = parseResponse(response, recipes);
+      const parsed = parseResponse(response, recipes, notes);
       setMessages((prev) => [...prev, {
         id: (Date.now() + 1).toString(), role: 'assistant',
-        content: parsed.content, recipeIds: parsed.recipeIds, saveRecipe: parsed.saveRecipe,
+        content: parsed.content, recipeIds: parsed.recipeIds, saveRecipe: parsed.saveRecipe, noteIds: parsed.noteIds, saveNote: parsed.saveNote,
       }]);
 
       if (!isPremium) {
@@ -291,10 +293,10 @@ export default function TchopAIScreen() {
         messages: messagesWithImage,
       });
 
-      const parsed = parseResponse(response, recipes);
+      const parsed = parseResponse(response, recipes, notes);
       setMessages((prev) => [...prev, {
         id: (Date.now() + 1).toString(), role: 'assistant',
-        content: parsed.content, recipeIds: parsed.recipeIds, saveRecipe: parsed.saveRecipe,
+        content: parsed.content, recipeIds: parsed.recipeIds, saveRecipe: parsed.saveRecipe, noteIds: parsed.noteIds, saveNote: parsed.saveNote,
       }]);
     } catch {
       setMessages((prev) => [...prev, { id: (Date.now() + 1).toString(), role: 'assistant', content: t('tchopaiError') }]);
@@ -329,10 +331,13 @@ export default function TchopAIScreen() {
               isFr={isFr}
               recipes={recipes}
               userRecipes={userRecipes}
+              notes={notes}
               copiedId={copiedId}
               setCopiedId={setCopiedId}
               onRecipePress={(id) => router.push(`/recipe/${id}`)}
+              onNotePress={(id) => router.push(`/note/${id}` as any)}
               onSaveRecipe={addRecipe}
+              onSaveNote={addNote}
               t={t}
             />
           )}
