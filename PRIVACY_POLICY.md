@@ -1,6 +1,6 @@
 # Politique de Confidentialité — Tchopé
 
-**Dernière mise à jour : 5 avril 2026**
+**Dernière mise à jour : 5 juillet 2026**
 **Développeur : LNDEV — [lndev.me](https://lndev.me)**
 
 ---
@@ -9,18 +9,18 @@
 
 Tchopé est une application mobile de recettes camerounaises. Votre vie privée est importante pour nous. Cette politique explique comment l'application gère vos données.
 
-**En résumé : Tchopé ne collecte aucune donnée personnelle. Tout reste sur votre appareil.**
+**En résumé : Tchopé ne collecte aucune donnée personnelle identifiable. Vos données restent sur votre appareil. La version gratuite affiche des annonces via Google AdMob (voir section 8) ; Tchopé+ est sans publicité.**
 
 ## 2. Collecte de données
 
-Tchopé **ne collecte, ne transmet et ne stocke aucune donnée personnelle** sur un serveur distant. L'application :
+Tchopé **ne collecte, ne transmet et ne stocke aucune donnée personnelle identifiable** (nom, email, téléphone) sur ses serveurs. L'application :
 
 - Ne requiert aucune création de compte
 - Ne demande aucune information personnelle (nom, email, numéro de téléphone)
 - N'utilise aucun service d'analytics ou de tracking
-- N'intègre aucun SDK publicitaire
-- Ne se connecte à aucun backend ou base de données distante
-- Fonctionne entièrement hors ligne
+- Stocke toutes vos données (favoris, notes, plans de repas, recettes personnelles) uniquement sur votre appareil
+- Permet de consulter les recettes entièrement hors ligne — seules les fonctionnalités IA (TchopAI) et l'affichage des annonces nécessitent une connexion
+- Affiche, dans sa version gratuite, des annonces via Google AdMob : le SDK publicitaire collecte alors certaines données techniques détaillées à la section 8
 
 ## 3. Caméra et Photos
 
@@ -80,11 +80,26 @@ L'application charge des images depuis Wikimedia Commons et des miniatures vidé
 
 Lorsque vous choisissez de regarder une vidéo de recette, vous êtes redirigé vers YouTube via votre navigateur. Tchopé n'a aucun contrôle sur les données collectées par YouTube.
 
-## 8. Modifications
+## 8. Publicité (Google AdMob)
+
+La version gratuite de Tchopé affiche des bannières publicitaires fournies par Google AdMob. À cette fin, le SDK Google Mobile Ads intégré à l'application collecte et partage avec Google les données suivantes :
+
+- **Identifiant publicitaire de l'appareil (Advertising ID)** : utilisé pour diffuser les annonces, limiter leur répétition et prévenir la fraude
+- **Interactions avec les annonces** : impressions et clics sur les bannières, à des fins de mesure des performances publicitaires
+- **Données de diagnostic** : informations techniques liées au fonctionnement du SDK publicitaire
+
+À noter :
+- **Annonces non personnalisées** : Tchopé demande uniquement des annonces non personnalisées. Leur contenu est choisi selon le contexte (application, langue, région) et non selon un profil publicitaire.
+- Vous pouvez réinitialiser ou supprimer votre identifiant publicitaire à tout moment dans les paramètres de votre téléphone (Paramètres > Confidentialité > Annonces).
+- **Les utilisateurs disposant d'une licence Tchopé+ ne voient aucune publicité.**
+
+Pour en savoir plus, consultez la [politique de confidentialité de Google](https://policies.google.com/privacy) et le fonctionnement des [annonces Google](https://policies.google.com/technologies/ads).
+
+## 9. Modifications
 
 Cette politique de confidentialité peut être mise à jour occasionnellement. Toute modification sera reflétée par la date de mise à jour en haut de ce document. Nous vous encourageons à consulter cette page régulièrement.
 
-## 9. Contact
+## 10. Contact
 
 Pour toute question concernant cette politique de confidentialité :
 
@@ -96,7 +111,7 @@ Pour toute question concernant cette politique de confidentialité :
 
 # Privacy Policy — Tchopé
 
-**Last updated: April 5, 2026**
+**Last updated: July 5, 2026**
 **Developer: LNDEV — [lndev.me](https://lndev.me)**
 
 ---
@@ -105,18 +120,18 @@ Pour toute question concernant cette politique de confidentialité :
 
 Tchopé is a mobile app for Cameroonian recipes. Your privacy matters to us. This policy explains how the app handles your data.
 
-**In short: Tchopé does not collect any personal data. Everything stays on your device.**
+**In short: Tchopé does not collect any personally identifiable data. Your data stays on your device. The free version shows ads via Google AdMob (see section 8); Tchopé+ is ad-free.**
 
 ## 2. Data Collection
 
-Tchopé **does not collect, transmit, or store any personal data** on a remote server. The app:
+Tchopé **does not collect, transmit, or store any personally identifiable data** (name, email, phone) on its servers. The app:
 
 - Does not require any account creation
 - Does not ask for any personal information (name, email, phone number)
 - Does not use any analytics or tracking services
-- Does not integrate any advertising SDK
-- Does not connect to any backend or remote database
-- Works entirely offline
+- Stores all your data (favorites, notes, meal plans, personal recipes) only on your device
+- Lets you browse recipes entirely offline — only AI features (TchopAI) and ad display require a connection
+- In its free version, displays ads via Google AdMob: the advertising SDK then collects certain technical data detailed in section 8
 
 ## 3. Camera and Photos
 
@@ -176,11 +191,26 @@ The app loads images from Wikimedia Commons and video thumbnails from YouTube to
 
 When you choose to watch a recipe video, you are redirected to YouTube via your browser. Tchopé has no control over the data collected by YouTube.
 
-## 8. Changes
+## 8. Advertising (Google AdMob)
+
+The free version of Tchopé displays ad banners served by Google AdMob. For this purpose, the Google Mobile Ads SDK embedded in the app collects and shares the following data with Google:
+
+- **Device advertising identifier (Advertising ID)**: used to serve ads, cap their frequency, and prevent fraud
+- **Ad interactions**: banner impressions and clicks, for ad performance measurement
+- **Diagnostic data**: technical information related to the operation of the advertising SDK
+
+Please note:
+- **Non-personalized ads**: Tchopé only requests non-personalized ads. Their content is selected based on context (app, language, region), not on an advertising profile.
+- You can reset or delete your advertising identifier at any time in your phone settings (Settings > Privacy > Ads).
+- **Users with a Tchopé+ license see no ads at all.**
+
+For more information, see [Google's privacy policy](https://policies.google.com/privacy) and how [Google ads work](https://policies.google.com/technologies/ads).
+
+## 9. Changes
 
 This privacy policy may be updated from time to time. Any changes will be reflected by the update date at the top of this document. We encourage you to review this page periodically.
 
-## 9. Contact
+## 10. Contact
 
 For any questions regarding this privacy policy:
 

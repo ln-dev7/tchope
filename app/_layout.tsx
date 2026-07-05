@@ -5,6 +5,7 @@ import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
+import mobileAds from 'react-native-google-mobile-ads';
 import 'react-native-reanimated';
 
 import { SettingsProvider } from '@/context/SettingsContext';
@@ -30,6 +31,11 @@ export const unstable_settings = {
 function InnerLayout() {
   const { isDark } = useTheme();
   const router = useRouter();
+
+  useEffect(() => {
+    mobileAds().initialize();
+  }, []);
+
   useEffect(() => {
     AsyncStorage.getItem(ONBOARDING_KEY).then((val) => {
       if (val !== 'true') {

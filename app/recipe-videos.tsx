@@ -9,6 +9,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { getRecipeVideos, getRecipeVideosEn, hasMultipleLanguages } from '@/constants/videos';
+import AdBanner from '@/components/AdBanner';
 import type { RecipeVideo } from '@/constants/videos';
 
 type Lang = 'fr' | 'en';
@@ -252,6 +253,8 @@ export default function RecipeVideosScreen() {
           </TouchableOpacity>
         ))}
       </ScrollView>
+
+      <AdBanner style={{ marginBottom: bottom }} />
     </SafeAreaView>
   );
 }

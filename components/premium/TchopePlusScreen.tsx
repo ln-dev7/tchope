@@ -28,6 +28,7 @@ const FEATURES = [
   { icon: 'search', key: 'featureAISearch', descKey: 'featureAISearchDesc' },
   { icon: 'calendar', key: 'featureAIMealPlan', descKey: 'featureAIMealPlanDesc' },
   { icon: 'options', key: 'featureAIAdjust', descKey: 'featureAIAdjustDesc' },
+  { icon: 'ban', key: 'featureNoAds', descKey: 'featureNoAdsDesc' },
 ] as const;
 
 type Plan = 'monthly' | 'annual';

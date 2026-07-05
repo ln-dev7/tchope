@@ -2,7 +2,7 @@
   "expo": {
     "name": "Tchope",
     "slug": "tchope",
-    "version": "1.5.0",
+    "version": "1.6.0",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
     "scheme": "tchope",
@@ -38,6 +38,13 @@
     },
     "plugins": [
       "expo-router",
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-2222017759396595~3414006095",
+          "iosAppId": "ca-app-pub-3940256099942544~1458002511"
+        }
+      ],
       [
         "expo-image-picker",
         {

@@ -13,6 +13,7 @@ import FeaturedCard from '@/components/FeaturedCard';
 import RecipeCard from '@/components/RecipeCard';
 import RegionItem from '@/components/RegionItem';
 import TchopePlusScreen from '@/components/premium/TchopePlusScreen';
+import AdBanner from '@/components/AdBanner';
 import type { Region } from '@/types';
 
 const ALL_REGIONS: Region[] = [
@@ -307,6 +308,8 @@ export default function HomeScreen() {
           </View>
         </View>
       </ScrollView>
+
+      <AdBanner style={{ marginBottom: 64 + bottom }} />
 
       <Modal visible={showPlusModal} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setShowPlusModal(false)}>
         <View style={{ flex: 1, backgroundColor: colors.background }}>
