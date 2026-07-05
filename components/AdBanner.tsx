@@ -4,10 +4,10 @@ import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads'
 
 import { useLicense } from '@/context/LicenseContext';
 
-// Bloc "First Block" (Android). Pas encore de bloc iOS — la bannière ne s'affiche pas sur iOS en production.
+// Bloc "Tchope Banner Ad" (Android). Pas encore de bloc iOS — la bannière ne s'affiche pas sur iOS en production.
 const AD_UNIT_ID = __DEV__
   ? TestIds.ADAPTIVE_BANNER
-  : Platform.select({ android: 'ca-app-pub-2222017759396595/8723841394' });
+  : Platform.select({ android: 'ca-app-pub-2222017759396595/2143678108' });
 
 export default function AdBanner({ style }: { style?: StyleProp<ViewStyle> }) {
   const { isPremium } = useLicense();

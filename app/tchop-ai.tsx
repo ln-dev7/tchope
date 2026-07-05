@@ -24,6 +24,8 @@ import { useSettings } from '@/context/SettingsContext';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 import { useLicense } from '@/context/LicenseContext';
 import { useImageQuota } from '@/hooks/useImageQuota';
+import { useRewardedAd } from '@/hooks/useRewardedAd';
+import { REWARDED_MESSAGES_PER_AD, REWARDED_DAILY_LIMIT } from '@/constants/ads';
 import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
 import { useUserRecipes } from '@/context/UserRecipesContext';
 import { useFavorites } from '@/context/FavoritesContext';
@@ -67,6 +69,8 @@ export default function TchopAIScreen() {
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
   const [freeMessagesUsed, setFreeMessagesUsed] = useState(0);
+  const [rewardedUsed, setRewardedUsed] = useState(0);
+  const rewardedAd = useRewardedAd();
   const [showPhotoModal, setShowPhotoModal] = useState(false);
   const [showPlusModal, setShowPlusModal] = useState(false);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
@@ -76,6 +80,22 @@ export default function TchopAIScreen() {
   const flatListRef = useRef<FlatList>(null);
 
   const canSendFree = isPremium || freeMessagesUsed < FREE_MESSAGE_LIMIT;
+  const canWatchRewarded = !isPremium && rewardedAd.ready && rewardedUsed < REWARDED_DAILY_LIMIT;
+
+  const handleWatchRewarded = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    rewardedAd.show(async () => {
+      const current = await AsyncStorage.getItem('tchope_free_messages');
+      const newCount = Math.max(0, (current ? parseInt(current, 10) : 0) - REWARDED_MESSAGES_PER_AD);
+      await AsyncStorage.setItem('tchope_free_messages', String(newCount));
+      setFreeMessagesUsed(newCount);
+
+      const rewarded = await AsyncStorage.getItem('tchope_rewarded_count');
+      const newRewarded = (rewarded ? parseInt(rewarded, 10) : 0) + 1;
+      await AsyncStorage.setItem('tchope_rewarded_count', String(newRewarded));
+      setRewardedUsed(newRewarded);
+    });
+  };
 
   // --- Keyboard handling ---
   useEffect(() => {
@@ -104,11 +124,15 @@ export default function TchopAIScreen() {
     AsyncStorage.getItem('tchope_free_messages_date').then(async (savedDate) => {
       if (savedDate !== today) {
         await AsyncStorage.setItem('tchope_free_messages', '0');
+        await AsyncStorage.setItem('tchope_rewarded_count', '0');
         await AsyncStorage.setItem('tchope_free_messages_date', today);
         setFreeMessagesUsed(0);
+        setRewardedUsed(0);
       } else {
         const val = await AsyncStorage.getItem('tchope_free_messages');
         if (val) setFreeMessagesUsed(parseInt(val, 10));
+        const rewarded = await AsyncStorage.getItem('tchope_rewarded_count');
+        if (rewarded) setRewardedUsed(parseInt(rewarded, 10));
       }
     });
   }, []);
@@ -391,6 +415,18 @@ export default function TchopAIScreen() {
               <Ionicons name="sparkles" size={16} color="#FFFFFF" />
               <Text style={{ fontSize: 15, fontWeight: '700', color: '#FFFFFF' }}>{t('upgradeToPremium')}</Text>
             </TouchableOpacity>
+            {canWatchRewarded && (
+              <TouchableOpacity
+                onPress={handleWatchRewarded}
+                style={{ borderWidth: 1.5, borderColor: colors.accent, borderRadius: 16, paddingVertical: 13, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                <Ionicons name="play-circle-outline" size={18} color={colors.accent} />
+                <Text style={{ fontSize: 15, fontWeight: '700', color: colors.accent }}>
+                  {t('watchAdForMessage')
+                    .replace('{count}', String(REWARDED_MESSAGES_PER_AD))
+                    .replace('{plural}', REWARDED_MESSAGES_PER_AD > 1 ? 's' : '')}
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
         )}
       </Animated.View>
