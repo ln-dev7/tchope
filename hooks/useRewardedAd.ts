@@ -2,10 +2,13 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Platform } from 'react-native';
 import { RewardedAd, RewardedAdEventType, AdEventType, TestIds } from 'react-native-google-mobile-ads';
 
-// Bloc "TchopAI Rewarded Message" (Android). Pas de bloc iOS pour l'instant.
+// Blocs "TchopAI Rewarded Message" — Android + iOS ("Tchope IOS", créé le 9 juillet 2026).
 const AD_UNIT_ID = __DEV__
   ? TestIds.REWARDED
-  : Platform.select({ android: 'ca-app-pub-2222017759396595/3107451588' });
+  : Platform.select({
+      android: 'ca-app-pub-2222017759396595/3107451588',
+      ios: 'ca-app-pub-2222017759396595/8002579254',
+    });
 
 const RETRY_DELAY_MS = 60_000;
 
