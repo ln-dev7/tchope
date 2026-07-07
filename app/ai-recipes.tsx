@@ -26,6 +26,9 @@ import { callClaude } from '@/utils/api';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 import { useLicense } from '@/context/LicenseContext';
 import TchopePlusScreen from '@/components/premium/TchopePlusScreen';
+import RewardedUnlockModal from '@/components/RewardedUnlockModal';
+import { useRewardedAd } from '@/hooks/useRewardedAd';
+import { canWatchRewarded, recordRewardedView } from '@/utils/adQuota';
 import type { Recipe } from '@/types';
 
 type SearchResult = {
@@ -175,6 +178,11 @@ export default function AIRecipesScreen() {
   const [showPlusModal, setShowPlusModal] = useState(false);
   const aiAvailable = !!process.env.EXPO_PUBLIC_API_URL && isConnected;
 
+  // Portail « 1 pub = 1 recherche libre » pour les non-abonnés (modèle Travora).
+  const rewardedAd = useRewardedAd();
+  const [showAdModal, setShowAdModal] = useState(false);
+  const [adsCapped, setAdsCapped] = useState(false);
+
   const knownIngredients = useMemo(() => {
     const set = new Set<string>();
     recipes.forEach((r) =>
@@ -261,15 +269,22 @@ export default function AIRecipesScreen() {
   const handleSearchFreeText = async () => {
     Keyboard.dismiss();
     if (!freeText.trim()) return;
-    if (!isPremium) {
-      setShowPlusModal(true);
-      return;
-    }
+    // Disponibilité vérifiée AVANT le portail : on ne fait pas regarder une
+    // pub pour une recherche qui échouera.
     if (!aiAvailable) {
       setError(t('aiFreeUnavailable'));
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
       return;
     }
+    if (!isPremium) {
+      setAdsCapped(!(await canWatchRewarded()));
+      setShowAdModal(true);
+      return;
+    }
+    await runFreeTextSearch();
+  };
+
+  const runFreeTextSearch = async () => {
     setLoading(true);
     setResults(null);
     setError(null);
@@ -738,6 +753,33 @@ export default function AIRecipesScreen() {
           <TchopePlusScreen onClose={() => setShowPlusModal(false)} />
         </View>
       </Modal>
+
+      <RewardedUnlockModal
+        visible={showAdModal}
+        title={t('searchAdUnlockTitle')}
+        text={t('searchAdUnlockText')}
+        ready={rewardedAd.ready}
+        capped={adsCapped}
+        colors={colors}
+        isDark={isDark}
+        onWatch={() =>
+          rewardedAd.show(() => {
+            recordRewardedView();
+            setShowAdModal(false);
+            runFreeTextSearch();
+          })
+        }
+        onContinue={() => {
+          setShowAdModal(false);
+          runFreeTextSearch();
+        }}
+        onUpgrade={() => {
+          setShowAdModal(false);
+          setShowPlusModal(true);
+        }}
+        onClose={() => setShowAdModal(false)}
+        t={t}
+      />
     </SafeAreaView>
   );
 }

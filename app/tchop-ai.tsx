@@ -16,7 +16,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -25,7 +24,9 @@ import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 import { useLicense } from '@/context/LicenseContext';
 import { useImageQuota } from '@/hooks/useImageQuota';
 import { useRewardedAd } from '@/hooks/useRewardedAd';
-import { REWARDED_MESSAGES_PER_AD, REWARDED_DAILY_LIMIT } from '@/constants/ads';
+import { REWARDED_MESSAGES_PER_AD, REWARDED_FAILOPEN_DELAY_MS } from '@/constants/ads';
+import { loadAiCredits, saveAiCredits } from '@/utils/aiCredits';
+import { canWatchRewarded, recordRewardedView } from '@/utils/adQuota';
 import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
 import { useUserRecipes } from '@/context/UserRecipesContext';
 import { useFavorites } from '@/context/FavoritesContext';
@@ -57,7 +58,6 @@ export default function TchopAIScreen() {
   const imageQuota = useImageQuota();
 
   const isFr = settings.language === 'fr';
-  const FREE_MESSAGE_LIMIT = 3;
 
   // --- State ---
   const keyboardPadding = useRef(new Animated.Value(0)).current;
@@ -68,8 +68,7 @@ export default function TchopAIScreen() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
-  const [freeMessagesUsed, setFreeMessagesUsed] = useState(0);
-  const [rewardedUsed, setRewardedUsed] = useState(0);
+  const [credits, setCredits] = useState(0);
   const rewardedAd = useRewardedAd();
   const [showPhotoModal, setShowPhotoModal] = useState(false);
   const [showPlusModal, setShowPlusModal] = useState(false);
@@ -79,21 +78,28 @@ export default function TchopAIScreen() {
   const chatIdRef = useRef<string>(Date.now().toString());
   const flatListRef = useRef<FlatList>(null);
 
-  const canSendFree = isPremium || freeMessagesUsed < FREE_MESSAGE_LIMIT;
-  const canWatchRewarded = !isPremium && rewardedAd.ready && rewardedUsed < REWARDED_DAILY_LIMIT;
+  // Portail rewarded « 1 pub = N messages » (modèle Travora) : le crédit se
+  // recharge à volonté en regardant une pub, dans la limite du plafond de
+  // sécurité quotidien partagé (utils/adQuota.ts).
+  const locked = !isPremium && credits <= 0;
+  const [adsCapped, setAdsCapped] = useState(false);
+  useEffect(() => {
+    if (locked) canWatchRewarded().then((ok) => setAdsCapped(!ok));
+  }, [locked]);
+
+  const grantCredits = useCallback((amount: number) => {
+    setCredits((c) => {
+      const n = c + amount;
+      saveAiCredits(n);
+      return n;
+    });
+  }, []);
 
   const handleWatchRewarded = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    rewardedAd.show(async () => {
-      const current = await AsyncStorage.getItem('tchope_free_messages');
-      const newCount = Math.max(0, (current ? parseInt(current, 10) : 0) - REWARDED_MESSAGES_PER_AD);
-      await AsyncStorage.setItem('tchope_free_messages', String(newCount));
-      setFreeMessagesUsed(newCount);
-
-      const rewarded = await AsyncStorage.getItem('tchope_rewarded_count');
-      const newRewarded = (rewarded ? parseInt(rewarded, 10) : 0) + 1;
-      await AsyncStorage.setItem('tchope_rewarded_count', String(newRewarded));
-      setRewardedUsed(newRewarded);
+    rewardedAd.show(() => {
+      recordRewardedView();
+      grantCredits(REWARDED_MESSAGES_PER_AD);
     });
   };
 
@@ -118,23 +124,9 @@ export default function TchopAIScreen() {
     return () => { showSub.remove(); hideSub.remove(); };
   }, [bottom, keyboardPadding]);
 
-  // --- Free message counter (daily reset) ---
+  // --- Message credits (persistent balance) ---
   useEffect(() => {
-    const today = new Date().toISOString().slice(0, 10);
-    AsyncStorage.getItem('tchope_free_messages_date').then(async (savedDate) => {
-      if (savedDate !== today) {
-        await AsyncStorage.setItem('tchope_free_messages', '0');
-        await AsyncStorage.setItem('tchope_rewarded_count', '0');
-        await AsyncStorage.setItem('tchope_free_messages_date', today);
-        setFreeMessagesUsed(0);
-        setRewardedUsed(0);
-      } else {
-        const val = await AsyncStorage.getItem('tchope_free_messages');
-        if (val) setFreeMessagesUsed(parseInt(val, 10));
-        const rewarded = await AsyncStorage.getItem('tchope_rewarded_count');
-        if (rewarded) setRewardedUsed(parseInt(rewarded, 10));
-      }
-    });
+    loadAiCredits().then(setCredits);
   }, []);
 
   // --- Auto-save chat ---
@@ -162,7 +154,7 @@ export default function TchopAIScreen() {
   // --- Send message ---
   const handleSend = async () => {
     const text = input.trim();
-    if (!text || loading || !canSendFree) return;
+    if (!text || loading || locked) return;
     Keyboard.dismiss();
 
     if (!isConnected) {
@@ -206,11 +198,13 @@ export default function TchopAIScreen() {
         content: parsed.content, recipeIds: parsed.recipeIds, saveRecipe: parsed.saveRecipe, noteIds: parsed.noteIds, saveNote: parsed.saveNote,
       }]);
 
+      // Réponse reçue → consomme 1 crédit (jamais décompté sur erreur).
       if (!isPremium) {
-        const current = await AsyncStorage.getItem('tchope_free_messages');
-        const newCount = (current ? parseInt(current, 10) : 0) + 1;
-        await AsyncStorage.setItem('tchope_free_messages', String(newCount));
-        setFreeMessagesUsed(newCount);
+        setCredits((c) => {
+          const n = Math.max(0, c - 1);
+          saveAiCredits(n);
+          return n;
+        });
       }
     } catch {
       setMessages((prev) => [...prev, { id: (Date.now() + 1).toString(), role: 'assistant', content: t('tchopaiError') }]);
@@ -389,45 +383,35 @@ export default function TchopAIScreen() {
           </View>
         )}
 
-        <ChatInput
-          input={input}
-          setInput={setInput}
-          loading={loading}
-          canSend={canSendFree}
-          canPhoto={imageQuota.canSend}
-          colors={colors}
-          onSend={handleSend}
-          onPhoto={handlePhotoPress}
-          t={t}
-        />
-
-        {!isPremium && !canSendFree && (
-          <View style={{ paddingHorizontal: 20, paddingVertical: 16, borderTopWidth: 1, borderTopColor: colors.border, gap: 12 }}>
-            <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text, textAlign: 'center' }}>
-              {t('freeMessagesUsed').replace('{limit}', String(FREE_MESSAGE_LIMIT))}
-            </Text>
-            <Text style={{ fontSize: 13, color: colors.textSecondary, textAlign: 'center', lineHeight: 18 }}>
-              {t('freeMessagesUpgrade').replace('{limit}', String(FREE_MESSAGE_LIMIT))}
-            </Text>
-            <TouchableOpacity
-              onPress={() => setShowPlusModal(true)}
-              style={{ backgroundColor: colors.accent, borderRadius: 16, paddingVertical: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-              <Ionicons name="sparkles" size={16} color="#FFFFFF" />
-              <Text style={{ fontSize: 15, fontWeight: '700', color: '#FFFFFF' }}>{t('upgradeToPremium')}</Text>
-            </TouchableOpacity>
-            {canWatchRewarded && (
-              <TouchableOpacity
-                onPress={handleWatchRewarded}
-                style={{ borderWidth: 1.5, borderColor: colors.accent, borderRadius: 16, paddingVertical: 13, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                <Ionicons name="play-circle-outline" size={18} color={colors.accent} />
-                <Text style={{ fontSize: 15, fontWeight: '700', color: colors.accent }}>
-                  {t('watchAdForMessage')
-                    .replace('{count}', String(REWARDED_MESSAGES_PER_AD))
-                    .replace('{plural}', REWARDED_MESSAGES_PER_AD > 1 ? 's' : '')}
-                </Text>
-              </TouchableOpacity>
+        {locked ? (
+          <AdGate
+            colors={colors}
+            ready={rewardedAd.ready}
+            capped={adsCapped}
+            onWatch={handleWatchRewarded}
+            onContinue={() => grantCredits(1)}
+            onUpgrade={() => setShowPlusModal(true)}
+            t={t}
+          />
+        ) : (
+          <>
+            <ChatInput
+              input={input}
+              setInput={setInput}
+              loading={loading}
+              canSend={!locked}
+              canPhoto={imageQuota.canSend}
+              colors={colors}
+              onSend={handleSend}
+              onPhoto={handlePhotoPress}
+              t={t}
+            />
+            {!isPremium && (
+              <Text style={{ textAlign: 'center', fontSize: 11, color: colors.textMuted, paddingBottom: 6 }}>
+                {t('aiMessagesLeft').replace('{count}', String(credits))}
+              </Text>
             )}
-          </View>
+          </>
         )}
       </Animated.View>
 
@@ -559,5 +543,72 @@ export default function TchopAIScreen() {
         </View>
       </Modal>
     </SafeAreaView>
+  );
+}
+
+/** Portail rewarded « regarde une pub = N messages » (modèle Travora) —
+ *  remplace la zone de saisie quand le crédit est à 0, rechargeable à volonté.
+ *  FAIL-OPEN : si la pub n'a pas chargé après REWARDED_FAILOPEN_DELAY_MS
+ *  (pas de remplissage, panne AdMob…), « Continuer sans pub » offre 1 message
+ *  — la régie ne doit jamais bloquer TchopAI. `capped` = plafond quotidien de
+ *  pubs atteint (utils/adQuota.ts) → seul l'abonnement est proposé. */
+function AdGate({ colors, ready, capped, onWatch, onContinue, onUpgrade, t }: {
+  colors: any;
+  ready: boolean;
+  capped: boolean;
+  onWatch: () => void;
+  onContinue: () => void;
+  onUpgrade: () => void;
+  t: (k: any) => string;
+}) {
+  const [elapsed, setElapsed] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => setElapsed(true), REWARDED_FAILOPEN_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, []);
+  const showFailOpen = !capped && elapsed && !ready;
+  const count = String(REWARDED_MESSAGES_PER_AD);
+
+  return (
+    <View style={{ paddingHorizontal: 20, paddingVertical: 16, borderTopWidth: 1, borderTopColor: colors.border, gap: 12, alignItems: 'center' }}>
+      <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text, textAlign: 'center' }}>
+        {t('aiUnlockTitle')}
+      </Text>
+      <Text style={{ fontSize: 13, color: colors.textSecondary, textAlign: 'center', lineHeight: 18 }}>
+        {capped ? t('adDailyLimitReached') : t('aiUnlockText').replace('{count}', count)}
+      </Text>
+      {!capped && (
+        <TouchableOpacity
+          onPress={onWatch}
+          disabled={!ready}
+          style={{ backgroundColor: ready ? colors.accent : colors.surface, borderRadius: 16, paddingVertical: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, alignSelf: 'stretch' }}>
+          {ready ? (
+            <Ionicons name="play-circle-outline" size={18} color="#FFFFFF" />
+          ) : (
+            <ActivityIndicator size="small" color={colors.textMuted} />
+          )}
+          <Text style={{ fontSize: 15, fontWeight: '700', color: ready ? '#FFFFFF' : colors.textMuted }}>
+            {ready
+              ? t('watchAdForMessage')
+                  .replace('{count}', count)
+                  .replace('{plural}', REWARDED_MESSAGES_PER_AD > 1 ? 's' : '')
+              : t('aiAdLoading')}
+          </Text>
+        </TouchableOpacity>
+      )}
+      <TouchableOpacity
+        onPress={onUpgrade}
+        style={{ borderWidth: 1.5, borderColor: colors.accent, borderRadius: 16, paddingVertical: 13, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, alignSelf: 'stretch' }}>
+        <Ionicons name="sparkles" size={16} color={colors.accent} />
+        <Text style={{ fontSize: 15, fontWeight: '700', color: colors.accent }}>{t('upgradeToPremium')}</Text>
+      </TouchableOpacity>
+      {showFailOpen && (
+        <TouchableOpacity onPress={onContinue} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+          <Text style={{ fontSize: 13, fontWeight: '700', color: colors.accent, textDecorationLine: 'underline' }}>
+            {t('aiContinueNoAd')}
+          </Text>
+        </TouchableOpacity>
+      )}
+    </View>
   );
 }

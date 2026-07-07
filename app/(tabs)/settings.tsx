@@ -64,8 +64,10 @@ export default function SettingsScreen() {
           const keysToPreserve = [
             'tchope_license',
             'tchope_device_id',
-            'tchope_free_messages',
-            'tchope_free_messages_date',
+            'tchope_ai_credits',
+            'tchope_ai_welcome_granted',
+            'tchope_rewarded_day',
+            'tchope_rewarded_views',
             'tchope_image_quota',
           ];
           const saved = await Promise.all(

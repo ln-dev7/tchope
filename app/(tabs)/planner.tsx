@@ -19,6 +19,9 @@ import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLicense } from '@/context/LicenseContext';
 import TchopePlusScreen from '@/components/premium/TchopePlusScreen';
+import RewardedUnlockModal from '@/components/RewardedUnlockModal';
+import { useRewardedAd } from '@/hooks/useRewardedAd';
+import { canWatchRewarded, recordRewardedView } from '@/utils/adQuota';
 import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
 import { useSettings } from '@/context/SettingsContext';
 import { useMealPlanner, type MealPlan, type DayPlan } from '@/context/MealPlannerContext';
@@ -208,6 +211,12 @@ export default function PlannerScreen() {
   const isConnected = useNetworkStatus();
   const { isPremium } = useLicense();
   const [showPlusModal, setShowPlusModal] = useState(false);
+
+  // Portail « 1 pub = 1 plan généré » pour les non-abonnés (modèle Travora).
+  // L'ajustement du plan, lui, reste réservé à Tchopé Plus.
+  const rewardedAd = useRewardedAd();
+  const [showAdModal, setShowAdModal] = useState(false);
+  const [adsCapped, setAdsCapped] = useState(false);
   const [preferences, setPreferences] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [showSaved, setShowSaved] = useState(false);
@@ -221,9 +230,7 @@ export default function PlannerScreen() {
     return map;
   }, [recipes]);
 
-  const handleGenerate = useCallback(async () => {
-    if (!isPremium) { setShowPlusModal(true); return; }
-    if (!isConnected) { Alert.alert('Tchopé', t('plannerNoConnection')); return; }
+  const doGenerate = useCallback(async () => {
     setIsGenerating(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     try {
@@ -252,6 +259,16 @@ export default function PlannerScreen() {
     }
   }, [preferences, recipes, settings.language, setCurrentPlan, t]);
 
+  const handleGenerate = useCallback(async () => {
+    if (!isConnected) { Alert.alert('Tchopé', t('plannerNoConnection')); return; }
+    if (!isPremium) {
+      setAdsCapped(!(await canWatchRewarded()));
+      setShowAdModal(true);
+      return;
+    }
+    await doGenerate();
+  }, [isConnected, isPremium, doGenerate, t]);
+
   const handleAdjust = useCallback(async () => {
     if (!currentPlan || !adjustText.trim()) return;
     if (!isPremium) { setShowPlusModal(true); return; }
@@ -269,7 +286,7 @@ export default function PlannerScreen() {
     } finally {
       setIsAdjusting(false);
     }
-  }, [currentPlan, adjustText, recipes, settings.language, setCurrentPlan, t, isConnected]);
+  }, [currentPlan, adjustText, recipes, settings.language, setCurrentPlan, t, isConnected, isPremium]);
 
   const handleSwap = useCallback((date: string, mealIndex: number) => {
     const current = currentPlan?.days[date]?.meals[mealIndex]?.recipeId;
@@ -586,6 +603,33 @@ export default function PlannerScreen() {
           <TchopePlusScreen onClose={() => setShowPlusModal(false)} />
         </View>
       </Modal>
+
+      <RewardedUnlockModal
+        visible={showAdModal}
+        title={t('planAdUnlockTitle')}
+        text={t('planAdUnlockText')}
+        ready={rewardedAd.ready}
+        capped={adsCapped}
+        colors={colors}
+        isDark={isDark}
+        onWatch={() =>
+          rewardedAd.show(() => {
+            recordRewardedView();
+            setShowAdModal(false);
+            doGenerate();
+          })
+        }
+        onContinue={() => {
+          setShowAdModal(false);
+          doGenerate();
+        }}
+        onUpgrade={() => {
+          setShowAdModal(false);
+          setShowPlusModal(true);
+        }}
+        onClose={() => setShowAdModal(false)}
+        t={t}
+      />
     </SafeAreaView>
   );
 }
