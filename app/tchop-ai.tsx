@@ -10,12 +10,14 @@ import {
   Keyboard,
   Modal,
   Alert,
+  ScrollView,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
+import * as WebBrowser from 'expo-web-browser';
 
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -45,7 +47,7 @@ import ChatInput from '@/components/tchop-ai/ChatInput';
 export default function TchopAIScreen() {
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
-  const { settings } = useSettings();
+  const { settings, updateAiConsent } = useSettings();
   const isConnected = useNetworkStatus();
   const recipes = useLocalizedRecipes();
   const { addRecipe, userRecipes } = useUserRecipes();
@@ -154,7 +156,8 @@ export default function TchopAIScreen() {
   // --- Send message ---
   const handleSend = async () => {
     const text = input.trim();
-    if (!text || loading || locked) return;
+    // Garde-fou : aucun envoi vers l'IA tant que le consentement n'est pas donné.
+    if (!text || loading || locked || !settings.aiConsent) return;
     Keyboard.dismiss();
 
     if (!isConnected) {
@@ -327,6 +330,16 @@ export default function TchopAIScreen() {
   // --- Render ---
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top', 'bottom']}>
+      {!settings.aiConsent ? (
+      <AiConsent
+        colors={colors}
+        isDark={isDark}
+        t={t}
+        locale={settings.language}
+        onAgree={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); updateAiConsent(true); }}
+        onBack={() => router.back()}
+      />
+      ) : (
       <Animated.View style={{ flex: 1, marginBottom: keyboardPadding }}>
         <ChatHeader
           colors={colors}
@@ -414,6 +427,7 @@ export default function TchopAIScreen() {
           </>
         )}
       </Animated.View>
+      )}
 
       {/* TchopePlus modal */}
       <Modal visible={showPlusModal} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setShowPlusModal(false)}>
@@ -609,6 +623,69 @@ function AdGate({ colors, ready, capped, onWatch, onContinue, onUpgrade, t }: {
           </Text>
         </TouchableOpacity>
       )}
+    </View>
+  );
+}
+
+/** Écran de consentement (Apple 5.1.1(i)/5.1.2(i)) : divulgue les données
+ *  envoyées à TchopAI + le prestataire IA (Anthropic) et recueille un accord
+ *  explicite AVANT tout envoi. Affiché tant que settings.aiConsent est faux ;
+ *  « J'accepte » le persiste et ne réapparaît plus. */
+function AiConsent({ colors, isDark, t, locale, onAgree, onBack }: {
+  colors: any;
+  isDark: boolean;
+  t: (k: any) => string;
+  locale: string;
+  onAgree: () => void;
+  onBack: () => void;
+}) {
+  const dataItems = t('aiConsentData').split('\n').filter(Boolean);
+
+  return (
+    <View style={{ flex: 1 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, gap: 12 }}>
+        <TouchableOpacity
+          onPress={onBack}
+          style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' }}>
+          <Ionicons name="chevron-back" size={22} color={colors.text} />
+        </TouchableOpacity>
+        <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text }}>TchopAI</Text>
+      </View>
+
+      <ScrollView contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 8, paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
+        <View style={{ alignItems: 'center', marginBottom: 4 }}>
+          <View style={{ width: 64, height: 64, borderRadius: 20, backgroundColor: isDark ? `${colors.accent}20` : `${colors.accent}10`, alignItems: 'center', justifyContent: 'center' }}>
+            <Ionicons name="shield-checkmark-outline" size={30} color={colors.accent} />
+          </View>
+          <Text style={{ marginTop: 14, fontSize: 22, fontWeight: '800', color: colors.text, textAlign: 'center' }}>{t('aiConsentTitle')}</Text>
+        </View>
+
+        <Text style={{ marginTop: 14, fontSize: 14, lineHeight: 21, color: colors.textSecondary }}>{t('aiConsentBody')}</Text>
+
+        <View style={{ marginTop: 14, gap: 10 }}>
+          {dataItems.map((item, i) => (
+            <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 10 }}>
+              <Ionicons name="arrow-forward-circle" size={18} color={colors.accent} style={{ marginTop: 1 }} />
+              <Text style={{ flex: 1, fontSize: 14, lineHeight: 20, color: colors.text, fontWeight: '600' }}>{item}</Text>
+            </View>
+          ))}
+        </View>
+
+        <Text style={{ marginTop: 16, fontSize: 13, lineHeight: 20, color: colors.textMuted }}>{t('aiConsentProvider')}</Text>
+
+        <TouchableOpacity
+          onPress={() => WebBrowser.openBrowserAsync(`https://tchope.lndev.me/${locale}/privacy`)}
+          style={{ marginTop: 14, flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start' }}>
+          <Ionicons name="document-text-outline" size={15} color={colors.accent} />
+          <Text style={{ fontSize: 13, fontWeight: '700', color: colors.accent, textDecorationLine: 'underline' }}>{t('aiConsentPrivacy')}</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={onAgree}
+          style={{ marginTop: 24, backgroundColor: colors.accent, borderRadius: 16, paddingVertical: 15, alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={{ fontSize: 15, fontWeight: '800', color: '#FFFFFF' }}>{t('aiConsentAgree')}</Text>
+        </TouchableOpacity>
+      </ScrollView>
     </View>
   );
 }

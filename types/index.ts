@@ -62,6 +62,7 @@ export type Settings = {
   theme: 'light' | 'dark' | 'system';
   language: 'fr' | 'en';
   notifications: NotificationPreferences;
+  aiConsent: boolean; // consentement explicite avant tout envoi vers TchopAI (Anthropic)
 };
 
 export type NoteBlockType =

@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_BASE_URL } from '@/constants/api';
+import { requestAiConsent, AiConsentError } from './aiConsentBridge';
 const CACHE_PREFIX = 'ai_cache:';
 const CACHE_TTL = 1000 * 60 * 60 * 24; // 24 hours
 
@@ -63,6 +64,9 @@ async function setCache(key: string, text: string): Promise<void> {
 }
 
 export async function callClaudeLive(params: ClaudeRequest): Promise<string> {
+  // Consentement obligatoire avant tout envoi vers Anthropic (Apple 5.1.1/5.1.2).
+  if (!(await requestAiConsent())) throw new AiConsentError();
+
   const response = await fetch(`${API_BASE_URL}/api/claude`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -91,6 +95,9 @@ export async function fetchRecipeUrl(url: string): Promise<string | null> {
 }
 
 export async function callClaude(params: ClaudeRequest): Promise<string> {
+  // Consentement obligatoire avant tout envoi vers Anthropic (Apple 5.1.1/5.1.2).
+  if (!(await requestAiConsent())) throw new AiConsentError();
+
   const key = await hashKey(params);
 
   const cached = await getCache(key);

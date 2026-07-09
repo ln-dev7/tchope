@@ -19,6 +19,7 @@ const defaultSettings: Settings = {
   theme: 'light',
   language: 'fr',
   notifications: defaultNotifications,
+  aiConsent: false,
 };
 
 type SettingsContextType = {
@@ -26,6 +27,7 @@ type SettingsContextType = {
   updateTheme: (theme: Settings['theme']) => void;
   updateLanguage: (language: Settings['language']) => void;
   updateNotifications: (notifications: Partial<NotificationPreferences>) => void;
+  updateAiConsent: (value: boolean) => void;
   resetFavorites: () => Promise<void>;
   resetUserRecipes: () => Promise<void>;
 };
@@ -35,6 +37,7 @@ const SettingsContext = createContext<SettingsContextType>({
   updateTheme: () => {},
   updateLanguage: () => {},
   updateNotifications: () => {},
+  updateAiConsent: () => {},
   resetFavorites: async () => {},
   resetUserRecipes: async () => {},
 });
@@ -79,6 +82,13 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     [settings, persist],
   );
 
+  const updateAiConsent = useCallback(
+    (value: boolean) => {
+      persist({ ...settings, aiConsent: value });
+    },
+    [settings, persist],
+  );
+
   const resetFavorites = useCallback(async () => {
     await AsyncStorage.removeItem(FAVORITES_KEY);
   }, []);
@@ -89,7 +99,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <SettingsContext.Provider
-      value={{ settings, updateTheme, updateLanguage, updateNotifications, resetFavorites, resetUserRecipes }}
+      value={{ settings, updateTheme, updateLanguage, updateNotifications, updateAiConsent, resetFavorites, resetUserRecipes }}
     >
       {children}
     </SettingsContext.Provider>

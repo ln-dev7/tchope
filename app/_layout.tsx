@@ -17,6 +17,7 @@ import { RatingProvider } from '@/context/RatingContext';
 import { MealPlannerProvider } from '@/context/MealPlannerContext';
 import { LicenseProvider } from '@/context/LicenseContext';
 import { NotesProvider } from '@/context/NotesContext';
+import { AiConsentProvider } from '@/context/AiConsentContext';
 import { useTheme } from '@/hooks/useTheme';
 import NetworkBanner from '@/components/NetworkBanner';
 import UpdateModal from '@/components/UpdateModal';
@@ -98,7 +99,9 @@ export default function RootLayout() {
                 <MealPlannerProvider>
                   <LicenseProvider>
                     <NotesProvider>
-                      <InnerLayout />
+                      <AiConsentProvider>
+                        <InnerLayout />
+                      </AiConsentProvider>
                     </NotesProvider>
                   </LicenseProvider>
                 </MealPlannerProvider>
