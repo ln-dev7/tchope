@@ -15,7 +15,6 @@ import { TimerProvider } from '@/context/TimerContext';
 import { ToastProvider } from '@/context/ToastContext';
 import { RatingProvider } from '@/context/RatingContext';
 import { MealPlannerProvider } from '@/context/MealPlannerContext';
-import { LicenseProvider } from '@/context/LicenseContext';
 import { NotesProvider } from '@/context/NotesContext';
 import { AiConsentProvider } from '@/context/AiConsentContext';
 import { useTheme } from '@/hooks/useTheme';
@@ -97,13 +96,11 @@ export default function RootLayout() {
             <TimerProvider>
               <RatingProvider>
                 <MealPlannerProvider>
-                  <LicenseProvider>
-                    <NotesProvider>
-                      <AiConsentProvider>
-                        <InnerLayout />
-                      </AiConsentProvider>
-                    </NotesProvider>
-                  </LicenseProvider>
+                  <NotesProvider>
+                    <AiConsentProvider>
+                      <InnerLayout />
+                    </AiConsentProvider>
+                  </NotesProvider>
                 </MealPlannerProvider>
               </RatingProvider>
             </TimerProvider>

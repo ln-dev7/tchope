@@ -507,7 +507,7 @@ export default function RecipeDetailScreen() {
         </View>
       </ScrollView>
 
-      <AdBanner style={{ marginBottom: bottom }} />
+      <AdBanner placement="recipe" style={{ marginBottom: bottom }} />
     </View>
   );
 }

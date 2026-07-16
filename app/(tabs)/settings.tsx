@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Alert, Linking, Modal } from 'react-native';
+import React from 'react';
+import { View, Text, ScrollView, TouchableOpacity, Alert, Linking, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -13,9 +13,6 @@ import { useFavorites } from '@/hooks/useFavorites';
 import { useUserRecipes } from '@/hooks/useUserRecipes';
 import { useToast } from '@/hooks/useToast';
 import { useRating } from '@/context/RatingContext';
-import { useLicense } from '@/context/LicenseContext';
-import LicenseActivation from '@/components/premium/LicenseActivation';
-import TchopePlusScreen from '@/components/premium/TchopePlusScreen';
 import type { Settings } from '@/types';
 
 export default function SettingsScreen() {
@@ -27,9 +24,7 @@ export default function SettingsScreen() {
   const { clearAll: clearUserRecipes } = useUserRecipes();
   const { toast } = useToast();
   const { requestRating } = useRating();
-  const { isPremium, licenseStatus } = useLicense();
   const router = useRouter();
-  const [showPlusModal, setShowPlusModal] = useState(false);
 
   const handleClearFavorites = () => {
     Alert.alert(t('clearConfirm'), t('clearConfirmMessage'), [
@@ -104,69 +99,6 @@ export default function SettingsScreen() {
         contentContainerStyle={{ paddingBottom: 80 + bottom, paddingHorizontal: 24, gap: 40, paddingTop: 32 }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled">
-        {/* Tchopé Plus */}
-        <View style={{ gap: 16 }}>
-          <Text
-            style={{
-              fontSize: 14,
-              fontWeight: '700',
-              color: colors.textSecondary,
-              textTransform: 'uppercase',
-              letterSpacing: 1.4,
-              paddingHorizontal: 8,
-            }}>
-            {t('tchopePlus')}
-          </Text>
-          {isPremium || licenseStatus === 'expired' ? (
-            <LicenseActivation />
-          ) : (
-            <View style={{ gap: 12 }}>
-              <TouchableOpacity
-                onPress={() => setShowPlusModal(true)}
-                activeOpacity={0.85}
-                style={{
-                  backgroundColor: isDark ? `${colors.accent}12` : `${colors.accent}08`,
-                  borderRadius: 20,
-                  padding: 20,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: 14,
-                  borderWidth: 1.5,
-                  borderColor: isDark ? `${colors.accent}25` : `${colors.accent}15`,
-                }}>
-                <View
-                  style={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: 24,
-                    backgroundColor: colors.accent,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}>
-                  <Ionicons name="sparkles" size={24} color="#FFFFFF" />
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 16, fontWeight: '700', color: colors.accent }}>
-                    {t('upgradeToPremium')}
-                </Text>
-                <Text style={{ fontSize: 12, color: colors.textSecondary, marginTop: 2 }}>
-                  {t('featurePrice')}
-                </Text>
-              </View>
-              <Ionicons name="chevron-forward" size={18} color={colors.accent} />
-              </TouchableOpacity>
-              <LicenseActivation />
-            </View>
-          )}
-        </View>
-
-        {/* Plus Modal */}
-        <Modal visible={showPlusModal} animationType="slide" presentationStyle="pageSheet">
-          <View style={{ flex: 1, backgroundColor: colors.background }}>
-            <TchopePlusScreen onClose={() => setShowPlusModal(false)} />
-          </View>
-        </Modal>
-
         {/* Appearance */}
         <View style={{ gap: 16 }}>
           <Text
@@ -509,7 +441,8 @@ export default function SettingsScreen() {
           <Ionicons name="open-outline" size={14} color={colors.textMuted} />
         </TouchableOpacity>
 
-        {/* Support */}
+        {/* Support — hidden on iOS (Apple 3.1.1: no external purchase links) */}
+        {Platform.OS !== 'ios' && (
         <TouchableOpacity
           onPress={() => Linking.openURL('https://lndev.mychariow.shop/prd_3cu1s0')}
           activeOpacity={0.85}
@@ -544,6 +477,7 @@ export default function SettingsScreen() {
           </View>
           <Ionicons name="open-outline" size={16} color={colors.accent} />
         </TouchableOpacity>
+        )}
 
         {/* About */}
         <View style={{ gap: 16, paddingBottom: 48 }}>

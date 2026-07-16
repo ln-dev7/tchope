@@ -1,27 +1,30 @@
 import React, { useState } from 'react';
-import { Platform, StyleProp, View, ViewStyle } from 'react-native';
+import { StyleProp, View, ViewStyle } from 'react-native';
 import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 
-import { useLicense } from '@/context/LicenseContext';
+import { AD_UNITS } from '@/constants/ads';
 
-// Blocs "Tchope Banner Ad" — Android + iOS ("Tchope IOS", créé le 9 juillet 2026).
-const AD_UNIT_ID = __DEV__
-  ? TestIds.ADAPTIVE_BANNER
-  : Platform.select({
-      android: 'ca-app-pub-2222017759396595/2143678108',
-      ios: 'ca-app-pub-2222017759396595/8194150944',
-    });
+const UNIT_BY_PLACEMENT = {
+  home: AD_UNITS.bannerHome,
+  recipe: AD_UNITS.bannerRecipe,
+} as const;
 
-export default function AdBanner({ style }: { style?: StyleProp<ViewStyle> }) {
-  const { isPremium } = useLicense();
+export default function AdBanner({
+  placement = 'home',
+  style,
+}: {
+  placement?: keyof typeof UNIT_BY_PLACEMENT;
+  style?: StyleProp<ViewStyle>;
+}) {
   const [failed, setFailed] = useState(false);
+  const unitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : UNIT_BY_PLACEMENT[placement];
 
-  if (isPremium || !AD_UNIT_ID || failed) return null;
+  if (!unitId || failed) return null;
 
   return (
     <View style={[{ alignItems: 'center' }, style]}>
       <BannerAd
-        unitId={AD_UNIT_ID}
+        unitId={unitId}
         size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
         requestOptions={{ requestNonPersonalizedAdsOnly: true }}
         onAdFailedToLoad={() => setFailed(true)}

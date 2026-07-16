@@ -3,12 +3,12 @@ import { View, Text, TouchableOpacity, Modal, ActivityIndicator } from 'react-na
 import { Ionicons } from '@expo/vector-icons';
 import { REWARDED_FAILOPEN_DELAY_MS } from '@/constants/ads';
 
-/** Modale « 1 pub = 1 action » pour les non-abonnés (recherche libre,
- *  génération de plan…). FAIL-OPEN : si la pub n'a pas chargé après
+/** Modale « 1 pub = 1 action » (recherche libre, génération/ajustement de
+ *  plan…). FAIL-OPEN : si la pub n'a pas chargé après
  *  REWARDED_FAILOPEN_DELAY_MS (pas de remplissage, panne AdMob…),
  *  « Continuer sans pub » exécute quand même l'action — la régie ne doit
  *  jamais bloquer une fonctionnalité. `capped` = plafond quotidien de pubs
- *  atteint (utils/adQuota.ts) → seul l'abonnement est proposé. */
+ *  atteint (utils/adQuota.ts) → on invite à revenir demain. */
 
 type Props = {
   visible: boolean;
@@ -20,14 +20,13 @@ type Props = {
   isDark: boolean;
   onWatch: () => void;
   onContinue: () => void;
-  onUpgrade: () => void;
   onClose: () => void;
   t: (k: any) => string;
 };
 
 export default function RewardedUnlockModal({
   visible, title, text, ready, capped, colors, isDark,
-  onWatch, onContinue, onUpgrade, onClose, t,
+  onWatch, onContinue, onClose, t,
 }: Props) {
   const [elapsed, setElapsed] = useState(false);
   useEffect(() => {
@@ -66,12 +65,6 @@ export default function RewardedUnlockModal({
               </Text>
             </TouchableOpacity>
           )}
-          <TouchableOpacity
-            onPress={onUpgrade}
-            style={{ borderWidth: 1.5, borderColor: colors.accent, borderRadius: 16, paddingVertical: 13, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, alignSelf: 'stretch' }}>
-            <Ionicons name="sparkles" size={16} color={colors.accent} />
-            <Text style={{ fontSize: 15, fontWeight: '700', color: colors.accent }}>{t('upgradeToPremium')}</Text>
-          </TouchableOpacity>
           {showFailOpen && (
             <TouchableOpacity onPress={onContinue} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
               <Text style={{ fontSize: 13, fontWeight: '700', color: colors.accent, textDecorationLine: 'underline' }}>

@@ -5,7 +5,7 @@ import {
   canSendImage,
   incrementImageCount,
   IMAGE_DAILY_LIMIT,
-} from '@/services/license/imageQuota';
+} from '@/services/imageQuota';
 
 export function useImageQuota() {
   const [used, setUsed] = useState(0);

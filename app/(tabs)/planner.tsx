@@ -9,7 +9,6 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
-  Modal,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -17,10 +16,9 @@ import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
-import { useLicense } from '@/context/LicenseContext';
-import TchopePlusScreen from '@/components/premium/TchopePlusScreen';
 import RewardedUnlockModal from '@/components/RewardedUnlockModal';
 import { useRewardedAd } from '@/hooks/useRewardedAd';
+import { AD_UNITS } from '@/constants/ads';
 import { canWatchRewarded, recordRewardedView } from '@/utils/adQuota';
 import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
 import { useSettings } from '@/context/SettingsContext';
@@ -209,14 +207,13 @@ export default function PlannerScreen() {
   } = useMealPlanner();
 
   const isConnected = useNetworkStatus();
-  const { isPremium } = useLicense();
-  const [showPlusModal, setShowPlusModal] = useState(false);
 
-  // Portail « 1 pub = 1 plan généré » pour les non-abonnés (modèle Travora).
-  // L'ajustement du plan, lui, reste réservé à Tchopé Plus.
-  const rewardedAd = useRewardedAd();
+  // Portail « 1 pub = 1 action IA » (modèle Travora) : la génération comme
+  // l'ajustement du plan passent par le bloc Meal Plan Rewarded.
+  const rewardedAd = useRewardedAd(AD_UNITS.rewardedPlan);
   const [showAdModal, setShowAdModal] = useState(false);
   const [adsCapped, setAdsCapped] = useState(false);
+  const [pendingAction, setPendingAction] = useState<'generate' | 'adjust'>('generate');
   const [preferences, setPreferences] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [showSaved, setShowSaved] = useState(false);
@@ -261,18 +258,13 @@ export default function PlannerScreen() {
 
   const handleGenerate = useCallback(async () => {
     if (!isConnected) { Alert.alert('Tchopé', t('plannerNoConnection')); return; }
-    if (!isPremium) {
-      setAdsCapped(!(await canWatchRewarded()));
-      setShowAdModal(true);
-      return;
-    }
-    await doGenerate();
-  }, [isConnected, isPremium, doGenerate, t]);
+    setAdsCapped(!(await canWatchRewarded()));
+    setPendingAction('generate');
+    setShowAdModal(true);
+  }, [isConnected, t]);
 
-  const handleAdjust = useCallback(async () => {
-    if (!currentPlan || !adjustText.trim()) return;
-    if (!isPremium) { setShowPlusModal(true); return; }
-    if (!isConnected) { Alert.alert('Tchopé', t('plannerNoConnection')); return; }
+  const doAdjust = useCallback(async () => {
+    if (!currentPlan) return;
     setIsAdjusting(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     try {
@@ -286,7 +278,15 @@ export default function PlannerScreen() {
     } finally {
       setIsAdjusting(false);
     }
-  }, [currentPlan, adjustText, recipes, settings.language, setCurrentPlan, t, isConnected, isPremium]);
+  }, [currentPlan, adjustText, recipes, settings.language, setCurrentPlan, t]);
+
+  const handleAdjust = useCallback(async () => {
+    if (!currentPlan || !adjustText.trim()) return;
+    if (!isConnected) { Alert.alert('Tchopé', t('plannerNoConnection')); return; }
+    setAdsCapped(!(await canWatchRewarded()));
+    setPendingAction('adjust');
+    setShowAdModal(true);
+  }, [currentPlan, adjustText, isConnected, t]);
 
   const handleSwap = useCallback((date: string, mealIndex: number) => {
     const current = currentPlan?.days[date]?.meals[mealIndex]?.recipeId;
@@ -598,16 +598,10 @@ export default function PlannerScreen() {
         </ScrollView>
       </KeyboardAvoidingView>
 
-      <Modal visible={showPlusModal} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setShowPlusModal(false)}>
-        <View style={{ flex: 1, backgroundColor: colors.background }}>
-          <TchopePlusScreen onClose={() => setShowPlusModal(false)} />
-        </View>
-      </Modal>
-
       <RewardedUnlockModal
         visible={showAdModal}
-        title={t('planAdUnlockTitle')}
-        text={t('planAdUnlockText')}
+        title={t(pendingAction === 'adjust' ? 'planAdjustUnlockTitle' : 'planAdUnlockTitle')}
+        text={t(pendingAction === 'adjust' ? 'planAdjustUnlockText' : 'planAdUnlockText')}
         ready={rewardedAd.ready}
         capped={adsCapped}
         colors={colors}
@@ -616,16 +610,14 @@ export default function PlannerScreen() {
           rewardedAd.show(() => {
             recordRewardedView();
             setShowAdModal(false);
-            doGenerate();
+            if (pendingAction === 'adjust') doAdjust();
+            else doGenerate();
           })
         }
         onContinue={() => {
           setShowAdModal(false);
-          doGenerate();
-        }}
-        onUpgrade={() => {
-          setShowAdModal(false);
-          setShowPlusModal(true);
+          if (pendingAction === 'adjust') doAdjust();
+          else doGenerate();
         }}
         onClose={() => setShowAdModal(false)}
         t={t}

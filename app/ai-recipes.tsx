@@ -9,7 +9,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   Keyboard,
-  Modal,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -24,10 +23,9 @@ import RecipeCard from '@/components/RecipeCard';
 import { searchByIngredients, isValidIngredient, getMissingIngredients } from '@/utils/ingredient-matcher';
 import { callClaude } from '@/utils/api';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
-import { useLicense } from '@/context/LicenseContext';
-import TchopePlusScreen from '@/components/premium/TchopePlusScreen';
 import RewardedUnlockModal from '@/components/RewardedUnlockModal';
 import { useRewardedAd } from '@/hooks/useRewardedAd';
+import { AD_UNITS } from '@/constants/ads';
 import { canWatchRewarded, recordRewardedView } from '@/utils/adQuota';
 import type { Recipe } from '@/types';
 
@@ -174,12 +172,10 @@ export default function AIRecipesScreen() {
 
   const isFr = settings.language === 'fr';
   const isConnected = useNetworkStatus();
-  const { isPremium } = useLicense();
-  const [showPlusModal, setShowPlusModal] = useState(false);
   const aiAvailable = !!process.env.EXPO_PUBLIC_API_URL && isConnected;
 
-  // Portail « 1 pub = 1 recherche libre » pour les non-abonnés (modèle Travora).
-  const rewardedAd = useRewardedAd();
+  // Portail « 1 pub = 1 recherche libre » (modèle Travora).
+  const rewardedAd = useRewardedAd(AD_UNITS.rewardedSearch);
   const [showAdModal, setShowAdModal] = useState(false);
   const [adsCapped, setAdsCapped] = useState(false);
 
@@ -276,12 +272,8 @@ export default function AIRecipesScreen() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
       return;
     }
-    if (!isPremium) {
-      setAdsCapped(!(await canWatchRewarded()));
-      setShowAdModal(true);
-      return;
-    }
-    await runFreeTextSearch();
+    setAdsCapped(!(await canWatchRewarded()));
+    setShowAdModal(true);
   };
 
   const runFreeTextSearch = async () => {
@@ -748,12 +740,6 @@ export default function AIRecipesScreen() {
         </ScrollView>
       </KeyboardAvoidingView>
 
-      <Modal visible={showPlusModal} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setShowPlusModal(false)}>
-        <View style={{ flex: 1, backgroundColor: colors.background }}>
-          <TchopePlusScreen onClose={() => setShowPlusModal(false)} />
-        </View>
-      </Modal>
-
       <RewardedUnlockModal
         visible={showAdModal}
         title={t('searchAdUnlockTitle')}
@@ -772,10 +758,6 @@ export default function AIRecipesScreen() {
         onContinue={() => {
           setShowAdModal(false);
           runFreeTextSearch();
-        }}
-        onUpgrade={() => {
-          setShowAdModal(false);
-          setShowPlusModal(true);
         }}
         onClose={() => setShowAdModal(false)}
         t={t}

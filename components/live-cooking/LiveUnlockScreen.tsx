@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Modal } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as Haptics from 'expo-haptics';
 
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
-import TchopePlusScreen from './TchopePlusScreen';
+import { useRewardedAd } from '@/hooks/useRewardedAd';
+import { AD_UNITS, REWARDED_FAILOPEN_DELAY_MS } from '@/constants/ads';
+import { canWatchRewarded, recordRewardedView } from '@/utils/adQuota';
 
 const FEATURES = [
   { icon: 'mic-outline', key: 'liveExplainFeature1' },
@@ -13,11 +16,37 @@ const FEATURES = [
   { icon: 'hand-left-outline', key: 'liveExplainFeature3' },
 ] as const;
 
-export default function LiveExplainScreen({ onClose }: { onClose: () => void }) {
+/** Portail « 1 pub = 1 session Live » — Live est le placement le plus cher en
+ *  API, la session n'est débloquée que pour la durée de l'écran courant.
+ *  FAIL-OPEN : si la pub n'a pas chargé après REWARDED_FAILOPEN_DELAY_MS, on
+ *  laisse démarrer la session sans pub — la régie ne bloque jamais la cuisine.
+ *  Plafond quotidien partagé (utils/adQuota.ts) : atteint → revenir demain. */
+export default function LiveUnlockScreen({ onClose, onUnlocked }: {
+  onClose: () => void;
+  onUnlocked: () => void;
+}) {
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
-  const [showPlusModal, setShowPlusModal] = useState(false);
   const { top } = useSafeAreaInsets();
+  const rewardedAd = useRewardedAd(AD_UNITS.rewardedLive);
+  const [capped, setCapped] = useState(false);
+  const [elapsed, setElapsed] = useState(false);
+
+  useEffect(() => {
+    canWatchRewarded().then((ok) => setCapped(!ok));
+    const timer = setTimeout(() => setElapsed(true), REWARDED_FAILOPEN_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const showFailOpen = !capped && elapsed && !rewardedAd.ready;
+
+  const handleWatch = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    rewardedAd.show(() => {
+      recordRewardedView();
+      onUnlocked();
+    });
+  };
 
   return (
     <ScrollView
@@ -113,38 +142,47 @@ export default function LiveExplainScreen({ onClose }: { onClose: () => void }) 
 
       {/* CTA */}
       <View style={{ marginTop: 32, alignItems: 'center', gap: 4 }}>
-        <Text style={{ fontSize: 13, color: colors.textMuted }}>
-          {t('liveExplainCta')}
+        <Text style={{ fontSize: 13, color: colors.textMuted, textAlign: 'center' }}>
+          {capped ? t('adDailyLimitReached') : t('liveUnlockCta')}
         </Text>
       </View>
 
-      <TouchableOpacity
-        onPress={() => setShowPlusModal(true)}
-        activeOpacity={0.85}
-        style={{
-          marginTop: 12,
-          backgroundColor: colors.accent,
-          borderRadius: 20,
-          paddingVertical: 16,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 8,
-        }}
-      >
-        <Ionicons name="sparkles" size={18} color="#FFFFFF" />
-        <Text style={{ fontSize: 16, fontWeight: '700', color: '#FFFFFF' }}>
-          {t('upgradeToPremium')}
-        </Text>
-      </TouchableOpacity>
+      {!capped && (
+        <TouchableOpacity
+          onPress={handleWatch}
+          disabled={!rewardedAd.ready}
+          activeOpacity={0.85}
+          style={{
+            marginTop: 12,
+            backgroundColor: rewardedAd.ready ? colors.accent : colors.surface,
+            borderRadius: 20,
+            paddingVertical: 16,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+          }}
+        >
+          {rewardedAd.ready ? (
+            <Ionicons name="play" size={18} color="#FFFFFF" />
+          ) : (
+            <ActivityIndicator size="small" color={colors.textMuted} />
+          )}
+          <Text style={{ fontSize: 16, fontWeight: '700', color: rewardedAd.ready ? '#FFFFFF' : colors.textMuted }}>
+            {rewardedAd.ready ? t('adUnlockWatch') : t('aiAdLoading')}
+          </Text>
+        </TouchableOpacity>
+      )}
+
+      {showFailOpen && (
+        <TouchableOpacity onPress={onUnlocked} style={{ marginTop: 16, alignItems: 'center' }} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+          <Text style={{ fontSize: 13, fontWeight: '700', color: colors.accent, textDecorationLine: 'underline' }}>
+            {t('adContinueNoAd')}
+          </Text>
+        </TouchableOpacity>
+      )}
 
       <View style={{ height: 32 }} />
-
-      <Modal visible={showPlusModal} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setShowPlusModal(false)}>
-        <View style={{ flex: 1, backgroundColor: colors.background }}>
-          <TchopePlusScreen onClose={() => setShowPlusModal(false)} />
-        </View>
-      </Modal>
     </ScrollView>
   );
 }

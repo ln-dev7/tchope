@@ -7,10 +7,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '@/hooks/useTheme';
 import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
 import { useUserRecipes } from '@/hooks/useUserRecipes';
-import { useLicense } from '@/context/LicenseContext';
 import { useTimer } from '@/context/TimerContext';
 import LiveCookingScreen from '@/components/live-cooking/LiveCookingScreen';
-import LiveExplainScreen from '@/components/premium/LiveExplainScreen';
+import LiveUnlockScreen from '@/components/live-cooking/LiveUnlockScreen';
 
 export default function LiveCookingRoute() {
   const { id, step } = useLocalSearchParams<{ id: string; step?: string }>();
@@ -18,7 +17,9 @@ export default function LiveCookingRoute() {
   const { colors } = useTheme();
   const recipes = useLocalizedRecipes();
   const { userRecipes } = useUserRecipes();
-  const { isPremium } = useLicense();
+  // « 1 pub = 1 session » : le déblocage ne vaut que pour ce montage d'écran —
+  // rouvrir Live plus tard repasse par le portail.
+  const [unlocked, setUnlocked] = React.useState(false);
   const { isTimerRunning, stopAllTimers } = useTimer();
 
   // Stop any active timer when launching Live cooking
@@ -46,10 +47,10 @@ export default function LiveCookingRoute() {
     );
   }
 
-  if (!isPremium) {
+  if (!unlocked) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top', 'bottom']}>
-        <LiveExplainScreen onClose={() => router.back()} />
+        <LiveUnlockScreen onClose={() => router.back()} onUnlocked={() => setUnlocked(true)} />
       </SafeAreaView>
     );
   }

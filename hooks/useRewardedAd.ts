@@ -1,18 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Platform } from 'react-native';
 import { RewardedAd, RewardedAdEventType, AdEventType, TestIds } from 'react-native-google-mobile-ads';
-
-// Blocs "TchopAI Rewarded Message" — Android + iOS ("Tchope IOS", créé le 9 juillet 2026).
-const AD_UNIT_ID = __DEV__
-  ? TestIds.REWARDED
-  : Platform.select({
-      android: 'ca-app-pub-2222017759396595/3107451588',
-      ios: 'ca-app-pub-2222017759396595/8002579254',
-    });
 
 const RETRY_DELAY_MS = 60_000;
 
-export function useRewardedAd() {
+// `unitId` : un bloc de constants/ads.ts (AD_UNITS.rewarded*) — un bloc
+// distinct par placement pour suivre l'eCPM de chacun dans AdMob.
+export function useRewardedAd(unitId: string | undefined) {
+  const adUnitId = __DEV__ ? TestIds.REWARDED : unitId;
   const [ready, setReady] = useState(false);
   const adRef = useRef<RewardedAd | null>(null);
   const onRewardRef = useRef<(() => void) | null>(null);
@@ -20,9 +14,9 @@ export function useRewardedAd() {
   const retryTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (!AD_UNIT_ID) return;
+    if (!adUnitId) return;
 
-    const ad = RewardedAd.createForAdRequest(AD_UNIT_ID, {
+    const ad = RewardedAd.createForAdRequest(adUnitId, {
       requestNonPersonalizedAdsOnly: true,
     });
     adRef.current = ad;
@@ -54,7 +48,7 @@ export function useRewardedAd() {
       subs.forEach((unsubscribe) => unsubscribe());
       if (retryTimer.current) clearTimeout(retryTimer.current);
     };
-  }, []);
+  }, [adUnitId]);
 
   const show = useCallback(
     (onReward: () => void) => {

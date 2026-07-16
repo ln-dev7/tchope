@@ -23,10 +23,9 @@ import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useSettings } from '@/context/SettingsContext';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
-import { useLicense } from '@/context/LicenseContext';
 import { useImageQuota } from '@/hooks/useImageQuota';
 import { useRewardedAd } from '@/hooks/useRewardedAd';
-import { REWARDED_MESSAGES_PER_AD, REWARDED_FAILOPEN_DELAY_MS } from '@/constants/ads';
+import { AD_UNITS, REWARDED_MESSAGES_PER_AD, REWARDED_FAILOPEN_DELAY_MS } from '@/constants/ads';
 import { loadAiCredits, saveAiCredits } from '@/utils/aiCredits';
 import { canWatchRewarded, recordRewardedView } from '@/utils/adQuota';
 import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
@@ -36,7 +35,6 @@ import { useMealPlanner } from '@/context/MealPlannerContext';
 import { useNotes } from '@/context/NotesContext';
 import { callClaude, callClaudeLive, fetchRecipeUrl } from '@/utils/api';
 import { getChatHistory, saveChat, deleteChat, clearAllChats, MAX_SAVED_CHATS, type SavedChat } from '@/utils/chatHistory';
-import TchopePlusScreen from '@/components/premium/TchopePlusScreen';
 
 import type { Message } from '@/components/tchop-ai/types';
 import { parseResponse, buildSystemPrompt } from '@/components/tchop-ai/utils';
@@ -56,7 +54,6 @@ export default function TchopAIScreen() {
   const { notes, addNote } = useNotes();
   const router = useRouter();
   const { bottom } = useSafeAreaInsets();
-  const { isPremium } = useLicense();
   const imageQuota = useImageQuota();
 
   const isFr = settings.language === 'fr';
@@ -71,9 +68,7 @@ export default function TchopAIScreen() {
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
   const [credits, setCredits] = useState(0);
-  const rewardedAd = useRewardedAd();
-  const [showPhotoModal, setShowPhotoModal] = useState(false);
-  const [showPlusModal, setShowPlusModal] = useState(false);
+  const rewardedAd = useRewardedAd(AD_UNITS.rewardedMessages);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [showSourceModal, setShowSourceModal] = useState(false);
   const [chatHistoryList, setChatHistoryList] = useState<SavedChat[]>([]);
@@ -83,7 +78,7 @@ export default function TchopAIScreen() {
   // Portail rewarded « 1 pub = N messages » (modèle Travora) : le crédit se
   // recharge à volonté en regardant une pub, dans la limite du plafond de
   // sécurité quotidien partagé (utils/adQuota.ts).
-  const locked = !isPremium && credits <= 0;
+  const locked = credits <= 0;
   const [adsCapped, setAdsCapped] = useState(false);
   useEffect(() => {
     if (locked) canWatchRewarded().then((ok) => setAdsCapped(!ok));
@@ -202,13 +197,11 @@ export default function TchopAIScreen() {
       }]);
 
       // Réponse reçue → consomme 1 crédit (jamais décompté sur erreur).
-      if (!isPremium) {
-        setCredits((c) => {
-          const n = Math.max(0, c - 1);
-          saveAiCredits(n);
-          return n;
-        });
-      }
+      setCredits((c) => {
+        const n = Math.max(0, c - 1);
+        saveAiCredits(n);
+        return n;
+      });
     } catch {
       setMessages((prev) => [...prev, { id: (Date.now() + 1).toString(), role: 'assistant', content: t('tchopaiError') }]);
     } finally {
@@ -255,8 +248,9 @@ export default function TchopAIScreen() {
   };
 
   // --- Photo ---
+  // Accessible dès qu'il reste du crédit (le portail remplace la saisie à 0) ;
+  // une photo consomme 1 crédit comme un message, bornée par useImageQuota.
   const handlePhotoPress = () => {
-    if (!isPremium) { setShowPhotoModal(true); return; }
     setShowSourceModal(true);
   };
 
@@ -319,6 +313,13 @@ export default function TchopAIScreen() {
         id: (Date.now() + 1).toString(), role: 'assistant',
         content: parsed.content, recipeIds: parsed.recipeIds, saveRecipe: parsed.saveRecipe, noteIds: parsed.noteIds, saveNote: parsed.saveNote,
       }]);
+
+      // Une photo analysée consomme 1 crédit, comme un message (jamais sur erreur).
+      setCredits((c) => {
+        const n = Math.max(0, c - 1);
+        saveAiCredits(n);
+        return n;
+      });
     } catch {
       setMessages((prev) => [...prev, { id: (Date.now() + 1).toString(), role: 'assistant', content: t('tchopaiError') }]);
     } finally {
@@ -403,7 +404,6 @@ export default function TchopAIScreen() {
             capped={adsCapped}
             onWatch={handleWatchRewarded}
             onContinue={() => grantCredits(1)}
-            onUpgrade={() => setShowPlusModal(true)}
             t={t}
           />
         ) : (
@@ -419,22 +419,13 @@ export default function TchopAIScreen() {
               onPhoto={handlePhotoPress}
               t={t}
             />
-            {!isPremium && (
-              <Text style={{ textAlign: 'center', fontSize: 11, color: colors.textMuted, paddingBottom: 6 }}>
-                {t('aiMessagesLeft').replace('{count}', String(credits))}
-              </Text>
-            )}
+            <Text style={{ textAlign: 'center', fontSize: 11, color: colors.textMuted, paddingBottom: 6 }}>
+              {t('aiMessagesLeft').replace('{count}', String(credits))}
+            </Text>
           </>
         )}
       </Animated.View>
       )}
-
-      {/* TchopePlus modal */}
-      <Modal visible={showPlusModal} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setShowPlusModal(false)}>
-        <View style={{ flex: 1, backgroundColor: colors.background }}>
-          <TchopePlusScreen onClose={() => setShowPlusModal(false)} />
-        </View>
-      </Modal>
 
       {/* Photo source picker */}
       <Modal visible={showSourceModal} transparent animationType="fade" onRequestClose={() => setShowSourceModal(false)}>
@@ -458,30 +449,6 @@ export default function TchopAIScreen() {
             style={{ backgroundColor: isDark ? colors.card : '#FFFFFF', borderRadius: 20, paddingVertical: 16, alignItems: 'center' }}>
             <Text style={{ fontSize: 16, fontWeight: '600', color: colors.textMuted }}>{isFr ? 'Annuler' : 'Cancel'}</Text>
           </TouchableOpacity>
-        </View>
-      </Modal>
-
-      {/* Photo premium modal */}
-      <Modal visible={showPhotoModal} transparent animationType="fade" onRequestClose={() => setShowPhotoModal(false)}>
-        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', paddingHorizontal: 32 }}>
-          <View style={{ backgroundColor: isDark ? colors.card : '#FFFFFF', borderRadius: 24, padding: 24, gap: 16, alignItems: 'center' }}>
-            <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: isDark ? `${colors.accent}20` : `${colors.accent}10`, alignItems: 'center', justifyContent: 'center' }}>
-              <Ionicons name="camera" size={28} color={colors.accent} />
-            </View>
-            <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text, textAlign: 'center' }}>{t('premiumRequired')}</Text>
-            <Text style={{ fontSize: 14, color: colors.textSecondary, textAlign: 'center', lineHeight: 20 }}>
-              {isFr ? "L'envoi de photos à TchopAI est réservé aux abonnés Tchopé Plus." : 'Sending photos to TchopAI is available for Tchopé Plus subscribers.'}
-            </Text>
-            <TouchableOpacity
-              onPress={() => { setShowPhotoModal(false); setShowPlusModal(true); }}
-              style={{ backgroundColor: colors.accent, borderRadius: 16, paddingVertical: 14, paddingHorizontal: 24, flexDirection: 'row', alignItems: 'center', gap: 8, width: '100%', justifyContent: 'center' }}>
-              <Ionicons name="sparkles" size={16} color="#FFFFFF" />
-              <Text style={{ fontSize: 15, fontWeight: '700', color: '#FFFFFF' }}>{t('upgradeToPremium')}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setShowPhotoModal(false)}>
-              <Text style={{ fontSize: 14, color: colors.textMuted }}>{isFr ? 'Annuler' : 'Cancel'}</Text>
-            </TouchableOpacity>
-          </View>
         </View>
       </Modal>
 
@@ -565,14 +532,13 @@ export default function TchopAIScreen() {
  *  FAIL-OPEN : si la pub n'a pas chargé après REWARDED_FAILOPEN_DELAY_MS
  *  (pas de remplissage, panne AdMob…), « Continuer sans pub » offre 1 message
  *  — la régie ne doit jamais bloquer TchopAI. `capped` = plafond quotidien de
- *  pubs atteint (utils/adQuota.ts) → seul l'abonnement est proposé. */
-function AdGate({ colors, ready, capped, onWatch, onContinue, onUpgrade, t }: {
+ *  pubs atteint (utils/adQuota.ts) → on invite à revenir demain. */
+function AdGate({ colors, ready, capped, onWatch, onContinue, t }: {
   colors: any;
   ready: boolean;
   capped: boolean;
   onWatch: () => void;
   onContinue: () => void;
-  onUpgrade: () => void;
   t: (k: any) => string;
 }) {
   const [elapsed, setElapsed] = useState(false);
@@ -610,12 +576,6 @@ function AdGate({ colors, ready, capped, onWatch, onContinue, onUpgrade, t }: {
           </Text>
         </TouchableOpacity>
       )}
-      <TouchableOpacity
-        onPress={onUpgrade}
-        style={{ borderWidth: 1.5, borderColor: colors.accent, borderRadius: 16, paddingVertical: 13, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, alignSelf: 'stretch' }}>
-        <Ionicons name="sparkles" size={16} color={colors.accent} />
-        <Text style={{ fontSize: 15, fontWeight: '700', color: colors.accent }}>{t('upgradeToPremium')}</Text>
-      </TouchableOpacity>
       {showFailOpen && (
         <TouchableOpacity onPress={onContinue} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
           <Text style={{ fontSize: 13, fontWeight: '700', color: colors.accent, textDecorationLine: 'underline' }}>
