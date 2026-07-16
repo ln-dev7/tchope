@@ -3,7 +3,7 @@ import { AI_WELCOME_CREDITS } from '@/constants/ads';
 
 // Crédit de messages TchopAI (modèle « 1 pub = N messages », aligné sur
 // Travora). Solde persistant : les messages non consommés restent disponibles
-// d'une session à l'autre. Jamais consulté pour les abonnés Tchopé Plus.
+// d'une session à l'autre. Une photo analysée consomme aussi 1 crédit.
 
 const KEY = 'tchope_ai_credits';
 const WELCOME_KEY = 'tchope_ai_welcome_granted';

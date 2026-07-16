@@ -164,10 +164,6 @@ export const translations = {
     videoSubtitle: "Apprenez étape par étape avec ces vidéos",
     watchVideo: "Regarder",
 
-    // Support
-    supportMe: "Me soutenir",
-    supportSubtitle: "Soutenir le projet",
-
     // Contact
     contactMe: "Me contacter",
     contactSubtitle: "Par email ou Telegram",
@@ -634,10 +630,6 @@ export const translations = {
     videoTutorials: "Video Tutorials",
     videoSubtitle: "Learn step by step with these videos",
     watchVideo: "Watch",
-
-    // Support
-    supportMe: "Support Me",
-    supportSubtitle: "Support the project",
 
     // Contact
     contactMe: "Contact Me",

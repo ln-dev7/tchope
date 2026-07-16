@@ -2,9 +2,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { REWARDED_DAILY_LIMIT } from '@/constants/ads';
 
 // Plafond de sécurité quotidien, partagé par TOUS les placements rewarded
-// (messages TchopAI, recherche libre, plan de repas) : borne le coût Claude
-// par utilisateur. Invisible en usage normal — quand il est atteint, les
-// portails ne proposent plus que Tchopé Plus.
+// (messages TchopAI, recherche libre, plan de repas, sessions Live) : borne le
+// coût Claude par utilisateur. Invisible en usage normal — quand il est
+// atteint, les portails invitent à revenir demain.
 
 const DAY_KEY = 'tchope_rewarded_day';
 const COUNT_KEY = 'tchope_rewarded_views';

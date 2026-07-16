@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Alert, Linking, Platform } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Alert, Linking } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -440,44 +440,6 @@ export default function SettingsScreen() {
           </View>
           <Ionicons name="open-outline" size={14} color={colors.textMuted} />
         </TouchableOpacity>
-
-        {/* Support — hidden on iOS (Apple 3.1.1: no external purchase links) */}
-        {Platform.OS !== 'ios' && (
-        <TouchableOpacity
-          onPress={() => Linking.openURL('https://lndev.mychariow.shop/prd_3cu1s0')}
-          activeOpacity={0.85}
-          style={{
-            borderRadius: 32,
-            padding: 20,
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 16,
-            backgroundColor: isDark ? 'rgba(249,127,6,0.1)' : 'rgba(249,127,6,0.08)',
-            borderWidth: 1.5,
-            borderColor: isDark ? 'rgba(249,127,6,0.2)' : 'rgba(249,127,6,0.15)',
-          }}>
-          <View
-            style={{
-              width: 48,
-              height: 48,
-              borderRadius: 24,
-              backgroundColor: colors.accentLight,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-            <Ionicons name="heart" size={24} color="#FFFFFF" />
-          </View>
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 16, fontWeight: '700', color: colors.accent }}>
-              {t('supportMe')}
-            </Text>
-            <Text style={{ fontSize: 13, color: colors.textSecondary, marginTop: 2 }}>
-              {t('supportSubtitle')}
-            </Text>
-          </View>
-          <Ionicons name="open-outline" size={16} color={colors.accent} />
-        </TouchableOpacity>
-        )}
 
         {/* About */}
         <View style={{ gap: 16, paddingBottom: 48 }}>
