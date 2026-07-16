@@ -2,7 +2,7 @@
   "expo": {
     "name": "Tchope",
     "slug": "tchope",
-    "version": "1.8.0",
+    "version": "1.9.0",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
     "scheme": "tchope",
@@ -11,11 +11,13 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.lndev.tchope",
+      "appleTeamId": "JDWTCZR377",
       "infoPlist": {
         "NSSpeechRecognitionUsageDescription": "TchopAI Live utilise la reconnaissance vocale pour vous guider pendant la cuisine.",
         "NSMicrophoneUsageDescription": "TchopAI Live utilise le micro pour écouter vos questions pendant la cuisine.",
         "NSCameraUsageDescription": "TchopAI utilise la caméra pour analyser vos plats et ingrédients.",
-        "NSPhotoLibraryUsageDescription": "TchopAI accède à votre galerie pour analyser vos photos de plats et ingrédients."
+        "NSPhotoLibraryUsageDescription": "TchopAI accède à votre galerie pour analyser vos photos de plats et ingrédients.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "splash": {
@@ -30,13 +32,17 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.lndev.tchope"
+      "package": "com.lndev.tchope",
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "output": "static",
       "favicon": "./assets/images/logo.png"
     },
     "plugins": [
+      "./plugins/with-no-aps-environment.js",
       "expo-router",
       [
         "react-native-google-mobile-ads",
@@ -137,7 +143,19 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "aaec700f-9bdc-4162-a589-a215757f7ca4"
+        "projectId": "aaec700f-9bdc-4162-a589-a215757f7ca4",
+        "build": {
+          "experimental": {
+            "ios": {
+              "appExtensions": [
+                {
+                  "bundleIdentifier": "com.lndev.tchope.recipe-widget",
+                  "targetName": "RecipeWidget"
+                }
+              ]
+            }
+          }
+        }
       }
     }
   }

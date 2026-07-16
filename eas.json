@@ -1,7 +1,8 @@
 {
   "cli": {
     "version": ">= 18.4.0",
-    "appVersionSource": "remote"
+    "appVersionSource": "remote",
+    "promptToConfigurePushNotifications": false
   },
   "build": {
     "development": {
@@ -19,6 +20,14 @@
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "appleTeamId": "JDWTCZR377",
+        "ascApiKeyPath": "/Users/lndev/AppStoreConnect/AuthKey_93RLX7MP37.p8",
+        "ascApiKeyId": "93RLX7MP37",
+        "ascApiKeyIssuerId": "77f8bae2-5581-4f42-919b-e2882728781b",
+        "ascAppId": "6791111069"
+      }
+    }
   }
 }
