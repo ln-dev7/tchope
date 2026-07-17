@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/hooks/useTheme';
 import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
@@ -48,10 +47,12 @@ export default function LiveCookingRoute() {
   }
 
   if (!unlocked) {
+    // Pas de SafeAreaView ici : figé à inset 0 dans un fullScreenModal iOS.
+    // LiveUnlockScreen gère lui-même le top inset via useSafeAreaInsets.
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top', 'bottom']}>
+      <View style={{ flex: 1, backgroundColor: colors.background }}>
         <LiveUnlockScreen onClose={() => router.back()} onUnlocked={() => setUnlocked(true)} />
-      </SafeAreaView>
+      </View>
     );
   }
 

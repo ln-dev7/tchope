@@ -56,7 +56,7 @@ export default function LiveCookingScreen({
   } = useLiveCooking(recipe, initialStep, settings.language);
 
   const isFr = settings.language === 'fr';
-  const { bottom } = useSafeAreaInsets();
+  const { top, bottom } = useSafeAreaInsets();
   const imageQuota = useImageQuota();
   const [showSourceModal, setShowSourceModal] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
@@ -200,7 +200,7 @@ export default function LiveCookingScreen({
   if (!isSpeechRecognitionAvailable()) {
     return (
       <View style={[styles.screen, { backgroundColor: colors.background }]}>
-        <SafeAreaView style={styles.flex} edges={['top']}>
+        <View style={[styles.flex, { paddingTop: top }]}>
           <View style={{ flexDirection: 'row', justifyContent: 'flex-end', paddingHorizontal: 20, paddingVertical: 12 }}>
             <TouchableOpacity
               onPress={onClose}
@@ -220,7 +220,7 @@ export default function LiveCookingScreen({
                 : 'Speech recognition requires a development build. Run "npx expo prebuild" then build the app.'}
             </Text>
           </View>
-        </SafeAreaView>
+        </View>
       </View>
     );
   }
@@ -230,7 +230,7 @@ export default function LiveCookingScreen({
     const isPermanentlyDenied = permissionState === 'denied_permanently';
     return (
       <View style={[styles.screen, { backgroundColor: colors.background }]}>
-        <SafeAreaView style={styles.centered}>
+        <View style={[styles.centered, { paddingTop: top }]}>
           <Ionicons
             name="mic-outline"
             size={56}
@@ -281,14 +281,14 @@ export default function LiveCookingScreen({
               {isFr ? 'Annuler' : 'Cancel'}
             </Text>
           </TouchableOpacity>
-        </SafeAreaView>
+        </View>
       </View>
     );
   }
 
   return (
     <View style={[styles.screen, { backgroundColor: colors.background }]}>
-      <SafeAreaView style={styles.flex} edges={['top']}>
+      <View style={[styles.flex, { paddingTop: top }]}>
         {/* Header */}
         <LiveCookingHeader
           recipeName={recipe.name}
@@ -432,7 +432,7 @@ export default function LiveCookingScreen({
         </View>
 
         {/* Controls */}
-        <SafeAreaView edges={['bottom']} style={styles.controlsWrapper}>
+        <View style={[styles.controlsWrapper, { paddingBottom: bottom + 16 }]}>
           <LiveCookingControls
             state={liveState}
             isDark={isDark}
@@ -446,8 +446,8 @@ export default function LiveCookingScreen({
             photoLabel={t('takePhotoForAI')}
             mode={mode}
           />
-        </SafeAreaView>
-      </SafeAreaView>
+        </View>
+      </View>
 
       {/* History modal */}
       <Modal visible={showHistory} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setShowHistory(false)}>

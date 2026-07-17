@@ -9,7 +9,7 @@ import {
   ScrollView,
   ViewToken,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter, useNavigation } from 'expo-router';
 import * as Haptics from 'expo-haptics';
@@ -68,6 +68,7 @@ export default function CookingModeScreen() {
   const { startTimer, pauseTimer, resumeTimer, stopTimer, stopAllTimers, getTimersForRecipe } = useTimer();
   const { toast } = useToast();
   const { settings } = useSettings();
+  const { top, bottom } = useSafeAreaInsets();
 
   const recipe = recipes.find((r) => r.id === id) ?? userRecipes.find((r) => r.id === id);
   const steps = recipe?.steps ?? [];
@@ -156,9 +157,9 @@ export default function CookingModeScreen() {
 
   if (!recipe) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' }}>
+      <View style={{ flex: 1, backgroundColor: colors.background, alignItems: 'center', justifyContent: 'center' }}>
         <Text style={{ color: colors.text }}>Recipe not found</Text>
-      </SafeAreaView>
+      </View>
     );
   }
 
@@ -168,14 +169,19 @@ export default function CookingModeScreen() {
     const thisStepHasTimer = stepHasTimer(index);
 
     return (
-      <View
+      <ScrollView
         style={{
           width: SCREEN_WIDTH,
           height: listHeight || undefined,
+        }}
+        contentContainerStyle={{
+          flexGrow: 1,
           paddingHorizontal: 32,
           justifyContent: hasTimers ? 'flex-start' : 'center',
           paddingTop: hasTimers ? 36 : 0,
-        }}>
+          paddingBottom: 16,
+        }}
+        showsVerticalScrollIndicator={false}>
         <View
           style={{
             width: 64, height: 64, borderRadius: 32,
@@ -240,7 +246,7 @@ export default function CookingModeScreen() {
             </TouchableOpacity>
           )
         )}
-      </View>
+      </ScrollView>
     );
   };
 
@@ -351,7 +357,7 @@ export default function CookingModeScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
-      <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+      <View style={{ flex: 1, paddingTop: top }}>
         {/* Header */}
         <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 24, paddingVertical: 12, gap: 16 }}>
           <TouchableOpacity
@@ -434,7 +440,7 @@ export default function CookingModeScreen() {
         </View>
 
         {/* Bottom navigation */}
-        <SafeAreaView edges={['bottom']}>
+        <View style={{ paddingBottom: bottom }}>
           <View style={{ flexDirection: 'row', paddingHorizontal: 24, paddingVertical: 16, gap: 12 }}>
             <TouchableOpacity
               onPress={handlePrev}
@@ -460,8 +466,8 @@ export default function CookingModeScreen() {
               <Ionicons name={currentStep === totalSteps - 1 ? 'checkmark-circle' : 'arrow-forward'} size={18} color="#FFFFFF" />
             </TouchableOpacity>
           </View>
-        </SafeAreaView>
-      </SafeAreaView>
+        </View>
+      </View>
     </View>
   );
 }

@@ -1,5 +1,6 @@
 import "../global.css";
 import React, { useEffect } from 'react';
+import { Text, TextInput } from 'react-native';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -27,6 +28,14 @@ import { ONBOARDING_KEY } from './onboarding';
 export const unstable_settings = {
   anchor: '(tabs)',
 };
+
+// Plafonne l'agrandissement système du texte (Dynamic Type iOS / taille de
+// police Android) : au-delà de ×1.2, les mises en page fixes (mode cuisine,
+// headers, portails) débordent de l'écran.
+// @ts-expect-error defaultProps n'est plus dans les types mais reste honoré par RN
+Text.defaultProps = { ...(Text.defaultProps ?? {}), maxFontSizeMultiplier: 1.2 };
+// @ts-expect-error idem
+TextInput.defaultProps = { ...(TextInput.defaultProps ?? {}), maxFontSizeMultiplier: 1.2 };
 
 function InnerLayout() {
   const { isDark } = useTheme();
