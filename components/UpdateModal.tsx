@@ -11,7 +11,7 @@ const VERSION_CHECK_KEY = 'last_version_check';
 const CHECK_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours
 
 const STORE_URL = Platform.select({
-  ios: 'https://apps.apple.com/app/id<YOUR_APP_ID>', // TODO: replace with real App Store ID
+  ios: 'https://apps.apple.com/app/tchope/id6791111069',
   android: 'https://play.google.com/store/apps/details?id=com.lndev.tchope',
 }) ?? '';
 
