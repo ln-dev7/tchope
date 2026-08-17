@@ -16,7 +16,6 @@ import { useUserRecipes } from '@/hooks/useUserRecipes';
 import { useRating } from '@/context/RatingContext';
 import { getRecipeVideos } from '@/constants/videos';
 import RecipeImage from '@/components/RecipeImage';
-import AdBanner from '@/components/AdBanner';
 import { scaleQuantity } from '@/utils/quantity';
 
 type Tab = 'ingredients' | 'steps';
@@ -507,7 +506,6 @@ export default function RecipeDetailScreen() {
         </View>
       </ScrollView>
 
-      <AdBanner placement="recipe" style={{ marginBottom: bottom }} />
     </View>
   );
 }

@@ -8,7 +8,7 @@ import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
 import { useUserRecipes } from '@/hooks/useUserRecipes';
 import { useTimer } from '@/context/TimerContext';
 import LiveCookingScreen from '@/components/live-cooking/LiveCookingScreen';
-import LiveUnlockScreen from '@/components/live-cooking/LiveUnlockScreen';
+import LiveIntroScreen from '@/components/live-cooking/LiveIntroScreen';
 
 export default function LiveCookingRoute() {
   const { id, step } = useLocalSearchParams<{ id: string; step?: string }>();
@@ -16,9 +16,8 @@ export default function LiveCookingRoute() {
   const { colors } = useTheme();
   const recipes = useLocalizedRecipes();
   const { userRecipes } = useUserRecipes();
-  // « 1 pub = 1 session » : le déblocage ne vaut que pour ce montage d'écran —
-  // rouvrir Live plus tard repasse par le portail.
-  const [unlocked, setUnlocked] = React.useState(false);
+  // Écran d'introduction (fonctionnement du mode Live) avant la session.
+  const [started, setStarted] = React.useState(false);
   const { isTimerRunning, stopAllTimers } = useTimer();
 
   // Stop any active timer when launching Live cooking
@@ -46,12 +45,12 @@ export default function LiveCookingRoute() {
     );
   }
 
-  if (!unlocked) {
+  if (!started) {
     // Pas de SafeAreaView ici : figé à inset 0 dans un fullScreenModal iOS.
-    // LiveUnlockScreen gère lui-même le top inset via useSafeAreaInsets.
+    // LiveIntroScreen gère lui-même le top inset via useSafeAreaInsets.
     return (
       <View style={{ flex: 1, backgroundColor: colors.background }}>
-        <LiveUnlockScreen onClose={() => router.back()} onUnlocked={() => setUnlocked(true)} />
+        <LiveIntroScreen onClose={() => router.back()} onStart={() => setStarted(true)} />
       </View>
     );
   }

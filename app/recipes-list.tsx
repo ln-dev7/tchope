@@ -9,7 +9,6 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
 import { useUserRecipes } from '@/context/UserRecipesContext';
 import RecipeCard from '@/components/RecipeCard';
-import AdBanner from '@/components/AdBanner';
 import type { Region, Recipe } from '@/types';
 
 export default function RecipesListScreen() {
@@ -114,7 +113,6 @@ export default function RecipesListScreen() {
         )}
       </ScrollView>
 
-      <AdBanner style={{ marginBottom: bottom }} />
     </SafeAreaView>
   );
 }

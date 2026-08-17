@@ -11,7 +11,6 @@ import { useUserRecipes } from '@/context/UserRecipesContext';
 import FeaturedCard from '@/components/FeaturedCard';
 import RecipeCard from '@/components/RecipeCard';
 import RegionItem from '@/components/RegionItem';
-import AdBanner from '@/components/AdBanner';
 import type { Region } from '@/types';
 
 const ALL_REGIONS: Region[] = [
@@ -232,7 +231,6 @@ export default function HomeScreen() {
         </View>
       </ScrollView>
 
-      <AdBanner style={{ marginBottom: 64 + bottom }} />
     </SafeAreaView>
   );
 }

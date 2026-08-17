@@ -23,10 +23,6 @@ import RecipeCard from '@/components/RecipeCard';
 import { searchByIngredients, isValidIngredient, getMissingIngredients } from '@/utils/ingredient-matcher';
 import { callClaude } from '@/utils/api';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
-import RewardedUnlockModal from '@/components/RewardedUnlockModal';
-import { useRewardedAd } from '@/hooks/useRewardedAd';
-import { AD_UNITS } from '@/constants/ads';
-import { canWatchRewarded, recordRewardedView } from '@/utils/adQuota';
 import type { Recipe } from '@/types';
 
 type SearchResult = {
@@ -174,11 +170,6 @@ export default function AIRecipesScreen() {
   const isConnected = useNetworkStatus();
   const aiAvailable = !!process.env.EXPO_PUBLIC_API_URL && isConnected;
 
-  // Portail « 1 pub = 1 recherche libre » (modèle Travora).
-  const rewardedAd = useRewardedAd(AD_UNITS.rewardedSearch);
-  const [showAdModal, setShowAdModal] = useState(false);
-  const [adsCapped, setAdsCapped] = useState(false);
-
   const knownIngredients = useMemo(() => {
     const set = new Set<string>();
     recipes.forEach((r) =>
@@ -265,15 +256,12 @@ export default function AIRecipesScreen() {
   const handleSearchFreeText = async () => {
     Keyboard.dismiss();
     if (!freeText.trim()) return;
-    // Disponibilité vérifiée AVANT le portail : on ne fait pas regarder une
-    // pub pour une recherche qui échouera.
     if (!aiAvailable) {
       setError(t('aiFreeUnavailable'));
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
       return;
     }
-    setAdsCapped(!(await canWatchRewarded()));
-    setShowAdModal(true);
+    runFreeTextSearch();
   };
 
   const runFreeTextSearch = async () => {
@@ -739,29 +727,6 @@ export default function AIRecipesScreen() {
           )}
         </ScrollView>
       </KeyboardAvoidingView>
-
-      <RewardedUnlockModal
-        visible={showAdModal}
-        title={t('searchAdUnlockTitle')}
-        text={t('searchAdUnlockText')}
-        ready={rewardedAd.ready}
-        capped={adsCapped}
-        colors={colors}
-        isDark={isDark}
-        onWatch={() =>
-          rewardedAd.show(() => {
-            recordRewardedView();
-            setShowAdModal(false);
-            runFreeTextSearch();
-          })
-        }
-        onContinue={() => {
-          setShowAdModal(false);
-          runFreeTextSearch();
-        }}
-        onClose={() => setShowAdModal(false)}
-        t={t}
-      />
     </SafeAreaView>
   );
 }

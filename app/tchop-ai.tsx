@@ -24,10 +24,6 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useSettings } from '@/context/SettingsContext';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 import { useImageQuota } from '@/hooks/useImageQuota';
-import { useRewardedAd } from '@/hooks/useRewardedAd';
-import { AD_UNITS, REWARDED_MESSAGES_PER_AD, REWARDED_FAILOPEN_DELAY_MS } from '@/constants/ads';
-import { loadAiCredits, saveAiCredits } from '@/utils/aiCredits';
-import { canWatchRewarded, recordRewardedView } from '@/utils/adQuota';
 import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
 import { useUserRecipes } from '@/context/UserRecipesContext';
 import { useFavorites } from '@/context/FavoritesContext';
@@ -67,38 +63,11 @@ export default function TchopAIScreen() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
-  const [credits, setCredits] = useState(0);
-  const rewardedAd = useRewardedAd(AD_UNITS.rewardedMessages);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [showSourceModal, setShowSourceModal] = useState(false);
   const [chatHistoryList, setChatHistoryList] = useState<SavedChat[]>([]);
   const chatIdRef = useRef<string>(Date.now().toString());
   const flatListRef = useRef<FlatList>(null);
-
-  // Portail rewarded « 1 pub = N messages » (modèle Travora) : le crédit se
-  // recharge à volonté en regardant une pub, dans la limite du plafond de
-  // sécurité quotidien partagé (utils/adQuota.ts).
-  const locked = credits <= 0;
-  const [adsCapped, setAdsCapped] = useState(false);
-  useEffect(() => {
-    if (locked) canWatchRewarded().then((ok) => setAdsCapped(!ok));
-  }, [locked]);
-
-  const grantCredits = useCallback((amount: number) => {
-    setCredits((c) => {
-      const n = c + amount;
-      saveAiCredits(n);
-      return n;
-    });
-  }, []);
-
-  const handleWatchRewarded = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    rewardedAd.show(() => {
-      recordRewardedView();
-      grantCredits(REWARDED_MESSAGES_PER_AD);
-    });
-  };
 
   // --- Keyboard handling ---
   useEffect(() => {
@@ -120,11 +89,6 @@ export default function TchopAIScreen() {
     });
     return () => { showSub.remove(); hideSub.remove(); };
   }, [bottom, keyboardPadding]);
-
-  // --- Message credits (persistent balance) ---
-  useEffect(() => {
-    loadAiCredits().then(setCredits);
-  }, []);
 
   // --- Auto-save chat ---
   useEffect(() => {
@@ -152,7 +116,7 @@ export default function TchopAIScreen() {
   const handleSend = async () => {
     const text = input.trim();
     // Garde-fou : aucun envoi vers l'IA tant que le consentement n'est pas donné.
-    if (!text || loading || locked || !settings.aiConsent) return;
+    if (!text || loading || !settings.aiConsent) return;
     Keyboard.dismiss();
 
     if (!isConnected) {
@@ -195,13 +159,6 @@ export default function TchopAIScreen() {
         id: (Date.now() + 1).toString(), role: 'assistant',
         content: parsed.content, recipeIds: parsed.recipeIds, saveRecipe: parsed.saveRecipe, noteIds: parsed.noteIds, saveNote: parsed.saveNote,
       }]);
-
-      // Réponse reçue → consomme 1 crédit (jamais décompté sur erreur).
-      setCredits((c) => {
-        const n = Math.max(0, c - 1);
-        saveAiCredits(n);
-        return n;
-      });
     } catch {
       setMessages((prev) => [...prev, { id: (Date.now() + 1).toString(), role: 'assistant', content: t('tchopaiError') }]);
     } finally {
@@ -248,8 +205,7 @@ export default function TchopAIScreen() {
   };
 
   // --- Photo ---
-  // Accessible dès qu'il reste du crédit (le portail remplace la saisie à 0) ;
-  // une photo consomme 1 crédit comme un message, bornée par useImageQuota.
+  // Envoi de photo borné par useImageQuota (limite quotidienne d'images).
   const handlePhotoPress = () => {
     setShowSourceModal(true);
   };
@@ -313,13 +269,6 @@ export default function TchopAIScreen() {
         id: (Date.now() + 1).toString(), role: 'assistant',
         content: parsed.content, recipeIds: parsed.recipeIds, saveRecipe: parsed.saveRecipe, noteIds: parsed.noteIds, saveNote: parsed.saveNote,
       }]);
-
-      // Une photo analysée consomme 1 crédit, comme un message (jamais sur erreur).
-      setCredits((c) => {
-        const n = Math.max(0, c - 1);
-        saveAiCredits(n);
-        return n;
-      });
     } catch {
       setMessages((prev) => [...prev, { id: (Date.now() + 1).toString(), role: 'assistant', content: t('tchopaiError') }]);
     } finally {
@@ -397,33 +346,17 @@ export default function TchopAIScreen() {
           </View>
         )}
 
-        {locked ? (
-          <AdGate
-            colors={colors}
-            ready={rewardedAd.ready}
-            capped={adsCapped}
-            onWatch={handleWatchRewarded}
-            onContinue={() => grantCredits(1)}
-            t={t}
-          />
-        ) : (
-          <>
-            <ChatInput
-              input={input}
-              setInput={setInput}
-              loading={loading}
-              canSend={!locked}
-              canPhoto={imageQuota.canSend}
-              colors={colors}
-              onSend={handleSend}
-              onPhoto={handlePhotoPress}
-              t={t}
-            />
-            <Text style={{ textAlign: 'center', fontSize: 11, color: colors.textMuted, paddingBottom: 6 }}>
-              {t('aiMessagesLeft').replace('{count}', String(credits))}
-            </Text>
-          </>
-        )}
+        <ChatInput
+          input={input}
+          setInput={setInput}
+          loading={loading}
+          canSend
+          canPhoto={imageQuota.canSend}
+          colors={colors}
+          onSend={handleSend}
+          onPhoto={handlePhotoPress}
+          t={t}
+        />
       </Animated.View>
       )}
 
@@ -524,66 +457,6 @@ export default function TchopAIScreen() {
         </View>
       </Modal>
     </SafeAreaView>
-  );
-}
-
-/** Portail rewarded « regarde une pub = N messages » (modèle Travora) —
- *  remplace la zone de saisie quand le crédit est à 0, rechargeable à volonté.
- *  FAIL-OPEN : si la pub n'a pas chargé après REWARDED_FAILOPEN_DELAY_MS
- *  (pas de remplissage, panne AdMob…), « Continuer sans pub » offre 1 message
- *  — la régie ne doit jamais bloquer TchopAI. `capped` = plafond quotidien de
- *  pubs atteint (utils/adQuota.ts) → on invite à revenir demain. */
-function AdGate({ colors, ready, capped, onWatch, onContinue, t }: {
-  colors: any;
-  ready: boolean;
-  capped: boolean;
-  onWatch: () => void;
-  onContinue: () => void;
-  t: (k: any) => string;
-}) {
-  const [elapsed, setElapsed] = useState(false);
-  useEffect(() => {
-    const timer = setTimeout(() => setElapsed(true), REWARDED_FAILOPEN_DELAY_MS);
-    return () => clearTimeout(timer);
-  }, []);
-  const showFailOpen = !capped && elapsed && !ready;
-  const count = String(REWARDED_MESSAGES_PER_AD);
-
-  return (
-    <View style={{ paddingHorizontal: 20, paddingVertical: 16, borderTopWidth: 1, borderTopColor: colors.border, gap: 12, alignItems: 'center' }}>
-      <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text, textAlign: 'center' }}>
-        {t('aiUnlockTitle')}
-      </Text>
-      <Text style={{ fontSize: 13, color: colors.textSecondary, textAlign: 'center', lineHeight: 18 }}>
-        {capped ? t('adDailyLimitReached') : t('aiUnlockText').replace('{count}', count)}
-      </Text>
-      {!capped && (
-        <TouchableOpacity
-          onPress={onWatch}
-          disabled={!ready}
-          style={{ backgroundColor: ready ? colors.accent : colors.surface, borderRadius: 16, paddingVertical: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, alignSelf: 'stretch' }}>
-          {ready ? (
-            <Ionicons name="play-circle-outline" size={18} color="#FFFFFF" />
-          ) : (
-            <ActivityIndicator size="small" color={colors.textMuted} />
-          )}
-          <Text style={{ fontSize: 15, fontWeight: '700', color: ready ? '#FFFFFF' : colors.textMuted }}>
-            {ready
-              ? t('watchAdForMessage')
-                  .replace('{count}', count)
-                  .replace('{plural}', REWARDED_MESSAGES_PER_AD > 1 ? 's' : '')
-              : t('aiAdLoading')}
-          </Text>
-        </TouchableOpacity>
-      )}
-      {showFailOpen && (
-        <TouchableOpacity onPress={onContinue} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-          <Text style={{ fontSize: 13, fontWeight: '700', color: colors.accent, textDecorationLine: 'underline' }}>
-            {t('aiContinueNoAd')}
-          </Text>
-        </TouchableOpacity>
-      )}
-    </View>
   );
 }
 

@@ -12,7 +12,6 @@ import CategoryChip from '@/components/CategoryChip';
 import IngredientItem from '@/components/IngredientItem';
 import SearchResultCard from '@/components/SearchResultCard';
 import EmptyState from '@/components/EmptyState';
-import AdBanner from '@/components/AdBanner';
 import type { Spiciness } from '@/types';
 
 const POPULAR_INGREDIENTS = ['Plantain', 'Manioc', 'Arachides'];
@@ -396,7 +395,6 @@ export default function SearchScreen() {
         )}
       </ScrollView>
 
-      <AdBanner style={{ marginBottom: 64 + bottom }} />
     </SafeAreaView>
   );
 }

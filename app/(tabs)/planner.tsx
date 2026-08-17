@@ -16,10 +16,6 @@ import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
-import RewardedUnlockModal from '@/components/RewardedUnlockModal';
-import { useRewardedAd } from '@/hooks/useRewardedAd';
-import { AD_UNITS } from '@/constants/ads';
-import { canWatchRewarded, recordRewardedView } from '@/utils/adQuota';
 import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
 import { useSettings } from '@/context/SettingsContext';
 import { useMealPlanner, type MealPlan, type DayPlan } from '@/context/MealPlannerContext';
@@ -208,12 +204,6 @@ export default function PlannerScreen() {
 
   const isConnected = useNetworkStatus();
 
-  // Portail « 1 pub = 1 action IA » (modèle Travora) : la génération comme
-  // l'ajustement du plan passent par le bloc Meal Plan Rewarded.
-  const rewardedAd = useRewardedAd(AD_UNITS.rewardedPlan);
-  const [showAdModal, setShowAdModal] = useState(false);
-  const [adsCapped, setAdsCapped] = useState(false);
-  const [pendingAction, setPendingAction] = useState<'generate' | 'adjust'>('generate');
   const [preferences, setPreferences] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [showSaved, setShowSaved] = useState(false);
@@ -258,10 +248,8 @@ export default function PlannerScreen() {
 
   const handleGenerate = useCallback(async () => {
     if (!isConnected) { Alert.alert('Tchopé', t('plannerNoConnection')); return; }
-    setAdsCapped(!(await canWatchRewarded()));
-    setPendingAction('generate');
-    setShowAdModal(true);
-  }, [isConnected, t]);
+    doGenerate();
+  }, [isConnected, t, doGenerate]);
 
   const doAdjust = useCallback(async () => {
     if (!currentPlan) return;
@@ -283,10 +271,8 @@ export default function PlannerScreen() {
   const handleAdjust = useCallback(async () => {
     if (!currentPlan || !adjustText.trim()) return;
     if (!isConnected) { Alert.alert('Tchopé', t('plannerNoConnection')); return; }
-    setAdsCapped(!(await canWatchRewarded()));
-    setPendingAction('adjust');
-    setShowAdModal(true);
-  }, [currentPlan, adjustText, isConnected, t]);
+    doAdjust();
+  }, [currentPlan, adjustText, isConnected, t, doAdjust]);
 
   const handleSwap = useCallback((date: string, mealIndex: number) => {
     const current = currentPlan?.days[date]?.meals[mealIndex]?.recipeId;
@@ -597,31 +583,6 @@ export default function PlannerScreen() {
           )}
         </ScrollView>
       </KeyboardAvoidingView>
-
-      <RewardedUnlockModal
-        visible={showAdModal}
-        title={t(pendingAction === 'adjust' ? 'planAdjustUnlockTitle' : 'planAdUnlockTitle')}
-        text={t(pendingAction === 'adjust' ? 'planAdjustUnlockText' : 'planAdUnlockText')}
-        ready={rewardedAd.ready}
-        capped={adsCapped}
-        colors={colors}
-        isDark={isDark}
-        onWatch={() =>
-          rewardedAd.show(() => {
-            recordRewardedView();
-            setShowAdModal(false);
-            if (pendingAction === 'adjust') doAdjust();
-            else doGenerate();
-          })
-        }
-        onContinue={() => {
-          setShowAdModal(false);
-          if (pendingAction === 'adjust') doAdjust();
-          else doGenerate();
-        }}
-        onClose={() => setShowAdModal(false)}
-        t={t}
-      />
     </SafeAreaView>
   );
 }

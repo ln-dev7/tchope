@@ -1,6 +1,6 @@
 # Politique de Confidentialité — Tchopé
 
-**Dernière mise à jour : 16 juillet 2026**
+**Dernière mise à jour : 16 août 2026**
 **Développeur : LNDEV — [lndev.me](https://lndev.me)**
 
 ---
@@ -9,7 +9,7 @@
 
 Tchopé est une application mobile de recettes camerounaises. Votre vie privée est importante pour nous. Cette politique explique comment l'application gère vos données.
 
-**En résumé : Tchopé ne collecte aucune donnée personnelle identifiable. Vos données restent sur votre appareil, sauf lorsque vous utilisez TchopAI, qui envoie vos messages et le contexte utile à notre prestataire d'IA (voir section 9). L'application affiche des annonces via Google AdMob et certaines fonctionnalités IA se débloquent en visionnant une publicité récompensée (voir section 8).**
+**En résumé : Tchopé ne collecte aucune donnée personnelle identifiable. Vos données restent sur votre appareil, sauf lorsque vous utilisez TchopAI, qui envoie vos messages et le contexte utile à notre prestataire d'IA (voir section 8). L'application est entièrement gratuite et n'affiche aucune publicité.**
 
 ## 2. Collecte de données
 
@@ -18,9 +18,9 @@ Tchopé **ne collecte, ne transmet et ne stocke aucune donnée personnelle ident
 - Ne requiert aucune création de compte
 - Ne demande aucune information personnelle (nom, email, numéro de téléphone)
 - N'utilise aucun service d'analytics ou de tracking
-- Stocke toutes vos données (favoris, notes, plans de repas, recettes personnelles) sur votre appareil — elles ne sont transmises à un tiers que si vous utilisez TchopAI, qui envoie ce contexte à l'IA pour personnaliser ses réponses (voir section 9)
-- Permet de consulter les recettes entièrement hors ligne — seules les fonctionnalités IA (TchopAI) et l'affichage des annonces nécessitent une connexion
-- Affiche des annonces via Google AdMob : le SDK publicitaire collecte certaines données techniques détaillées à la section 8
+- Stocke toutes vos données (favoris, notes, plans de repas, recettes personnelles) sur votre appareil — elles ne sont transmises à un tiers que si vous utilisez TchopAI, qui envoie ce contexte à l'IA pour personnaliser ses réponses (voir section 8)
+- Permet de consulter les recettes entièrement hors ligne — seules les fonctionnalités IA (TchopAI) nécessitent une connexion
+- N'affiche aucune publicité et n'intègre aucune régie publicitaire active
 
 ## 3. Caméra et Photos
 
@@ -66,7 +66,7 @@ L'application stocke localement sur votre appareil (via AsyncStorage) les donné
 
 Ces données :
 - Sont stockées exclusivement sur votre appareil
-- Ne sont pas transmises à un tiers, sauf le contexte que vous choisissez d'envoyer à TchopAI (voir section 9)
+- Ne sont pas transmises à un tiers, sauf le contexte que vous choisissez d'envoyer à TchopAI (voir section 8)
 - Peuvent être supprimées à tout moment depuis les paramètres de l'application ou en désinstallant l'application
 
 ## 7. Données de tiers
@@ -75,21 +75,7 @@ L'application charge des images depuis Wikimedia Commons et des miniatures vidé
 
 Lorsque vous choisissez de regarder une vidéo de recette, vous êtes redirigé vers YouTube via votre navigateur. Tchopé n'a aucun contrôle sur les données collectées par YouTube.
 
-## 8. Publicité (Google AdMob)
-
-Tchopé affiche des bannières publicitaires et propose des publicités récompensées (visionnées volontairement pour débloquer les fonctionnalités IA), fournies par Google AdMob. À cette fin, le SDK Google Mobile Ads intégré à l'application collecte et partage avec Google les données suivantes :
-
-- **Identifiant publicitaire de l'appareil (Advertising ID)** : utilisé pour diffuser les annonces, limiter leur répétition et prévenir la fraude
-- **Interactions avec les annonces** : impressions et clics sur les bannières, à des fins de mesure des performances publicitaires
-- **Données de diagnostic** : informations techniques liées au fonctionnement du SDK publicitaire
-
-À noter :
-- **Annonces non personnalisées** : Tchopé demande uniquement des annonces non personnalisées. Leur contenu est choisi selon le contexte (application, langue, région) et non selon un profil publicitaire.
-- Vous pouvez réinitialiser ou supprimer votre identifiant publicitaire à tout moment dans les paramètres de votre téléphone (Paramètres > Confidentialité > Annonces).
-
-Pour en savoir plus, consultez la [politique de confidentialité de Google](https://policies.google.com/privacy) et le fonctionnement des [annonces Google](https://policies.google.com/technologies/ads).
-
-## 9. Assistant IA (TchopAI)
+## 8. Assistant IA (TchopAI)
 
 TchopAI regroupe les fonctionnalités d'intelligence artificielle de Tchopé (chat, recherche IA, plans de repas IA, TchopAI Live). Lorsque, et uniquement lorsque, vous les utilisez, certaines données sont envoyées à notre serveur proxy puis à l'API Claude d'Anthropic afin de générer une réponse :
 
@@ -101,11 +87,11 @@ TchopAI regroupe les fonctionnalités d'intelligence artificielle de Tchopé (ch
 - **Consentement** : avant votre première utilisation de TchopAI, l'application affiche un écran décrivant ces données et leur destinataire, et recueille votre accord explicite. Aucune donnée n'est envoyée tant que vous n'avez pas accepté.
 - **Confidentialité** : ces échanges ne sont reliés à aucun identifiant personnel et ne sont pas revendus. L'historique de vos conversations est conservé localement sur votre appareil.
 
-## 10. Modifications
+## 9. Modifications
 
 Cette politique de confidentialité peut être mise à jour occasionnellement. Toute modification sera reflétée par la date de mise à jour en haut de ce document. Nous vous encourageons à consulter cette page régulièrement.
 
-## 11. Contact
+## 10. Contact
 
 Pour toute question concernant cette politique de confidentialité :
 
@@ -117,7 +103,7 @@ Pour toute question concernant cette politique de confidentialité :
 
 # Privacy Policy — Tchopé
 
-**Last updated: July 16, 2026**
+**Last updated: August 16, 2026**
 **Developer: LNDEV — [lndev.me](https://lndev.me)**
 
 ---
@@ -126,7 +112,7 @@ Pour toute question concernant cette politique de confidentialité :
 
 Tchopé is a mobile app for Cameroonian recipes. Your privacy matters to us. This policy explains how the app handles your data.
 
-**In short: Tchopé does not collect any personally identifiable data. Your data stays on your device, except when you use TchopAI, which sends your messages and relevant context to our AI provider (see section 9). The app shows ads via Google AdMob, and some AI features are unlocked by watching a rewarded ad (see section 8).**
+**In short: Tchopé does not collect any personally identifiable data. Your data stays on your device, except when you use TchopAI, which sends your messages and relevant context to our AI provider (see section 8). The app is completely free and displays no advertising.**
 
 ## 2. Data Collection
 
@@ -135,9 +121,9 @@ Tchopé **does not collect, transmit, or store any personally identifiable data*
 - Does not require any account creation
 - Does not ask for any personal information (name, email, phone number)
 - Does not use any analytics or tracking services
-- Stores all your data (favorites, notes, meal plans, personal recipes) on your device — it is only transmitted to a third party if you use TchopAI, which sends this context to the AI to personalize its answers (see section 9)
-- Lets you browse recipes entirely offline — only AI features (TchopAI) and ad display require a connection
-- Displays ads via Google AdMob: the advertising SDK collects certain technical data detailed in section 8
+- Stores all your data (favorites, notes, meal plans, personal recipes) on your device — it is only transmitted to a third party if you use TchopAI, which sends this context to the AI to personalize its answers (see section 8)
+- Lets you browse recipes entirely offline — only AI features (TchopAI) require a connection
+- Displays no advertising and embeds no active ad network
 
 ## 3. Camera and Photos
 
@@ -183,7 +169,7 @@ The app stores the following data locally on your device (via AsyncStorage):
 
 This data:
 - Is stored exclusively on your device
-- Is not transmitted to any third party, except the context you choose to send to TchopAI (see section 9)
+- Is not transmitted to any third party, except the context you choose to send to TchopAI (see section 8)
 - Can be deleted at any time from the app settings or by uninstalling the app
 
 ## 7. Third-Party Data
@@ -192,21 +178,7 @@ The app loads images from Wikimedia Commons and video thumbnails from YouTube to
 
 When you choose to watch a recipe video, you are redirected to YouTube via your browser. Tchopé has no control over the data collected by YouTube.
 
-## 8. Advertising (Google AdMob)
-
-Tchopé displays ad banners and offers rewarded ads (watched voluntarily to unlock AI features), served by Google AdMob. For this purpose, the Google Mobile Ads SDK embedded in the app collects and shares the following data with Google:
-
-- **Device advertising identifier (Advertising ID)**: used to serve ads, cap their frequency, and prevent fraud
-- **Ad interactions**: banner impressions and clicks, for ad performance measurement
-- **Diagnostic data**: technical information related to the operation of the advertising SDK
-
-Please note:
-- **Non-personalized ads**: Tchopé only requests non-personalized ads. Their content is selected based on context (app, language, region), not on an advertising profile.
-- You can reset or delete your advertising identifier at any time in your phone settings (Settings > Privacy > Ads).
-
-For more information, see [Google's privacy policy](https://policies.google.com/privacy) and how [Google ads work](https://policies.google.com/technologies/ads).
-
-## 9. AI Assistant (TchopAI)
+## 8. AI Assistant (TchopAI)
 
 TchopAI covers Tchopé's artificial-intelligence features (chat, AI search, AI meal plans, TchopAI Live). When, and only when, you use them, certain data is sent to our proxy server and then to Anthropic's Claude API in order to generate a response:
 
@@ -218,11 +190,11 @@ TchopAI covers Tchopé's artificial-intelligence features (chat, AI search, AI m
 - **Consent**: before your first use of TchopAI, the app shows a screen describing this data and its recipient, and collects your explicit agreement. No data is sent until you have agreed.
 - **Privacy**: these exchanges are not linked to any personal identifier and are not sold. Your conversation history is stored locally on your device.
 
-## 10. Changes
+## 9. Changes
 
 This privacy policy may be updated from time to time. Any changes will be reflected by the update date at the top of this document. We encourage you to review this page periodically.
 
-## 11. Contact
+## 10. Contact
 
 For any questions regarding this privacy policy:
 
