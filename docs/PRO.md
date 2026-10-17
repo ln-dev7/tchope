@@ -40,7 +40,9 @@ le chat TchopAI qui garde **3 messages texte gratuits au total** (comme Travora 
 - Tests : `cd server && npm test`.
 
 ## Mise en place (stores, RevenueCat, Vercel)
-- RevenueCat, projet « LN Dev » : apps Tchopé (App Store `com.lndev.tchope`, Play `com.lndev.tchope`), entitlement
+- RevenueCat, projet « LN Dev » (17 oct. 2026) : app « Tchopé (App Store) » (`com.lndev.tchope`, clé d'achats intégrés
+  App Store Connect déjà utilisée par Travora), produit `tchope_pro_monthly` ; app Play à créer après le 1er build Android ;
+  entitlement
   `tchope_pro` (propre à Tchopé : un abonné Travora n'a pas Tchopé Pro, et inversement), offre `tchope`, paquet Monthly → produit `tchope_pro_monthly`.
 - App Store Connect : groupe « Tchopé Pro », produit `tchope_pro_monthly`, 1 mois, 2,99 $ ; Play Console : abonnement
   `tchope_pro_monthly`, plan de base `monthly` (exige d'abord un build contenant la permission BILLING).
