@@ -14,9 +14,7 @@ const FEATURES = [
 ] as const;
 
 /** Écran d'introduction TchopAI Live : présente le fonctionnement du mode
- *  (guidage vocal, photo, temps réel) avant de démarrer la session.
- *  Remplace l'ancien portail rewarded LiveUnlockScreen (pubs supprimées —
- *  voir ADS_RESTORE.md pour le rétablir). */
+ *  (guidage vocal, photo, temps réel) avant de démarrer la session. */
 export default function LiveIntroScreen({ onClose, onStart }: {
   onClose: () => void;
   onStart: () => void;

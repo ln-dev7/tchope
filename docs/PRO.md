@@ -4,6 +4,12 @@
 le chat TchopAI qui garde **3 messages texte gratuits au total** (comme Travora Pro). Même conception que Travora
 (`travora-app/docs/PRO.md`, `REVENUECAT.md`, `STORES.md`).
 
+## Pas d'IA sur le site, pas de publicité (17 oct. 2026)
+- Site `tchope-web` : aucune IA (comme Travora). Chaque entrée IA ouvre la fenêtre « TchopAI est dans l'app »
+  (`components/app-only.tsx`) ; plus de routes `/api/claude` ni `/api/fetch-recipe-url` côté site.
+- Plus aucune publicité : SDK `react-native-google-mobile-ads` et plugin retirés (plus d'identifiant publicitaire ni de
+  permission AD_ID), `app-ads.txt` retiré du site. Ne pas réintroduire sans décision de LN.
+
 ## Ce qui est gratuit / Pro
 - Gratuit : recettes, recherche classique, planning manuel, courses, notes, minuteurs, mode cuisson ; « Avec mes
   ingrédients » sans abonnement = recherche LOCALE (sans IA), avec un bandeau « Résultats simples… Voir Pro ».

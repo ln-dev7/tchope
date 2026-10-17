@@ -20,7 +20,7 @@ Tchopé **ne collecte, ne transmet et ne stocke aucune donnée personnelle ident
 - N'utilise aucun service d'analytics ou de tracking
 - Stocke toutes vos données (favoris, notes, plans de repas, recettes personnelles) sur votre appareil — elles ne sont transmises à un tiers que si vous utilisez TchopAI, qui envoie ce contexte à l'IA pour personnaliser ses réponses (voir section 8)
 - Permet de consulter les recettes entièrement hors ligne — seules les fonctionnalités IA (TchopAI) nécessitent une connexion
-- N'affiche aucune publicité et n'intègre aucune régie publicitaire active
+- N'affiche aucune publicité et n'intègre aucun SDK publicitaire (aucun identifiant publicitaire n'est lu)
 
 ## 3. Caméra et Photos
 
@@ -127,7 +127,7 @@ Tchopé **does not collect, transmit, or store any personally identifiable data*
 - Does not use any analytics or tracking services
 - Stores all your data (favorites, notes, meal plans, personal recipes) on your device — it is only transmitted to a third party if you use TchopAI, which sends this context to the AI to personalize its answers (see section 8)
 - Lets you browse recipes entirely offline — only AI features (TchopAI) require a connection
-- Displays no advertising and embeds no active ad network
+- Displays no advertising and embeds no advertising SDK (no advertising identifier is read)
 
 ## 3. Camera and Photos
 
