@@ -3,7 +3,7 @@
    - lib/pro-check.ts : Tchopé Pro vérifié auprès de RevenueCat ; seul le chat texte a un avant-goût gratuit, toutes
      les autres fonctions IA (photo, recherche par ingrédients, recherche libre, planning, guidage vocal) sont Pro ;
    - limites par appareil (abonné) ou par IP (anciennes apps).
-   Le corps porte `feature` (app ≥ 1.11.0). Une image dans les messages = fonction photo, donc Pro. */
+   Le corps porte `feature` (app ≥ 2.0.0). Une image dans les messages = fonction photo, donc Pro. */
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { ANTHROPIC_URL } from '../config';
 import { cleanClaudeRequest } from '../lib/claude-policy';

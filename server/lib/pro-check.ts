@@ -1,6 +1,6 @@
 /* Tchopé Pro vérifié CÔTÉ SERVEUR (17 oct. 2026, même conception que Travora : travora/lib/pro-check.ts).
 
-   L'app (≥ 1.11.0) envoie :
+   L'app (≥ 2.0.0) envoie :
    - `x-tchope-user` : son identifiant ANONYME RevenueCat (`$RCAnonymousID:<32 hex>`), aucun nom ni e-mail ;
    - `x-tchope-pro` : `1` si l'app se croit abonnée (simple indice : déclenche une revérification après un achat).
    Le serveur interroge l'API v2 de RevenueCat (`GET /v2/projects/{REVENUECAT_PROJECT_ID}/customers/{id}`, clé secrète v2

@@ -2,7 +2,7 @@
   "expo": {
     "name": "Tchope",
     "slug": "tchope",
-    "version": "1.11.0",
+    "version": "2.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
     "scheme": "tchope",

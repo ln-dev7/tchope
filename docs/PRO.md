@@ -54,4 +54,4 @@ le chat TchopAI qui garde **3 messages texte gratuits au total** (comme Travora 
   `tchope_pro_monthly`, plan de base `monthly` (exige d'abord un build contenant la permission BILLING).
 - Clés publiques RevenueCat dans `constants/revenuecat.ts`. Rebuild natif (module `react-native-purchases`).
 - Vercel `tchope-api` : `REVENUECAT_SECRET_KEY` (la clé v2 du projet LN Dev, la même que Travora), `REVENUECAT_PROJECT_ID` ; puis `/api/pro-status` → `active: true`.
-  Une fois la 1.11.0 en ligne : `MIN_APP_VERSION=1.11.0` (invitation à mettre à jour) et `PRO_REQUIRE_DEVICE=on`.
+  Une fois la 2.0.0 en ligne : `MIN_APP_VERSION=2.0.0` (invitation à mettre à jour) et `PRO_REQUIRE_DEVICE=on`.
