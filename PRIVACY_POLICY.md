@@ -1,6 +1,6 @@
 # Politique de Confidentialité — Tchopé
 
-**Dernière mise à jour : 16 août 2026**
+**Dernière mise à jour : 17 octobre 2026**
 **Développeur : LNDEV — [lndev.me](https://lndev.me)**
 
 ---
@@ -9,7 +9,7 @@
 
 Tchopé est une application mobile de recettes camerounaises. Votre vie privée est importante pour nous. Cette politique explique comment l'application gère vos données.
 
-**En résumé : Tchopé ne collecte aucune donnée personnelle identifiable. Vos données restent sur votre appareil, sauf lorsque vous utilisez TchopAI, qui envoie vos messages et le contexte utile à notre prestataire d'IA (voir section 8). L'application est entièrement gratuite et n'affiche aucune publicité.**
+**En résumé : Tchopé ne collecte aucune donnée personnelle identifiable. Vos données restent sur votre appareil, sauf lorsque vous utilisez TchopAI, qui envoie vos messages et le contexte utile à notre prestataire d'IA (voir section 8). L'application n'affiche aucune publicité ; les fonctions IA font partie de l'abonnement Tchopé Pro (voir section 5).**
 
 ## 2. Collecte de données
 
@@ -50,11 +50,15 @@ Tchopé utilise le microphone de votre appareil **uniquement** dans le cadre de 
 - **Pas de sauvegarde** : les conversations vocales (texte transcrit et réponses de l'IA) ne sont pas sauvegardées après la fin de la session TchopAI Live. Elles sont supprimées de la mémoire dès que vous quittez l'écran.
 - **Révocable** : vous pouvez révoquer la permission microphone à tout moment dans les paramètres de votre téléphone (Réglages > Tchopé > Microphone).
 
-## 5. Paiement et Achats
+## 5. Paiement et Achats — Tchopé Pro
 
-Tchopé est entièrement gratuit et ne propose aucun achat intégré, abonnement ou licence. Les fonctionnalités IA (TchopAI Chat, Recherche IA, Meal Plan IA, TchopAI Live) se débloquent gratuitement en visionnant des publicités récompensées (voir section 8).
+Les recettes, le planning manuel, la liste de courses, les notes, les minuteurs et le mode cuisson sont gratuits. Les fonctions d'intelligence artificielle (TchopAI au-delà de 3 messages gratuits, photo, recherche par ingrédients et recherche libre par IA, planning IA, guidage vocal TchopAI Live) font partie de **Tchopé Pro**, un abonnement mensuel sans engagement, souscrit sans créer de compte.
 
-- **Aucune donnée bancaire** : Tchopé ne collecte, ne stocke et ne traite aucune donnée bancaire ou financière. Aucune donnée de paiement ne transite par l'application.
+- **Paiement par le store** : le paiement est effectué par l'App Store (Apple) ou Google Play. Nous ne voyons ni ne stockons vos coordonnées bancaires.
+- **Validation de l'abonnement** : l'application s'appuie sur RevenueCat, Inc. (États-Unis), notre sous-traitant de gestion des abonnements. RevenueCat reçoit un identifiant anonyme généré par l'application (sans lien avec votre identité), le reçu d'achat transmis par le store et des données techniques (plate-forme, version de l'application, pays du store), uniquement pour valider l'abonnement, le restaurer sur un nouvel appareil et établir des statistiques de ventes agrégées.
+- **Contrôle par notre serveur** : quand vous utilisez une fonction IA, l'application envoie aussi cet identifiant anonyme à notre serveur, qui demande à RevenueCat si votre abonnement est actif. Notre serveur garde cette réponse quelques minutes en mémoire et compte les requêtes par identifiant (24 heures au plus) pour appliquer les limites d'usage ; il ne la relie ni à votre identité ni au contenu de vos demandes.
+- **Résiliation** : vous pouvez consulter, modifier ou résilier l'abonnement à tout moment dans les réglages de votre compte App Store ou Google Play (l'application y mène depuis Réglages → Tchopé Pro). La résiliation prend effet à la fin de la période en cours.
+- Le nombre de messages TchopAI gratuits déjà utilisés est compté sur votre appareil.
 
 ## 6. Stockage local
 
@@ -103,7 +107,7 @@ Pour toute question concernant cette politique de confidentialité :
 
 # Privacy Policy — Tchopé
 
-**Last updated: August 16, 2026**
+**Last updated: October 17, 2026**
 **Developer: LNDEV — [lndev.me](https://lndev.me)**
 
 ---
@@ -112,7 +116,7 @@ Pour toute question concernant cette politique de confidentialité :
 
 Tchopé is a mobile app for Cameroonian recipes. Your privacy matters to us. This policy explains how the app handles your data.
 
-**In short: Tchopé does not collect any personally identifiable data. Your data stays on your device, except when you use TchopAI, which sends your messages and relevant context to our AI provider (see section 8). The app is completely free and displays no advertising.**
+**In short: Tchopé does not collect any personally identifiable data. Your data stays on your device, except when you use TchopAI, which sends your messages and relevant context to our AI provider (see section 8). The app displays no advertising; the AI features are part of the Tchopé Pro subscription (see section 5).**
 
 ## 2. Data Collection
 
@@ -153,11 +157,15 @@ Tchopé uses your device's microphone **only** within the TchopAI Live feature, 
 - **No saving**: voice conversations (transcribed text and AI responses) are not saved after the TchopAI Live session ends. They are cleared from memory as soon as you leave the screen.
 - **Revocable**: you can revoke the microphone permission at any time in your phone settings (Settings > Tchopé > Microphone).
 
-## 5. Payment and Purchases
+## 5. Payment and Purchases — Tchopé Pro
 
-Tchopé is entirely free and offers no in-app purchases, subscriptions, or licenses. The AI features (TchopAI Chat, AI Search, AI Meal Plan, TchopAI Live) are unlocked for free by watching rewarded ads (see section 8).
+Recipes, manual meal planning, the shopping list, notes, timers and cooking mode are free. The artificial-intelligence features (TchopAI beyond 3 free messages, photos, AI ingredient and free-text search, AI meal planning, TchopAI Live voice guidance) are part of **Tchopé Pro**, a monthly subscription with no commitment, purchased without creating an account.
 
-- **No financial data**: Tchopé does not collect, store, or process any banking or financial data. No payment data passes through the application.
+- **Payment through the store**: payment is handled by the App Store (Apple) or Google Play. We never see or store your payment details.
+- **Subscription validation**: the app relies on RevenueCat, Inc. (United States), our subscription-management processor. RevenueCat receives an anonymous identifier generated by the app (not linked to your identity), the purchase receipt passed on by the store and technical data (platform, app version, store country), solely to validate the subscription, restore it on a new device and compile aggregated sales statistics.
+- **Check by our server**: when you use an AI feature, the app also sends this anonymous identifier to our server, which asks RevenueCat whether your subscription is active. Our server keeps that answer in memory for a few minutes and counts requests per identifier (for at most 24 hours) to apply usage limits; it links it neither to your identity nor to the content of your requests.
+- **Cancellation**: you can review, change or cancel the subscription at any time in your App Store or Google Play account settings (the app links there from Settings → Tchopé Pro). Cancellation takes effect at the end of the current period.
+- The number of free TchopAI messages already used is counted on your device.
 
 ## 6. Local Storage
 
