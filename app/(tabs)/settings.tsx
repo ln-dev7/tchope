@@ -13,6 +13,8 @@ import { useFavorites } from '@/hooks/useFavorites';
 import { useUserRecipes } from '@/hooks/useUserRecipes';
 import { useToast } from '@/hooks/useToast';
 import { useRating } from '@/context/RatingContext';
+import { useShopping } from '@/context/ShoppingContext';
+import { useMealPlanner } from '@/context/MealPlannerContext';
 import type { Settings } from '@/types';
 
 export default function SettingsScreen() {
@@ -25,6 +27,8 @@ export default function SettingsScreen() {
   const { toast } = useToast();
   const { requestRating } = useRating();
   const router = useRouter();
+  const { clearAll: clearShopping } = useShopping();
+  const { clearAll: clearPlans } = useMealPlanner();
 
   const handleClearFavorites = () => {
     Alert.alert(t('clearConfirm'), t('clearConfirmMessage'), [
@@ -64,6 +68,7 @@ export default function SettingsScreen() {
           const saved = await Promise.all(
             keysToPreserve.map(async (key) => [key, await AsyncStorage.getItem(key)] as const)
           );
+          await Promise.all([clearShopping(), clearPlans()]);
           await AsyncStorage.clear();
           await Promise.all(
             saved.filter(([, val]) => val !== null).map(([key, val]) => AsyncStorage.setItem(key, val!))

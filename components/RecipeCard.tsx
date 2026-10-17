@@ -22,7 +22,7 @@ export default function RecipeCard({ recipe, titlePaddingRight }: Props) {
       activeOpacity={0.8}
       style={{
         backgroundColor: isDark ? colors.surface : colors.surface,
-        borderRadius: 32,
+        borderRadius: 24,
         padding: 12,
         flexDirection: 'row',
         gap: 16,

@@ -32,7 +32,7 @@ export default function FeaturedCard({ recipe }: Props) {
       <View
         style={{
           backgroundColor: isDark ? colors.card : '#FFFFFF',
-          borderRadius: 32,
+          borderRadius: 24,
           overflow: 'hidden',
         }}>
         {/* Image */}
@@ -64,13 +64,14 @@ export default function FeaturedCard({ recipe }: Props) {
           )}
           {/* Favorite button */}
           <TouchableOpacity
-            onPress={() => { const was = isFavorite(recipe.id); toggleFavorite(recipe.id); toast(was ? 'Retiré des favoris' : 'Ajouté aux favoris', was ? 'custom' : 'heart'); }}
+            accessibilityRole="button" accessibilityLabel={t(isFavorite(recipe.id) ? 'removeFavorite' : 'addFavorite')}
+            onPress={() => { const was = isFavorite(recipe.id); toggleFavorite(recipe.id); toast(was ? t('favoriteRemoved') : t('favoriteAdded'), was ? 'custom' : 'heart'); }}
             style={{
               position: 'absolute',
               top: 16,
               right: 16,
-              width: 40,
-              height: 40,
+              width: 44,
+              height: 44,
               borderRadius: 20,
               backgroundColor: 'rgba(249,246,245,0.8)',
               alignItems: 'center',
@@ -79,7 +80,7 @@ export default function FeaturedCard({ recipe }: Props) {
             <Ionicons
               name={isFavorite(recipe.id) ? 'heart' : 'heart-outline'}
               size={20}
-              color={isFavorite(recipe.id) ? '#E74C3C' : colors.textSecondary}
+              color={isFavorite(recipe.id) ? '#E74C3C' : '#5C5B5B'}
             />
           </TouchableOpacity>
         </View>

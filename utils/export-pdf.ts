@@ -1,3 +1,5 @@
+import { buildShoppingList } from './shopping-list';
+import { translations } from '../constants/translations';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import type { MealPlan } from '@/context/MealPlannerContext';
@@ -21,21 +23,8 @@ function formatDate(dateStr: string, lang: 'fr' | 'en'): string {
   return `${names[d.getDay()]} ${d.getDate()} ${month}`;
 }
 
-function buildShoppingList(plan: MealPlan, recipeMap: Record<string, Recipe>): Map<string, string> {
-  const ingredients = new Map<string, string>();
-  for (const day of Object.values(plan.days)) {
-    for (const meal of day.meals) {
-      const recipe = recipeMap[meal.recipeId];
-      if (!recipe) continue;
-      for (const ing of recipe.ingredients) {
-        const key = ing.name.toLowerCase();
-        if (!ingredients.has(key)) {
-          ingredients.set(key, ing.name);
-        }
-      }
-    }
-  }
-  return ingredients;
+function escapeHTML(value: string): string {
+  return value.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]!);
 }
 
 function generateHTML({ plan, recipeMap, lang, title, shoppingListTitle }: ExportOptions): string {
@@ -46,11 +35,11 @@ function generateHTML({ plan, recipeMap, lang, title, shoppingListTitle }: Expor
     if (!day) return '';
     const mealsHTML = day.meals.map((meal) => {
       const recipe = recipeMap[meal.recipeId];
-      const name = recipe?.name ?? meal.recipeId;
-      const meta = recipe ? `${recipe.region} · ${recipe.duration} min` : '';
+      const name = escapeHTML(recipe?.name ?? meal.recipeId);
+      const meta = recipe ? `${recipe.region} · ${recipe.duration} min${meal.servings ? ` · ${meal.servings} ${translations[lang].portions}` : ''}` : '';
       return `
         <div class="meal">
-          <span class="meal-label">${meal.label}</span>
+          <span class="meal-label">${escapeHTML(meal.slot ? translations[lang][meal.slot] : meal.label)}</span>
           <span class="meal-name">${name}</span>
           <span class="meal-meta">${meta}</span>
         </div>`;
@@ -63,11 +52,8 @@ function generateHTML({ plan, recipeMap, lang, title, shoppingListTitle }: Expor
       </div>`;
   }).join('');
 
-  const shoppingMap = buildShoppingList(plan, recipeMap);
-  const shoppingHTML = Array.from(shoppingMap.values())
-    .sort((a, b) => a.localeCompare(b, lang))
-    .map((name) => `<li>${name}</li>`)
-    .join('');
+  const shoppingHTML = buildShoppingList(plan, [], recipeMap, recipeMap)
+    .map(item => `<li>${escapeHTML(item.name)} — ${escapeHTML(item.quantity)}</li>`).join('');
 
   return `
 <!DOCTYPE html>

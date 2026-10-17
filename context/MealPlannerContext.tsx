@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { appendMeal, removePlannedMeal, localDateKey, shiftPlanDays } from '../utils/meal-planning';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const PLAN_KEY = 'tchope_meal_plan';
@@ -7,6 +8,8 @@ const SAVED_PLANS_KEY = 'tchope_saved_meal_plans';
 export type MealSlot = {
   label: string; // "Petit-déj", "Déjeuner", "Dîner", etc.
   recipeId: string;
+  servings?: number;
+  slot?: 'breakfastMeal' | 'lunchMeal' | 'dinnerMeal';
 };
 
 export type DayPlan = {
@@ -31,6 +34,9 @@ type MealPlannerContextType = {
   reusePlan: (plan: MealPlan) => void;
   resetPlan: () => void;
   swapMeal: (date: string, mealIndex: number, newRecipeId: string) => void;
+  addMeal: (date: string, meal: MealSlot) => void;
+  removeMeal: (date: string, index: number) => void;
+  clearAll: () => Promise<void>;
   isLoaded: boolean;
 };
 
@@ -43,6 +49,9 @@ const MealPlannerContext = createContext<MealPlannerContextType>({
   reusePlan: () => {},
   resetPlan: () => {},
   swapMeal: () => {},
+  addMeal: () => {},
+  removeMeal: () => {},
+  clearAll: async () => {},
   isLoaded: false,
 });
 
@@ -55,7 +64,7 @@ function generatePlanId(): string {
 }
 
 function isPlanExpired(plan: MealPlan): boolean {
-  const end = new Date(plan.endDate);
+  const end = new Date(plan.endDate + 'T12:00:00');
   end.setHours(23, 59, 59, 999);
   return new Date() > end;
 }
@@ -113,23 +122,14 @@ export function MealPlannerProvider({ children }: { children: React.ReactNode })
 
   const reusePlan = useCallback((plan: MealPlan) => {
     const today = new Date();
-    const dayKeys = Object.keys(plan.days).sort();
-    const newDays: Record<string, DayPlan> = {};
-
-    dayKeys.forEach((_, i) => {
-      const d = new Date(today);
-      d.setDate(d.getDate() + i);
-      const key = d.toISOString().split('T')[0];
-      newDays[key] = plan.days[dayKeys[i]];
-    });
-
-    const endDate = new Date(today);
-    endDate.setDate(endDate.getDate() + dayKeys.length - 1);
+    const newDays = shiftPlanDays(plan.days, today);
+    const dates = Object.keys(newDays).sort();
+    if (!dates.length) return;
 
     const newPlan: MealPlan = {
       id: generatePlanId(),
-      startDate: today.toISOString().split('T')[0],
-      endDate: endDate.toISOString().split('T')[0],
+      startDate: localDateKey(today),
+      endDate: dates[dates.length - 1],
       preferences: plan.preferences,
       days: newDays,
       createdAt: new Date().toISOString(),
@@ -154,11 +154,24 @@ export function MealPlannerProvider({ children }: { children: React.ReactNode })
     setCurrentPlan({ ...currentPlan, days: updatedDays });
   }, [currentPlan, setCurrentPlan]);
 
+  const addMeal = useCallback((date: string, meal: MealSlot) => {
+    if (isLoaded) setCurrentPlan(appendMeal(currentPlan, date, meal));
+  }, [currentPlan, isLoaded, setCurrentPlan]);
+  const removeMeal = useCallback((date: string, index: number) => {
+    if (currentPlan) setCurrentPlan(removePlannedMeal(currentPlan, date, index));
+  }, [currentPlan, setCurrentPlan]);
+
+  const clearAll = useCallback(async () => {
+    setCurrentPlanState(null);
+    setSavedPlans([]);
+    await AsyncStorage.multiRemove([PLAN_KEY, SAVED_PLANS_KEY]);
+  }, []);
+
   return (
     <MealPlannerContext.Provider
       value={{
         currentPlan, savedPlans, setCurrentPlan, savePlan,
-        deleteSavedPlan, reusePlan, resetPlan, swapMeal, isLoaded,
+        deleteSavedPlan, reusePlan, resetPlan, swapMeal, addMeal, removeMeal, clearAll, isLoaded,
       }}>
       {children}
     </MealPlannerContext.Provider>

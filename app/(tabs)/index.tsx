@@ -19,9 +19,7 @@ const ALL_REGIONS: Region[] = [
 ];
 
 const FEATURED_ORDER = [
-  'ndole', 'poulet-dg', 'eru', 'mbongo-tchobi', 'koki',
-  'taro-sauce-jaune', 'kondre', 'sanga', 'okok-sucre',
-  'poisson-braise', 'ekwang', 'met-de-pistache', 'okok-sale',
+  'ndole', 'poulet-dg', 'eru', 'poisson-braise',
 ];
 
 const POPULAR_ORDER = [
@@ -52,7 +50,7 @@ export default function HomeScreen() {
   );
 
   const popularRecipes = useMemo(
-    () => POPULAR_ORDER.map((id) => recipes.find((r) => r.id === id)).filter(Boolean).slice(0, 10) as typeof recipes,
+    () => POPULAR_ORDER.filter((id) => !FEATURED_ORDER.includes(id)).map((id) => recipes.find((r) => r.id === id)).filter(Boolean).slice(0, 10) as typeof recipes,
     [recipes],
   );
 
@@ -88,60 +86,53 @@ export default function HomeScreen() {
           style={{
             marginHorizontal: 24,
             backgroundColor: colors.inputBg,
-            borderRadius: 48,
+            borderRadius: 20,
             paddingLeft: 48,
             paddingRight: 16,
-            paddingVertical: 18,
+            paddingVertical: 14,
             position: 'relative',
           }}>
           <Ionicons
             name="search-outline"
             size={18}
             color={colors.textSecondary}
-            style={{ position: 'absolute', left: 16, top: 20 }}
+            style={{ position: 'absolute', left: 16, top: 17 }}
           />
-          <Text style={{ fontSize: 16, color: 'rgba(92,91,91,0.6)' }}>
+          <Text style={{ fontSize: 15, color: colors.textSecondary }}>
             {t('searchPlaceholder')}
           </Text>
         </TouchableOpacity>
 
-        {/* AI Recipe Finder */}
-        <TouchableOpacity
-          onPress={() => router.push('/ai-recipes' as any)}
-          activeOpacity={0.85}
-          style={{
-            marginHorizontal: 24,
-            marginTop: 16,
-            borderRadius: 24,
-            padding: 20,
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 16,
-            backgroundColor: 'rgba(168,85,247,0.08)',
-            borderWidth: 1.5,
-            borderColor: 'rgba(168,85,247,0.15)',
-          }}>
-          <View
-            style={{
-              width: 48,
-              height: 48,
-              borderRadius: 24,
-              backgroundColor: 'rgba(168,85,247,0.15)',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-            <Ionicons name="sparkles" size={24} color="#A855F7" />
-          </View>
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 16, fontWeight: '700', color: colors.text }}>
-              {t('aiCta')}
-            </Text>
-            <Text style={{ fontSize: 13, color: colors.textSecondary, marginTop: 2 }}>
-              {t('aiCtaSubtitle')}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 12, gap: 10 }}>
+          <TouchableOpacity onPress={() => router.push('/search?duration=under30')} style={{ backgroundColor: colors.card, padding: 12, borderRadius: 20, flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <Ionicons name="time-outline" size={18} color={colors.accent} /><Text style={{ color: colors.text, fontWeight: '600' }}>{t('quickRecipes')}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push('/ai-recipes')} style={{ backgroundColor: colors.card, padding: 12, borderRadius: 20, flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <Ionicons name="nutrition-outline" size={18} color={colors.accent} /><Text style={{ color: colors.text, fontWeight: '600' }}>{t('withIngredients')}</Text>
+          </TouchableOpacity>
+        </ScrollView>
+        {/* Featured Recipes Section */}
+        <View style={{ paddingVertical: 16, gap: 14 }}>
+          <View style={{ paddingHorizontal: 24 }}>
+            <Text
+              style={{
+                fontSize: 24,
+                fontWeight: '800',
+                color: colors.text,
+                letterSpacing: -0.6,
+              }}>
+              {t('homeHeadline')}
             </Text>
           </View>
-          <Ionicons name="chevron-forward" size={18} color="#A855F7" />
-        </TouchableOpacity>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingLeft: 24 }}>
+            {featuredRecipes.map((recipe) => (
+              <FeaturedCard key={recipe.id} recipe={recipe} />
+            ))}
+          </ScrollView>
+        </View>
 
         {/* Regions Section */}
         <View style={{ paddingVertical: 16, gap: 16 }}>
@@ -172,31 +163,13 @@ export default function HomeScreen() {
           </ScrollView>
         </View>
 
-        {/* Featured Recipes Section */}
-        <View style={{ paddingVertical: 16, gap: 24 }}>
-          <View style={{ paddingHorizontal: 24 }}>
-            <Text
-              style={{
-                fontSize: 24,
-                fontWeight: '800',
-                color: colors.text,
-                letterSpacing: -0.6,
-              }}>
-              {t('featuredRecipes')}
-            </Text>
-          </View>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingLeft: 24 }}>
-            {featuredRecipes.map((recipe) => (
-              <FeaturedCard key={recipe.id} recipe={recipe} />
-            ))}
-          </ScrollView>
-        </View>
-
+        <TouchableOpacity onPress={() => router.push('/tchop-ai')} style={{ marginHorizontal: 24, padding: 16, flexDirection: 'row', gap: 12, alignItems: 'center' }}>
+          <Ionicons name="chatbubble-ellipses-outline" size={22} color={colors.accent} />
+          <View style={{ flex: 1 }}><Text style={{ color: colors.text, fontWeight: '700', fontSize: 15 }}>{t('askAI')}</Text><Text style={{ color: colors.textSecondary, marginTop: 4 }}>{t('askAISubtitle')}</Text></View>
+          <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+        </TouchableOpacity>
         {/* Popular Recipes Section */}
-        <View style={{ paddingVertical: 16, gap: 24 }}>
+        <View style={{ paddingVertical: 16, gap: 14 }}>
           <View
             style={{
               flexDirection: 'row',

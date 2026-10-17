@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Share } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,49 +11,11 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
 import { useMealPlanner } from '@/context/MealPlannerContext';
 import { useToast } from '@/hooks/useToast';
+import { useShopping } from '@/context/ShoppingContext';
+import { useUserRecipes } from '@/hooks/useUserRecipes';
+import { recipes as baseRecipes } from '@/data/recipes';
+import { buildShoppingList } from '@/utils/shopping-list';
 import type { Recipe } from '@/types';
-
-type ShoppingItem = {
-  name: string;
-  quantity: string;
-  recipes: string[]; // recipe names that use this ingredient
-};
-
-function buildShoppingList(
-  plan: { days: Record<string, { meals: { recipeId: string }[] }> } | null,
-  recipeMap: Record<string, Recipe>,
-): ShoppingItem[] {
-  if (!plan) return [];
-
-  const items: Record<string, ShoppingItem> = {};
-
-  Object.values(plan.days).forEach((day) => {
-    day.meals.forEach((meal) => {
-      const recipe = recipeMap[meal.recipeId];
-      if (!recipe) return;
-
-      recipe.ingredients.forEach((ing) => {
-        const key = ing.name.toLowerCase().trim();
-        if (items[key]) {
-          if (!items[key].recipes.includes(recipe.name)) {
-            items[key].recipes.push(recipe.name);
-          }
-          if (ing.quantity && !items[key].quantity.includes(ing.quantity)) {
-            items[key].quantity += `, ${ing.quantity}`;
-          }
-        } else {
-          items[key] = {
-            name: ing.name,
-            quantity: ing.quantity || '',
-            recipes: [recipe.name],
-          };
-        }
-      });
-    });
-  });
-
-  return Object.values(items).sort((a, b) => a.name.localeCompare(b.name));
-}
 
 export default function ShoppingListScreen() {
   const { colors } = useTheme();
@@ -64,40 +26,30 @@ export default function ShoppingListScreen() {
   const recipes = useLocalizedRecipes();
   const { currentPlan } = useMealPlanner();
 
-  const [checked, setChecked] = useState<Set<string>>(new Set());
+  const { selections, checked: checkedKeys, toggle, clearChecked, removeRecipe, isLoaded, error } = useShopping();
+  const { userRecipes } = useUserRecipes();
+  const checked = useMemo(() => new Set(checkedKeys), [checkedKeys]);
+  const baseMap = useMemo(() => Object.fromEntries([...baseRecipes, ...userRecipes].map(r => [r.id, r])), [userRecipes]);
 
   const recipeMap = useMemo(() => {
     const map: Record<string, Recipe> = {};
-    recipes.forEach((r) => { map[r.id] = r; });
+    [...recipes, ...userRecipes].forEach((r) => { map[r.id] = r; });
     return map;
-  }, [recipes]);
+  }, [recipes, userRecipes]);
 
-  const items = useMemo(() => buildShoppingList(currentPlan, recipeMap), [currentPlan, recipeMap]);
+  const items = useMemo(() => buildShoppingList(currentPlan, selections, recipeMap, baseMap), [currentPlan, selections, recipeMap, baseMap]);
 
-  const uncheckedItems = useMemo(() => items.filter((i) => !checked.has(i.name.toLowerCase())), [items, checked]);
-  const checkedItems = useMemo(() => items.filter((i) => checked.has(i.name.toLowerCase())), [items, checked]);
+  const uncheckedItems = useMemo(() => items.filter((i) => !checked.has(i.key)), [items, checked]);
+  const checkedItems = useMemo(() => items.filter((i) => checked.has(i.key)), [items, checked]);
 
-  const toggleItem = useCallback((name: string) => {
-    const key = name.toLowerCase();
-    setChecked((prev) => {
-      const next = new Set(prev);
-      if (next.has(key)) {
-        next.delete(key);
-      } else {
-        next.add(key);
-      }
-      return next;
-    });
+  const toggleItem = useCallback((key: string) => {
+    toggle(key);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-  }, []);
-
-  const clearChecked = useCallback(() => {
-    setChecked(new Set());
-  }, []);
+  }, [toggle]);
 
   const formatListAsText = useCallback(() => {
     const lines = items
-      .filter((i) => !checked.has(i.name.toLowerCase()))
+      .filter((i) => !checked.has(i.key))
       .map((i) => `${i.quantity ? `${i.quantity} — ` : ''}${i.name}`);
     return `🛒 ${t('shoppingListTitle')} (Tchopé)\n\n${lines.map((l) => `• ${l}`).join('\n')}`;
   }, [items, checked, t]);
@@ -142,7 +94,7 @@ export default function ShoppingListScreen() {
             {t('shoppingListTitle')}
           </Text>
           <Text style={{ fontSize: 12, color: colors.textSecondary, marginTop: 1 }}>
-            {t('shoppingListSubtitle')}
+            {t('shoppingSources')}
           </Text>
         </View>
       </View>
@@ -192,12 +144,21 @@ export default function ShoppingListScreen() {
         contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40 + bottom }}
         showsVerticalScrollIndicator={false}>
 
+        {error && <Text style={{ color: colors.text, padding: 12 }}>{t('storageError')}</Text>}
+        {selections.length > 0 && <View style={{ gap: 8, marginVertical: 12 }}>
+          <Text style={{ fontWeight: '700', color: colors.text }}>{t('extraShopping')}</Text>
+          {selections.map(selection => <View key={selection.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <Text style={{ flex: 1, color: colors.textSecondary }}>{recipeMap[selection.recipeId]?.name ?? selection.recipeId} · {selection.servings} {t('portions')}</Text>
+            <TouchableOpacity accessibilityRole="button" accessibilityLabel={t('removeShoppingRecipe')} onPress={() => removeRecipe(selection.id)} style={{ padding: 12 }}><Ionicons name="close-circle-outline" size={22} color={colors.accent} /></TouchableOpacity>
+          </View>)}
+        </View>}
         {items.length === 0 && (
           <View style={{ alignItems: 'center', paddingVertical: 60 }}>
             <Ionicons name="cart-outline" size={48} color={colors.textMuted} />
             <Text style={{ fontSize: 15, color: colors.textMuted, marginTop: 12 }}>
-              {t('shoppingListEmpty')}
+              {t('shoppingEmptyHint')}
             </Text>
+            <TouchableOpacity onPress={() => router.push('/(tabs)/search')} style={{ padding: 16, marginTop: 12 }}><Text style={{ color: colors.accent, fontWeight: '700' }}>{t('browseRecipes')}</Text></TouchableOpacity>
           </View>
         )}
 
@@ -206,8 +167,11 @@ export default function ShoppingListScreen() {
           <View style={{ marginTop: 12 }}>
             {uncheckedItems.map((item) => (
               <TouchableOpacity
-                key={item.name}
-                onPress={() => toggleItem(item.name)}
+                key={item.key}
+                accessibilityRole="checkbox" accessibilityState={{ checked: checked.has(item.key) }} aria-checked={checked.has(item.key)}
+                accessibilityLabel={item.name}
+                disabled={!isLoaded}
+                onPress={() => toggleItem(item.key)}
                 activeOpacity={0.7}
                 style={{
                   flexDirection: 'row',
@@ -268,8 +232,11 @@ export default function ShoppingListScreen() {
 
             {checkedItems.map((item) => (
               <TouchableOpacity
-                key={item.name}
-                onPress={() => toggleItem(item.name)}
+                key={item.key}
+                accessibilityRole="checkbox" accessibilityState={{ checked: checked.has(item.key) }} aria-checked={checked.has(item.key)}
+                accessibilityLabel={item.name}
+                disabled={!isLoaded}
+                onPress={() => toggleItem(item.key)}
                 activeOpacity={0.7}
                 style={{
                   flexDirection: 'row',
@@ -293,7 +260,7 @@ export default function ShoppingListScreen() {
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}>
-                  <Ionicons name="checkmark" size={16} color="#FFFFFF" />
+                  <Ionicons name="checkmark" size={16} color={colors.chipActiveText} />
                 </View>
 
                 {/* Content */}
@@ -344,8 +311,8 @@ export default function ShoppingListScreen() {
               justifyContent: 'center',
               gap: 8,
             }}>
-            <Ionicons name="copy-outline" size={18} color="#FFFFFF" />
-            <Text style={{ fontSize: 14, fontWeight: '700', color: '#FFFFFF' }}>
+            <Ionicons name="copy-outline" size={18} color={colors.chipActiveText} />
+            <Text style={{ fontSize: 14, fontWeight: '700', color: colors.chipActiveText }}>
               {t('shoppingListCopy')}
             </Text>
           </TouchableOpacity>

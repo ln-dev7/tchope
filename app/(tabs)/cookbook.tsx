@@ -26,18 +26,19 @@ export default function CookbookScreen() {
   const { favorites } = useFavorites();
   const { userRecipes, deleteRecipe } = useUserRecipes();
   const { notes } = useNotes();
-  const [activeTab, setActiveTab] = useState<Tab>('myRecipes');
+  const [selectedTab, setActiveTab] = useState<Tab | null>(null);
+  const activeTab = selectedTab ?? (userRecipes.length === 0 && favorites.length > 0 ? 'favorites' : 'myRecipes');
   const [activeFilter, setActiveFilter] = useState<Filter>('all');
 
   const savedRecipes = useMemo(() => {
-    const favRecipes = recipes.filter((r) => favorites.includes(r.id));
+    const favRecipes = [...recipes, ...userRecipes].filter((r) => favorites.includes(r.id));
     if (activeFilter === 'all') return favRecipes;
     if (activeFilter === 'breakfast') return favRecipes.filter((r) => r.tags?.includes('Breakfast'));
     if (activeFilter === 'sundayFeast') return favRecipes.filter((r) => r.tags?.includes('Sunday Feast'));
     if (activeFilter === 'starters') return favRecipes.filter((r) => r.category === 'Entrée');
     if (activeFilter === 'sauces') return favRecipes.filter((r) => r.category === 'Sauce');
     return favRecipes;
-  }, [favorites, activeFilter]);
+  }, [favorites, activeFilter, recipes, userRecipes]);
 
   const filters: { key: Filter; label: string }[] = [
     { key: 'all', label: t('all') },
@@ -62,7 +63,7 @@ export default function CookbookScreen() {
         showsVerticalScrollIndicator={false}>
         {/* Title + Add button */}
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-          <View style={{ gap: 4 }}>
+          <View style={{ gap: 4, flex: 1 }}>
             <Text
               style={{
                 fontSize: 12,
@@ -73,12 +74,13 @@ export default function CookbookScreen() {
               }}>
               {t('personalSpace')}
             </Text>
-            <Text style={{ fontSize: 36, fontWeight: '800', color: colors.text, letterSpacing: -0.9 }}>
+            <Text style={{ fontSize: 28, fontWeight: '800', color: colors.text, letterSpacing: -0.9 }}>
               {t('myCookbook')}
             </Text>
           </View>
           <TouchableOpacity
             onPress={() => router.push('/add-recipe')}
+            accessibilityRole="button" accessibilityLabel={t('addRecipe')}
             style={{
               width: 48,
               height: 48,
@@ -94,44 +96,6 @@ export default function CookbookScreen() {
             <Ionicons name="add" size={24} color="#FFFFFF" />
           </TouchableOpacity>
         </View>
-
-        {/* Notes shortcut */}
-        <TouchableOpacity
-          onPress={() => router.push('/notes' as any)}
-          activeOpacity={0.8}
-          style={{
-            backgroundColor: isDark ? colors.card : '#FFFFFF',
-            borderRadius: 18,
-            padding: 16,
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 12,
-            borderWidth: 1,
-            borderColor: colors.border,
-          }}>
-          <View
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: 14,
-              backgroundColor: `${colors.accent}15`,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-            <Ionicons name="document-text-outline" size={22} color={colors.accent} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 16, fontWeight: '700', color: colors.text }}>
-              {t('myNotes')}
-            </Text>
-            <Text style={{ fontSize: 12, color: colors.textMuted, marginTop: 2 }}>
-              {notes.length === 0
-                ? t('notesSubtitle')
-                : t('notesCount').replace('{count}', String(notes.length))}
-            </Text>
-          </View>
-          <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
-        </TouchableOpacity>
 
         {/* Tabs */}
         <View
@@ -185,28 +149,6 @@ export default function CookbookScreen() {
         {activeTab === 'myRecipes' ? (
           /* Mes Recettes */
           <View style={{ gap: 20 }}>
-            {/* Create button */}
-            <TouchableOpacity
-              onPress={() => router.push('/add-recipe')}
-              activeOpacity={0.8}
-              style={{
-                backgroundColor: isDark ? 'rgba(145,71,0,0.1)' : 'rgba(145,71,0,0.06)',
-                borderRadius: 24,
-                borderWidth: 2,
-                borderColor: isDark ? 'rgba(145,71,0,0.2)' : 'rgba(145,71,0,0.12)',
-                borderStyle: 'dashed',
-                paddingVertical: 20,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 10,
-              }}>
-              <Ionicons name="add-circle-outline" size={22} color={colors.accent} />
-              <Text style={{ fontSize: 16, fontWeight: '600', color: colors.accent }}>
-                {t('addRecipe')}
-              </Text>
-            </TouchableOpacity>
-
             {userRecipes.length > 0 ? (
               <View style={{ gap: 16 }}>
                 {userRecipes.map((recipe) => (
@@ -275,7 +217,12 @@ export default function CookbookScreen() {
                   variant={activeFilter === f.key ? 'default' : 'peach'}
                 />
               ))}
-            </ScrollView>
+              <TouchableOpacity onPress={() => router.push('/notes')} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 16, borderTopWidth: 1, borderTopColor: colors.border, gap: 10 }}>
+          <Ionicons name="document-text-outline" size={20} color={colors.accent} />
+          <Text style={{ flex: 1, color: colors.text, fontWeight: '600' }}>{t('myNotes')} · {notes.length}</Text>
+          <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+        </TouchableOpacity>
+      </ScrollView>
 
             {/* Grid */}
             {savedRecipes.length > 0 ? (
@@ -293,6 +240,11 @@ export default function CookbookScreen() {
             )}
           </>
         )}
+        <TouchableOpacity onPress={() => router.push('/notes')} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 16, borderTopWidth: 1, borderTopColor: colors.border, gap: 10 }}>
+          <Ionicons name="document-text-outline" size={20} color={colors.accent} />
+          <Text style={{ flex: 1, color: colors.text, fontWeight: '600' }}>{t('myNotes')} · {notes.length}</Text>
+          <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );

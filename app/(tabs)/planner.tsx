@@ -24,6 +24,8 @@ import RecipeImage from '@/components/RecipeImage';
 import { callClaude } from '@/utils/api';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 import { exportMealPlanPDF } from '@/utils/export-pdf';
+import { useUserRecipes } from '@/hooks/useUserRecipes';
+import { localDateKey, retainMealDetails } from '@/utils/meal-planning';
 import type { Recipe } from '@/types';
 
 const FULL_DAY_FR = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
@@ -145,13 +147,15 @@ Return the FULL updated plan as valid JSON (no markdown), same format:
 // ── Meal Card ──────────────────────────────────────────
 
 function MealCard({
-  recipe, label, colors, isDark, onSwap, onPress,
+  recipe, label, colors, isDark, onSwap, onPress, onRemove, removeLabel,
 }: {
   recipe: Recipe | undefined;
   label: string;
   colors: any;
   isDark?: boolean;
   onSwap: () => void;
+  onRemove: () => void;
+  removeLabel: string;
   onPress: () => void;
 }) {
   if (!recipe) return null;
@@ -179,6 +183,7 @@ function MealCard({
             {recipe.region} · {recipe.duration} min
           </Text>
         </View>
+        <TouchableOpacity accessibilityRole="button" accessibilityLabel={removeLabel} onPress={onRemove} style={{ padding: 12, justifyContent: 'center' }}><Ionicons name="close-circle-outline" size={20} color={colors.textMuted} /></TouchableOpacity>
         <TouchableOpacity onPress={onSwap} style={{ padding: 12, justifyContent: 'center' }}>
           <Ionicons name="shuffle-outline" size={18} color={colors.textMuted} />
         </TouchableOpacity>
@@ -194,12 +199,14 @@ export default function PlannerScreen() {
   const { t } = useTranslation();
   const { settings } = useSettings();
   const router = useRouter();
-  const recipes = useLocalizedRecipes();
+  const catalogue = useLocalizedRecipes();
+  const { userRecipes } = useUserRecipes();
+  const recipes = useMemo(() => [...catalogue, ...userRecipes], [catalogue, userRecipes]);
   const { bottom } = useSafeAreaInsets();
   const { toast } = useToast();
   const {
     currentPlan, savedPlans, setCurrentPlan,
-    savePlan, deleteSavedPlan, reusePlan, resetPlan, swapMeal,
+    savePlan, deleteSavedPlan, reusePlan, resetPlan, swapMeal, removeMeal,
   } = useMealPlanner();
 
   const isConnected = useNetworkStatus();
@@ -226,7 +233,7 @@ export default function PlannerScreen() {
       for (let i = 0; i < 7; i++) {
         const d = new Date(today);
         d.setDate(d.getDate() + i);
-        days.push(d.toISOString().split('T')[0]);
+        days.push(localDateKey(d));
       }
       const result = await generateMealPlanAI(recipes, preferences, days, settings.language === 'fr');
       const plan: MealPlan = {
@@ -257,7 +264,7 @@ export default function PlannerScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     try {
       const result = await adjustMealPlanAI(recipes, currentPlan, adjustText, settings.language === 'fr');
-      setCurrentPlan({ ...currentPlan, days: result });
+      setCurrentPlan({ ...currentPlan, days: retainMealDetails(currentPlan.days, result) });
       setAdjustText('');
       setShowAdjust(false);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -344,12 +351,20 @@ export default function PlannerScreen() {
             </Text>
           </View>
 
+          <View style={{ paddingHorizontal: 24, gap: 10, marginBottom: 20 }}>
+            <TouchableOpacity onPress={() => router.push('/plan-meal')} style={{ padding: 16, borderRadius: 18, backgroundColor: colors.accent, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+              <Ionicons name="add-circle-outline" size={22} color={colors.chipActiveText} /><Text style={{ color: colors.chipActiveText, fontWeight: '700', fontSize: 16, flexShrink: 1 }}>{t('manualMeal')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleShoppingList} style={{ padding: 14, borderRadius: 18, backgroundColor: colors.surface, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+              <Ionicons name="cart-outline" size={22} color={colors.accent} /><Text style={{ color: colors.accent, fontWeight: '700', flexShrink: 1 }}>{t('plannerShoppingList')}</Text>
+            </TouchableOpacity>
+          </View>
           {currentPlan ? (
             <View style={{ paddingHorizontal: 24 }}>
               {/* Period badge */}
               <View style={{ backgroundColor: colors.accent + '10', borderRadius: 16, padding: 14, flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
                 <Ionicons name="calendar-outline" size={18} color={colors.accent} />
-                <Text style={{ fontSize: 13, fontWeight: '600', color: colors.accent, marginLeft: 8 }}>
+                <Text style={{ fontSize: 13, fontWeight: '600', color: colors.accent, marginLeft: 8, flex: 1 }}>
                   {formatDate(currentPlan.startDate, settings.language)} → {formatDate(currentPlan.endDate, settings.language)}
                 </Text>
               </View>
@@ -363,7 +378,7 @@ export default function PlannerScreen() {
                   <View key={date} style={{ marginBottom: 20 }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
                       <View style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center' }}>
-                        <Text style={{ fontSize: 12, fontWeight: '800', color: '#FFFFFF' }}>
+                        <Text style={{ fontSize: 12, fontWeight: '800', color: colors.chipActiveText }}>
                           {shortDay(date, settings.language)}
                         </Text>
                       </View>
@@ -372,12 +387,14 @@ export default function PlannerScreen() {
                       </Text>
                     </View>
 
-                    <View style={{ gap: 8, marginLeft: 52 }}>
+                    <View style={{ gap: 8 }}>
                       {day.meals.map((meal, idx) => (
                         <MealCard
                           key={`${date}-${idx}`}
                           recipe={recipeMap[meal.recipeId]}
-                          label={meal.label}
+                          label={`${meal.slot ? t(meal.slot) : meal.label}${meal.servings ? ` · ${meal.servings} ${t('portions')}` : ''}`}
+                          onRemove={() => removeMeal(date, idx)}
+                          removeLabel={t('removeMeal')}
                           colors={colors}
                           isDark={isDark}
                           onSwap={() => handleSwap(date, idx)}
@@ -446,13 +463,13 @@ export default function PlannerScreen() {
                     }}>
                     {isAdjusting ? (
                       <>
-                        <ActivityIndicator color="#FFFFFF" size="small" />
-                        <Text style={{ fontSize: 14, fontWeight: '700', color: '#FFFFFF' }}>{t('plannerAdjusting')}</Text>
+                        <ActivityIndicator color={colors.chipActiveText} size="small" />
+                        <Text style={{ fontSize: 14, fontWeight: '700', color: colors.chipActiveText }}>{t('plannerAdjusting')}</Text>
                       </>
                     ) : (
                       <>
-                        <Ionicons name="checkmark" size={18} color="#FFFFFF" />
-                        <Text style={{ fontSize: 14, fontWeight: '700', color: '#FFFFFF' }}>{t('plannerAdjust')}</Text>
+                        <Ionicons name="checkmark" size={18} color={colors.chipActiveText} />
+                        <Text style={{ fontSize: 14, fontWeight: '700', color: colors.chipActiveText }}>{t('plannerAdjust')}</Text>
                       </>
                     )}
                   </TouchableOpacity>
@@ -461,13 +478,6 @@ export default function PlannerScreen() {
 
               {/* Action buttons */}
               <View style={{ gap: 10, marginTop: 16 }}>
-                <TouchableOpacity
-                  onPress={handleShoppingList}
-                  style={{ backgroundColor: colors.accent, borderRadius: 16, padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                  <Ionicons name="cart-outline" size={18} color="#FFFFFF" />
-                  <Text style={{ fontSize: 15, fontWeight: '700', color: '#FFFFFF' }}>{t('plannerShoppingList')}</Text>
-                </TouchableOpacity>
-
                 <TouchableOpacity
                   onPress={handleSave}
                   style={{ backgroundColor: colors.green + '15', borderRadius: 16, padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
@@ -493,12 +503,12 @@ export default function PlannerScreen() {
           ) : (
             /* No plan — generation form */
             <View style={{ paddingHorizontal: 24 }}>
-              <View style={{ alignItems: 'center', paddingVertical: 24 }}>
-                <View style={{ width: 80, height: 80, borderRadius: 40, backgroundColor: colors.accent + '12', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+              <View style={{ alignItems: 'center', paddingVertical: 16 }}>
+                <View style={{ width: 56, height: 56, borderRadius: 18, backgroundColor: colors.accent + '12', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
                   <Ionicons name="restaurant-outline" size={36} color={colors.accent} />
                 </View>
                 <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text, textAlign: 'center' }}>
-                  {t('plannerEmptyState')}
+                  {t('planWithAI')}
                 </Text>
                 <Text style={{ fontSize: 13, color: colors.textSecondary, textAlign: 'center', marginTop: 6, lineHeight: 18 }}>
                   {t('plannerEmptyStateSubtitle')}
@@ -528,13 +538,13 @@ export default function PlannerScreen() {
                 }}>
                 {isGenerating ? (
                   <>
-                    <ActivityIndicator color="#FFFFFF" size="small" />
-                    <Text style={{ fontSize: 16, fontWeight: '700', color: '#FFFFFF' }}>{t('plannerGenerating')}</Text>
+                    <ActivityIndicator color={colors.chipActiveText} size="small" />
+                    <Text style={{ fontSize: 16, fontWeight: '700', color: colors.chipActiveText }}>{t('plannerGenerating')}</Text>
                   </>
                 ) : (
                   <>
-                    <Ionicons name="sparkles" size={20} color="#FFFFFF" />
-                    <Text style={{ fontSize: 16, fontWeight: '700', color: '#FFFFFF' }}>{t('plannerGenerate')}</Text>
+                    <Ionicons name="sparkles" size={20} color={colors.chipActiveText} />
+                    <Text style={{ fontSize: 16, fontWeight: '700', color: colors.chipActiveText }}>{t('plannerGenerate')}</Text>
                   </>
                 )}
               </TouchableOpacity>

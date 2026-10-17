@@ -1,5 +1,6 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
+import { useWindowDimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -11,7 +12,8 @@ export default function TabLayout() {
   const { t } = useTranslation();
   const { bottom } = useSafeAreaInsets();
 
-  const tabBarHeight = 64 + bottom;
+  const { fontScale } = useWindowDimensions();
+  const tabBarHeight = 72 + bottom + Math.max(0, fontScale - 1) * 24;
 
   return (
     <Tabs
@@ -28,7 +30,7 @@ export default function TabLayout() {
           position: 'absolute',
           height: tabBarHeight,
           paddingTop: 12,
-          paddingBottom: bottom,
+          paddingBottom: 8 + bottom,
           shadowColor: '#2F2F2E',
           shadowOffset: { width: 0, height: -12 },
           shadowOpacity: 0.06,

@@ -1,6 +1,5 @@
 import "../global.css";
 import React, { useEffect } from 'react';
-import { Text, TextInput } from 'react-native';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -21,20 +20,12 @@ import { useTheme } from '@/hooks/useTheme';
 import NetworkBanner from '@/components/NetworkBanner';
 import UpdateModal from '@/components/UpdateModal';
 import WhatsNewModal from '@/components/WhatsNewModal';
-import TchopAI from '@/components/TchopAI';
+import { ShoppingProvider } from '@/context/ShoppingContext';
 import { ONBOARDING_KEY } from './onboarding';
 
 export const unstable_settings = {
   anchor: '(tabs)',
 };
-
-// Plafonne l'agrandissement système du texte (Dynamic Type iOS / taille de
-// police Android) : au-delà de ×1.2, les mises en page fixes (mode cuisine,
-// headers, portails) débordent de l'écran.
-// @ts-expect-error defaultProps n'est plus dans les types mais reste honoré par RN
-Text.defaultProps = { ...(Text.defaultProps ?? {}), maxFontSizeMultiplier: 1.2 };
-// @ts-expect-error idem
-TextInput.defaultProps = { ...(TextInput.defaultProps ?? {}), maxFontSizeMultiplier: 1.2 };
 
 function InnerLayout() {
   const { isDark } = useTheme();
@@ -74,6 +65,7 @@ function InnerLayout() {
         <Stack.Screen name="ai-recipes" />
         <Stack.Screen name="timer" />
         <Stack.Screen name="shopping-list" />
+        <Stack.Screen name="plan-meal" options={{ presentation: 'modal' }} />
         <Stack.Screen name="notification-settings" />
         <Stack.Screen name="cooking-mode" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
         <Stack.Screen name="live-cooking" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
@@ -85,7 +77,6 @@ function InnerLayout() {
       <NetworkBanner />
       <UpdateModal />
       <WhatsNewModal />
-      <TchopAI />
       <StatusBar style={isDark ? 'light' : 'dark'} />
     </ThemeProvider>
   );
@@ -100,11 +91,13 @@ export default function RootLayout() {
             <TimerProvider>
               <RatingProvider>
                 <MealPlannerProvider>
-                  <NotesProvider>
-                    <AiConsentProvider>
-                      <InnerLayout />
-                    </AiConsentProvider>
-                  </NotesProvider>
+                  <ShoppingProvider>
+                    <NotesProvider>
+                      <AiConsentProvider>
+                        <InnerLayout />
+                      </AiConsentProvider>
+                    </NotesProvider>
+                  </ShoppingProvider>
                 </MealPlannerProvider>
               </RatingProvider>
             </TimerProvider>

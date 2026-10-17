@@ -1,8 +1,8 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, ScrollView, TextInput, TouchableOpacity, Keyboard, LayoutAnimation, Platform, UIManager } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -29,13 +29,17 @@ export default function SearchScreen() {
   const [selectedIngredient, setSelectedIngredient] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const inputRef = useRef<TextInput>(null);
+  const { duration } = useLocalSearchParams<{ duration?: string }>();
+  const router = useRouter();
 
-  useFocusEffect(
-    useCallback(() => {
-      const timeout = setTimeout(() => inputRef.current?.focus(), 100);
-      return () => clearTimeout(timeout);
-    }, [])
-  );
+  useEffect(() => {
+    if (duration === 'under30') {
+      setQuery('');
+      setFilters({ duration: 'under30' });
+      setSelectedIngredient(null);
+      router.setParams({ duration: undefined });
+    }
+  }, [duration, router, setFilters, setQuery]);
 
   const dismissKeyboard = () => Keyboard.dismiss();
 
@@ -89,10 +93,10 @@ export default function SearchScreen() {
             value={query}
             onChangeText={setQuery}
             placeholder={t('searchPlaceholder')}
-            placeholderTextColor="rgba(92,91,91,0.6)"
+            placeholderTextColor={colors.textSecondary}
             style={{
               backgroundColor: colors.inputBg,
-              borderRadius: 48,
+              borderRadius: 20,
               paddingLeft: 48,
               paddingRight: query ? 48 : 16,
               paddingVertical: 18,
@@ -189,6 +193,10 @@ export default function SearchScreen() {
           </View>
         )}
 
+        {!hasActiveFilters && <View style={{ paddingHorizontal: 24, gap: 16 }}>
+          <Text style={{ fontSize: 20, fontWeight: '700', color: colors.text }}>{t('discoverRecipes')}</Text>
+          {recipes.filter(r => r.duration < 30).slice(0, 4).map(recipe => <SearchResultCard key={recipe.id} recipe={recipe} />)}
+        </View>}
         {/* Results */}
         {hasActiveFilters && (
           <View style={{ gap: 20, paddingHorizontal: 24 }}>

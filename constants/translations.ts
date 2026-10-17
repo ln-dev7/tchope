@@ -1,9 +1,44 @@
 export const translations = {
   fr: {
+    homeHeadline: "On mange quoi aujourd’hui ?",
+    homeSubtitle: "Les saveurs du Cameroun, à votre table.",
+    quickRecipes: "Prêt en moins de 30 min",
+    withIngredients: "Avec mes ingrédients",
+    askAI: "Poser une question à TchopAI",
+    askAISubtitle: "Une technique, une substitution, un conseil.",
+    voiceGuide: "Guidage vocal IA",
+    planRecipe: "Planifier ce repas",
+    addToShopping: "Ajouter aux courses",
+    addedToShopping: "Ingrédients ajoutés aux courses",
+    manualMeal: "Ajouter un repas",
+    mealDate: "Choisissez un jour",
+    mealSlot: "Quel repas ?",
+    chooseRecipe: "Choisissez une recette",
+    breakfastMeal: "Petit-déjeuner",
+    lunchMeal: "Déjeuner",
+    dinnerMeal: "Dîner",
+    mealAdded: "Repas ajouté au planning",
+    removeMeal: "Retirer ce repas",
+    planWithAI: "Ou composez votre semaine avec l’IA",
+    extraShopping: "Recettes ajoutées aux courses",
+    removeShoppingRecipe: "Retirer des courses",
+    shoppingSources: "Planning et recettes ajoutées",
+    shoppingEmptyHint: "Ajoutez les ingrédients depuis une recette ou planifiez un repas.",
+    browseRecipes: "Explorer les recettes",
+    discoverRecipes: "À découvrir",
+    decreaseServings: "Diminuer les portions",
+    increaseServings: "Augmenter les portions",
+    addFavorite: "Ajouter aux favoris",
+    removeFavorite: "Retirer des favoris",
+    favoriteAdded: "Ajouté aux favoris",
+    favoriteRemoved: "Retiré des favoris",
+    back: "Retour",
+    storageError: "Enregistrement impossible. Réessayez.",
+
     // Tabs
     tabHome: "Accueil",
     tabSearch: "Rechercher",
-    tabCookbook: "Cookbook",
+    tabCookbook: "Recettes",
     tabSettings: "Paramètres",
 
     // Home
@@ -59,7 +94,7 @@ export const translations = {
     filter: "Filtrer",
 
     // Cookbook
-    myCookbook: "Mon Cookbook",
+    myCookbook: "Mes recettes",
     savedRecipes: "Recettes Sauvées",
     collections: "Collections",
     addRecipe: "Ajouter une recette",
@@ -273,7 +308,7 @@ export const translations = {
     plannerAdjusting: "Ajustement en cours...",
     plannerBreakfast: "Petit-déj",
     plannerEmptyState: "Planifiez vos repas de la semaine",
-    plannerEmptyStateSubtitle: "Décrivez vos envies et l'IA composera vos repas",
+    plannerEmptyStateSubtitle: "Choisissez vos recettes, ou laissez l’IA vous inspirer.",
 
     // Shopping List
     shoppingListTitle: "Liste de courses",
@@ -290,7 +325,7 @@ export const translations = {
     // General
     allRecipes: "Toutes les recettes",
     favorites: "Favoris",
-    myRecipes: "Mes Recettes",
+    myRecipes: "Créations",
     recipes: "Recettes",
 
     // Network
@@ -454,6 +489,41 @@ export const translations = {
   },
 
   en: {
+    homeHeadline: "What’s cooking today?",
+    homeSubtitle: "Bring the flavours of Cameroon to your table.",
+    quickRecipes: "Ready in under 30 min",
+    withIngredients: "Use my ingredients",
+    askAI: "Ask TchopAI a question",
+    askAISubtitle: "Techniques, substitutions and cooking advice.",
+    voiceGuide: "AI voice guidance",
+    planRecipe: "Plan this meal",
+    addToShopping: "Add to shopping list",
+    addedToShopping: "Ingredients added to your shopping list",
+    manualMeal: "Add a meal",
+    mealDate: "Choose a day",
+    mealSlot: "Which meal?",
+    chooseRecipe: "Choose a recipe",
+    breakfastMeal: "Breakfast",
+    lunchMeal: "Lunch",
+    dinnerMeal: "Dinner",
+    mealAdded: "Meal added to your plan",
+    removeMeal: "Remove this meal",
+    planWithAI: "Or let AI help plan your week",
+    extraShopping: "Recipes added to your shopping list",
+    removeShoppingRecipe: "Remove from shopping list",
+    shoppingSources: "Your meal plan and added recipes",
+    shoppingEmptyHint: "Add ingredients from a recipe or plan a meal.",
+    browseRecipes: "Explore recipes",
+    discoverRecipes: "Discover",
+    decreaseServings: "Decrease servings",
+    increaseServings: "Increase servings",
+    addFavorite: "Add to favourites",
+    removeFavorite: "Remove from favourites",
+    favoriteAdded: "Added to favourites",
+    favoriteRemoved: "Removed from favourites",
+    back: "Back",
+    storageError: "Could not save. Please try again.",
+
     // Tabs
     tabHome: "Home",
     tabSearch: "Search",
@@ -725,7 +795,7 @@ export const translations = {
     plannerAdjusting: "Adjusting...",
     plannerBreakfast: "Breakfast",
     plannerEmptyState: "Plan your weekly meals",
-    plannerEmptyStateSubtitle: "Describe your preferences and AI will compose your meals",
+    plannerEmptyStateSubtitle: "Choose your recipes, or let AI inspire you.",
 
     // Shopping List
     shoppingListTitle: "Shopping List",
@@ -742,7 +812,7 @@ export const translations = {
     // General
     allRecipes: "All Recipes",
     favorites: "Favorites",
-    myRecipes: "My Recipes",
+    myRecipes: "My creations",
     recipes: "Recipes",
 
     // Network

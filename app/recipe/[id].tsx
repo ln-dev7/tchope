@@ -10,7 +10,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useToast } from '@/hooks/useToast';
-import { useTimer } from '@/context/TimerContext';
+import { useShopping } from '@/context/ShoppingContext';
 import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
 import { useUserRecipes } from '@/hooks/useUserRecipes';
 import { useRating } from '@/context/RatingContext';
@@ -27,7 +27,7 @@ export default function RecipeDetailScreen() {
   const { bottom } = useSafeAreaInsets();
   const { isFavorite, toggleFavorite } = useFavorites();
   const { toast } = useToast();
-  const { startTimer, isTimerRunning } = useTimer();
+  const { addRecipe: addShoppingRecipe, isLoaded: shoppingLoaded } = useShopping();
   const { userRecipes } = useUserRecipes();
   const { trackRecipeView } = useRating();
   const recipes = useLocalizedRecipes();
@@ -41,7 +41,7 @@ export default function RecipeDetailScreen() {
 
   useEffect(() => {
     if (recipe) trackRecipeView();
-  }, [recipe?.id]);
+  }, [recipe, trackRecipeView]);
 
   const currentServings = servings ?? recipe?.servings ?? 1;
   const portionRatio = recipe ? currentServings / recipe.servings : 1;
@@ -72,7 +72,7 @@ export default function RecipeDetailScreen() {
   const handleFavorite = () => {
     const wasFav = isFavorite(recipe.id);
     toggleFavorite(recipe.id);
-    toast(wasFav ? 'Retiré des favoris' : 'Ajouté aux favoris', wasFav ? 'custom' : 'heart');
+    toast(wasFav ? t('favoriteRemoved') : t('favoriteAdded'), wasFav ? 'custom' : 'heart');
   };
 
   const buildRecipeText = (): string => {
@@ -130,7 +130,7 @@ export default function RecipeDetailScreen() {
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 24 + bottom }} showsVerticalScrollIndicator={false}>
         {/* Hero Image */}
-        <View style={{ height: 350, overflow: 'hidden' }}>
+        <View style={{ height: 260, overflow: 'hidden' }}>
           <RecipeImage recipeId={recipe.id} category={recipe.category} imageUri={(recipe as any).imageUri} isDark={isDark} style={{ width: '100%', height: '100%' }} borderRadius={0} />
           {/* Back + Share buttons */}
           <SafeAreaView
@@ -176,15 +176,15 @@ export default function RecipeDetailScreen() {
         <View
           style={{
             backgroundColor: colors.background,
-            borderTopLeftRadius: 40,
-            borderTopRightRadius: 40,
-            marginTop: -48,
-            paddingTop: 32,
+            borderTopLeftRadius: 28,
+            borderTopRightRadius: 28,
+            marginTop: -24,
+            paddingTop: 20,
             paddingHorizontal: 24,
           }}>
           {/* Title + Actions */}
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Text style={{ fontSize: 36, fontWeight: '800', color: colors.text, letterSpacing: -1.8, flex: 1 }}>
+            <Text style={{ fontSize: 28, fontWeight: '800', color: colors.text, letterSpacing: -0.7, flex: 1 }}>
               {recipe.name}
             </Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
@@ -204,6 +204,7 @@ export default function RecipeDetailScreen() {
               )}
               <TouchableOpacity
                 onPress={handleFavorite}
+                accessibilityRole="button" accessibilityLabel={t(isFavorite(recipe.id) ? 'removeFavorite' : 'addFavorite')}
                 style={{
                   width: 56,
                   height: 56,
@@ -225,128 +226,15 @@ export default function RecipeDetailScreen() {
             </View>
           </View>
 
-          {/* Meta Bento Grid */}
-          <View style={{ flexDirection: 'row', gap: 16, marginTop: 32, flexWrap: 'wrap' }}>
-            <View style={{ flex: 1, minWidth: '45%', backgroundColor: colors.surface, borderRadius: 32, padding: 16, alignItems: 'center', gap: 4 }}>
-              <Ionicons name="time-outline" size={20} color={colors.accentOrange} />
-              <Text style={{ fontSize: 12, color: colors.textSecondary, textTransform: 'uppercase', letterSpacing: 0.6, textAlign: 'center' }}>
-                {t('prepTime')}
-              </Text>
-              <Text style={{ fontSize: 18, fontWeight: '700', color: colors.text }}>
-                {recipe.duration} min
-              </Text>
-            </View>
-            <View style={{ flex: 1, minWidth: '45%', backgroundColor: colors.surface, borderRadius: 32, padding: 16, alignItems: 'center', gap: 4 }}>
-              <Ionicons name="speedometer-outline" size={20} color={colors.accentOrange} />
-              <Text style={{ fontSize: 12, color: colors.textSecondary, textTransform: 'uppercase', letterSpacing: 0.6, textAlign: 'center' }}>
-                {t('difficulty')}
-              </Text>
-              <Text style={{ fontSize: 18, fontWeight: '700', color: colors.text }}>
-                {difficultyLabel}
-              </Text>
-            </View>
-            <View style={{ flex: 1, minWidth: '45%', backgroundColor: colors.surface, borderRadius: 32, padding: 16, alignItems: 'center', gap: 4 }}>
-              <Ionicons name="people-outline" size={20} color={colors.accentOrange} />
-              <Text style={{ fontSize: 12, color: colors.textSecondary, textTransform: 'uppercase', letterSpacing: 0.6, textAlign: 'center' }}>
-                {t('servings')}
-              </Text>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 2 }}>
-                <TouchableOpacity
-                  onPress={() => adjustServings(-1)}
-                  disabled={currentServings <= 1}
-                  style={{
-                    width: 28,
-                    height: 28,
-                    borderRadius: 14,
-                    backgroundColor: currentServings <= 1 ? colors.border : colors.accent,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}>
-                  <Ionicons name="remove" size={16} color={currentServings <= 1 ? colors.textMuted : '#FFFFFF'} />
-                </TouchableOpacity>
-                <Text style={{ fontSize: 18, fontWeight: '700', color: colors.text, minWidth: 24, textAlign: 'center' }}>
-                  {currentServings}
-                </Text>
-                <TouchableOpacity
-                  onPress={() => adjustServings(1)}
-                  style={{
-                    width: 28,
-                    height: 28,
-                    borderRadius: 14,
-                    backgroundColor: colors.accent,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}>
-                  <Ionicons name="add" size={16} color="#FFFFFF" />
-                </TouchableOpacity>
-              </View>
-            </View>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 16, marginTop: 12, alignItems: 'center' }}>
+            <Text style={{ color: colors.textSecondary, fontSize: 15 }}>◷ {recipe.duration} min</Text>
+            <Text style={{ color: colors.textSecondary, fontSize: 15 }}>{difficultyLabel} · {recipe.region}</Text>
           </View>
-
-          {/* Action Buttons */}
-          <View style={{ gap: 12, marginTop: 24 }}>
-            <TouchableOpacity
-              onPress={() => router.push(`/live-cooking?id=${recipe.id}` as any)}
-              activeOpacity={0.85}
-              style={{
-                backgroundColor: isDark ? 'rgba(168,85,247,0.12)' : 'rgba(168,85,247,0.08)',
-                borderRadius: 20,
-                paddingVertical: 14,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 8,
-                borderWidth: 1.5,
-                borderColor: isDark ? 'rgba(168,85,247,0.3)' : 'rgba(168,85,247,0.2)',
-              }}>
-              <Ionicons name="mic" size={18} color="#A855F7" />
-              <Text style={{ fontSize: 14, fontWeight: '700', color: '#A855F7' }}>
-                {t('startLiveCooking')}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={handleStartCooking}
-              disabled={isTimerRunning}
-              activeOpacity={0.85}
-              style={{
-                backgroundColor: isTimerRunning ? colors.surface : colors.accent,
-                borderRadius: 20,
-                paddingVertical: 14,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 8,
-              }}>
-              <Ionicons
-                name={isTimerRunning ? 'timer-outline' : 'play-circle-outline'}
-                size={18}
-                color={isTimerRunning ? colors.textMuted : '#FFFFFF'}
-              />
-              <Text style={{ fontSize: 14, fontWeight: '700', color: isTimerRunning ? colors.textMuted : '#FFFFFF' }}>
-                {isTimerRunning ? 'Timer...' : t('startCooking')}
-              </Text>
-            </TouchableOpacity>
-            {getRecipeVideos(recipe.id) && (
-              <TouchableOpacity
-                onPress={() => router.push(`/recipe-videos?id=${recipe.id}&name=${encodeURIComponent(recipe.name)}` as any)}
-                activeOpacity={0.85}
-                style={{
-                  backgroundColor: isDark ? 'rgba(255,0,0,0.08)' : 'rgba(255,0,0,0.05)',
-                  borderRadius: 20,
-                  paddingVertical: 14,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 8,
-                  borderWidth: 1.5,
-                  borderColor: isDark ? 'rgba(255,0,0,0.2)' : 'rgba(255,0,0,0.15)',
-                }}>
-                <Ionicons name="logo-youtube" size={18} color="#FF0000" />
-                <Text style={{ fontSize: 14, fontWeight: '700', color: colors.text }}>
-                  {t('videoRecipe')}
-                </Text>
-              </TouchableOpacity>
-            )}
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 12, marginTop: 16 }}>
+            <Text style={{ color: colors.text, fontWeight: '600', flexGrow: 1 }}>{t('portions')}</Text>
+            <TouchableOpacity accessibilityRole="button" accessibilityLabel={t('decreaseServings')} disabled={currentServings <= 1} onPress={() => adjustServings(-1)} style={{ width: 44, height: 44, borderRadius: 14, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' }}><Ionicons name="remove" size={20} color={currentServings <= 1 ? colors.textMuted : colors.accent} /></TouchableOpacity>
+            <Text style={{ color: colors.text, fontSize: 18, fontWeight: '700' }}>{currentServings}</Text>
+            <TouchableOpacity accessibilityRole="button" accessibilityLabel={t('increaseServings')} onPress={() => adjustServings(1)} style={{ width: 44, height: 44, borderRadius: 14, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' }}><Ionicons name="add" size={20} color={colors.accent} /></TouchableOpacity>
           </View>
 
           {/* Tab Switcher */}
@@ -364,7 +252,7 @@ export default function RecipeDetailScreen() {
                 flex: 1,
                 paddingVertical: 12,
                 borderRadius: 9999,
-                backgroundColor: activeTab === 'ingredients' ? (isDark ? colors.card : '#FFFFFF') : 'transparent',
+                backgroundColor: activeTab === 'ingredients' ? (isDark ? colors.card : colors.chipActiveText) : 'transparent',
                 alignItems: 'center',
                 ...(activeTab === 'ingredients'
                   ? { shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2 }
@@ -385,7 +273,7 @@ export default function RecipeDetailScreen() {
                 flex: 1,
                 paddingVertical: 12,
                 borderRadius: 9999,
-                backgroundColor: activeTab === 'steps' ? (isDark ? colors.card : '#FFFFFF') : 'transparent',
+                backgroundColor: activeTab === 'steps' ? (isDark ? colors.card : colors.chipActiveText) : 'transparent',
                 alignItems: 'center',
               }}>
               <Text
@@ -404,7 +292,7 @@ export default function RecipeDetailScreen() {
             <View style={{ marginTop: 24, gap: 24 }}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Text style={{ fontSize: 24, fontWeight: '700', color: colors.text }}>
-                  {t('shoppingList')}
+                  {t('ingredients')}
                 </Text>
                 <View style={{ backgroundColor: colors.surface, paddingHorizontal: 12, paddingVertical: 4, borderRadius: 9999 }}>
                   <Text style={{ fontSize: 14, color: colors.textSecondary }}>
@@ -417,9 +305,9 @@ export default function RecipeDetailScreen() {
                   <View
                     key={index}
                     style={{
-                      backgroundColor: isDark ? colors.card : '#FFFFFF',
-                      borderRadius: 32,
-                      padding: 16,
+                      backgroundColor: isDark ? colors.card : colors.chipActiveText,
+                      borderRadius: 18,
+                      padding: 14,
                       flexDirection: 'row',
                       alignItems: 'center',
                     }}>
@@ -438,7 +326,7 @@ export default function RecipeDetailScreen() {
                     <Text style={{ flex: 1, fontSize: 16, fontWeight: '500', color: colors.text }}>
                       {ing.name}
                     </Text>
-                    <Text style={{ fontSize: 16, fontWeight: '700', color: colors.accent }}>
+                    <Text style={{ fontSize: 16, fontWeight: '700', color: colors.accent, maxWidth: '40%', flexShrink: 1, textAlign: 'right', marginLeft: 8 }}>
                       {ing.quantity}
                     </Text>
                   </View>
@@ -462,7 +350,7 @@ export default function RecipeDetailScreen() {
                         alignItems: 'center',
                         justifyContent: 'center',
                       }}>
-                      <Text style={{ fontSize: 20, fontWeight: '800', color: '#FFFFFF' }}>
+                      <Text style={{ fontSize: 20, fontWeight: '800', color: colors.chipActiveText }}>
                         {index + 1}
                       </Text>
                     </View>
@@ -477,6 +365,20 @@ export default function RecipeDetailScreen() {
             </View>
           )}
 
+          <View style={{ gap: 10, marginTop: 24 }}>
+            <TouchableOpacity disabled={!shoppingLoaded} onPress={() => { addShoppingRecipe(recipe.id, currentServings); toast(t('addedToShopping'), 'done'); router.push('/shopping-list'); }} style={{ padding: 16, borderRadius: 18, backgroundColor: colors.surface, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+              <Ionicons name="cart-outline" size={22} color={colors.accent} /><Text style={{ color: colors.accent, fontWeight: '700', flex: 1 }}>{t('addToShopping')}</Text><Ionicons name="chevron-forward" size={18} color={colors.accent} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => router.push({ pathname: '/plan-meal', params: { recipeId: recipe.id, servings: String(currentServings) } })} style={{ padding: 16, borderRadius: 18, backgroundColor: colors.surface, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+              <Ionicons name="calendar-outline" size={22} color={colors.accent} /><Text style={{ color: colors.accent, fontWeight: '700', flex: 1 }}>{t('planRecipe')}</Text><Ionicons name="chevron-forward" size={18} color={colors.accent} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => router.push(`/live-cooking?id=${recipe.id}` as any)} style={{ padding: 16, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+              <Ionicons name="mic-outline" size={22} color={colors.accent} /><Text style={{ color: colors.text, fontWeight: '600', flex: 1 }}>{t('voiceGuide')}</Text>
+            </TouchableOpacity>
+            {!!getRecipeVideos(recipe.id)?.length && <TouchableOpacity onPress={() => router.push(`/recipe-videos?id=${recipe.id}&name=${encodeURIComponent(recipe.name)}` as any)} style={{ padding: 16, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+              <Ionicons name="logo-youtube" size={22} color={colors.accent} /><Text style={{ color: colors.text, fontWeight: '600', flex: 1 }}>{t('videoRecipe')}</Text>
+            </TouchableOpacity>}
+          </View>
           {/* Chef's Tips */}
           {recipe.tips && (
             <View
@@ -505,7 +407,11 @@ export default function RecipeDetailScreen() {
 
         </View>
       </ScrollView>
-
+      <View style={{ paddingHorizontal: 24, paddingTop: 12, paddingBottom: 12 + bottom, borderTopWidth: 1, borderTopColor: colors.border, backgroundColor: colors.background }}>
+        <TouchableOpacity accessibilityRole="button" onPress={handleStartCooking} style={{ padding: 16, backgroundColor: colors.accent, borderRadius: 18, flexDirection: 'row', gap: 10, alignItems: 'center', justifyContent: 'center' }}>
+          <Ionicons name="play-circle-outline" size={22} color={colors.chipActiveText} /><Text style={{ color: colors.chipActiveText, fontWeight: '700', fontSize: 16, flexShrink: 1 }}>{t('startCooking')}</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
