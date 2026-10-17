@@ -26,7 +26,7 @@ const FAKE = '$RCAnonymousID:' + 'f'.repeat(32);
 const ENT = 'entl0000pro';
 globalThis.fetch = async (url) => {
   const u = String(url);
-  if (u.includes('/entitlements')) return new Response(JSON.stringify({ items: [{ id: ENT, lookup_key: 'pro' }] }), { status: 200 });
+  if (u.includes('/entitlements')) return new Response(JSON.stringify({ items: [{ id: ENT, lookup_key: 'tchope_pro' }] }), { status: 200 });
   const id = decodeURIComponent(u.split('/customers/')[1]);
   if (id !== PRO && id !== FREE) return new Response('{}', { status: 404 });
   return new Response(JSON.stringify({ active_entitlements: { items: id === PRO ? [{ entitlement_id: ENT, expires_at: Date.now() + 86_400_000 }] : [] } }), { status: 200 });

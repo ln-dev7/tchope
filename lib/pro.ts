@@ -1,7 +1,7 @@
 // Tchopé Pro : abonnement mensuel (2,99 $ / mois) qui débloque TOUTES les fonctions IA de Tchopé (décision de LN,
 // 17 oct. 2026) : TchopAI (au-delà de 3 messages gratuits au total), photo dans le chat, recherche par ingrédients,
 // recherche libre, planning de la semaine et guidage vocal. Même conception que Travora Pro (travora-app/lib/pro.ts) :
-// RevenueCat (projet « LN Dev », entitlement `pro`, offre `tchope`, paquet « Monthly »), pas de compte utilisateur,
+// RevenueCat (projet « LN Dev », entitlement `tchope_pro`, offre `tchope`, paquet « Monthly »), pas de compte utilisateur,
 // identité anonyme ; « Restaurer mes achats » retrouve l'abonnement via le compte Apple / Google.
 //
 // SDK chargé à l'usage (une coque native sans le module démarre quand même). Clés publiques dans
@@ -9,7 +9,7 @@
 import { Platform } from "react-native";
 import { REVENUECAT_KEYS } from "@/constants/revenuecat";
 
-export const ENTITLEMENT = "pro";
+export const ENTITLEMENT = "tchope_pro";
 export const OFFERING = "tchope";
 /** Avant-goût gratuit : 3 messages TchopAI au total (texte seulement) ; tout le reste de l'IA est réservé aux abonnés. */
 export const FREE_CHAT_MESSAGES = 3;

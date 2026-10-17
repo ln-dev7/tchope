@@ -5,7 +5,7 @@
    - `x-tchope-pro` : `1` si l'app se croit abonnée (simple indice : déclenche une revérification après un achat).
    Le serveur interroge l'API v2 de RevenueCat (`GET /v2/projects/{REVENUECAT_PROJECT_ID}/customers/{id}`, clé secrète v2
    `REVENUECAT_SECRET_KEY`, droits en lecture « Customer information » et « Project configuration ») : l'entitlement
-   `pro` est-il actif ? La v2 répond 404 pour un identifiant inconnu (inventé par un script) → 403 `unknown-device`
+   `tchope_pro` est-il actif ? La v2 répond 404 pour un identifiant inconnu (inventé par un script) → 403 `unknown-device`
    (l'app réessaie une fois après 2 s, cas d'un tout premier appel avant que le SDK ait créé son client).
 
    Modes :
@@ -19,7 +19,7 @@ import { checkRateLimit, clientKeyFromHeaders, type RateLimitResult } from './ra
 type HeaderGetter = { get(name: string): string | null };
 
 const API = 'https://api.revenuecat.com/v2/projects/';
-const ENTITLEMENT_KEY = 'pro';
+const ENTITLEMENT_KEY = 'tchope_pro';
 const DEVICE_ID = /^\$RCAnonymousID:[0-9a-f]{32}$/;
 const PRO_TTL_MS = 10 * 60_000;
 const FREE_TTL_MS = 60_000;

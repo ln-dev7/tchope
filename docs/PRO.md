@@ -41,9 +41,9 @@ le chat TchopAI qui garde **3 messages texte gratuits au total** (comme Travora 
 
 ## Mise en place (stores, RevenueCat, Vercel)
 - RevenueCat, projet « LN Dev » : apps Tchopé (App Store `com.lndev.tchope`, Play `com.lndev.tchope`), entitlement
-  `pro` (déjà existant, partagé avec Travora), offre `tchope`, paquet Monthly → produit `tchope_pro_monthly`.
+  `tchope_pro` (propre à Tchopé : un abonné Travora n'a pas Tchopé Pro, et inversement), offre `tchope`, paquet Monthly → produit `tchope_pro_monthly`.
 - App Store Connect : groupe « Tchopé Pro », produit `tchope_pro_monthly`, 1 mois, 2,99 $ ; Play Console : abonnement
   `tchope_pro_monthly`, plan de base `monthly` (exige d'abord un build contenant la permission BILLING).
 - Clés publiques RevenueCat dans `constants/revenuecat.ts`. Rebuild natif (module `react-native-purchases`).
-- Vercel `tchope-api` : `REVENUECAT_SECRET_KEY`, `REVENUECAT_PROJECT_ID` ; puis `/api/pro-status` → `active: true`.
+- Vercel `tchope-api` : `REVENUECAT_SECRET_KEY` (la clé v2 du projet LN Dev, la même que Travora), `REVENUECAT_PROJECT_ID` ; puis `/api/pro-status` → `active: true`.
   Une fois la 1.11.0 en ligne : `MIN_APP_VERSION=1.11.0` (invitation à mettre à jour) et `PRO_REQUIRE_DEVICE=on`.
