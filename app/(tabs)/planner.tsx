@@ -22,6 +22,7 @@ import { useMealPlanner, type MealPlan, type DayPlan } from '@/context/MealPlann
 import { useToast } from '@/hooks/useToast';
 import RecipeImage from '@/components/RecipeImage';
 import { callClaude } from '@/utils/api';
+import { isProRequired, requireAi } from '@/utils/proBridge';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 import { exportMealPlanPDF } from '@/utils/export-pdf';
 import { useUserRecipes } from '@/hooks/useUserRecipes';
@@ -91,7 +92,7 @@ Return ONLY valid JSON (no markdown), format:
     max_tokens: 2048,
     system: [{ type: 'text', text: systemPrompt, cache_control: { type: 'ephemeral' } }],
     messages: [{ role: 'user', content: `Recipe list:\n${recipeList}\n\nPreferences: ${preferences || 'No specific preferences. 2 meals per day (lunch + dinner), balanced and varied.'}` }],
-  });
+  }, 'plan');
 
   const jsonMatch = text.match(/\{[\s\S]*\}/);
   if (!jsonMatch) throw new Error('Invalid response');
@@ -137,7 +138,7 @@ Return the FULL updated plan as valid JSON (no markdown), same format:
     max_tokens: 2048,
     system: [{ type: 'text', text: systemPrompt, cache_control: { type: 'ephemeral' } }],
     messages: [{ role: 'user', content: `Available recipes:\n${recipeList}\n\nCurrent plan:\n${currentPlanStr}\n\nAdjustment requested: ${adjustmentRequest}` }],
-  });
+  }, 'plan-adjust');
 
   const jsonMatch = text.match(/\{[\s\S]*\}/);
   if (!jsonMatch) throw new Error('Invalid response');
@@ -246,7 +247,8 @@ export default function PlannerScreen() {
       };
       setCurrentPlan(plan);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    } catch {
+    } catch (e) {
+      if (isProRequired(e)) return; // écran Tchopé Pro déjà ouvert
       Alert.alert('Tchopé', t('plannerError'));
     } finally {
       setIsGenerating(false);
@@ -255,6 +257,7 @@ export default function PlannerScreen() {
 
   const handleGenerate = useCallback(async () => {
     if (!isConnected) { Alert.alert('Tchopé', t('plannerNoConnection')); return; }
+    if (!requireAi('plan')) return; // Tchopé Pro
     doGenerate();
   }, [isConnected, t, doGenerate]);
 
@@ -268,7 +271,8 @@ export default function PlannerScreen() {
       setAdjustText('');
       setShowAdjust(false);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    } catch {
+    } catch (e) {
+      if (isProRequired(e)) return;
       Alert.alert('Tchopé', t('plannerError'));
     } finally {
       setIsAdjusting(false);
@@ -278,6 +282,7 @@ export default function PlannerScreen() {
   const handleAdjust = useCallback(async () => {
     if (!currentPlan || !adjustText.trim()) return;
     if (!isConnected) { Alert.alert('Tchopé', t('plannerNoConnection')); return; }
+    if (!requireAi('plan-adjust')) return;
     doAdjust();
   }, [currentPlan, adjustText, isConnected, t, doAdjust]);
 

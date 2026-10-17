@@ -3,6 +3,7 @@ import * as Speech from 'expo-speech';
 import * as ImagePicker from 'expo-image-picker';
 
 import { callClaudeLive } from '@/utils/api';
+import { isProRequired } from '@/utils/proBridge';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 import type { Recipe } from '@/types';
@@ -219,7 +220,7 @@ export function useLiveCooking(
             role: m.role,
             content: m.content,
           })),
-        });
+        }, 'live-cooking');
 
         const assistantMessage: Message = {
           role: 'assistant',
@@ -229,6 +230,7 @@ export function useLiveCooking(
 
         await speakResponse(response);
       } catch (error: any) {
+        if (isProRequired(error)) return; // écran Tchopé Pro déjà ouvert
         let errorMsg: string;
         const message = error?.message ?? '';
 

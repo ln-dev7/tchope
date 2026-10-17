@@ -30,6 +30,10 @@ import { useFavorites } from '@/context/FavoritesContext';
 import { useMealPlanner } from '@/context/MealPlannerContext';
 import { useNotes } from '@/context/NotesContext';
 import { callClaude, callClaudeLive, fetchRecipeUrl } from '@/utils/api';
+import { isProRequired, requireAi } from '@/utils/proBridge';
+import { usePro } from '@/context/ProContext';
+import { proDict, fill } from '@/constants/pro-translations';
+import { FREE_CHAT_MESSAGES } from '@/lib/pro';
 import { getChatHistory, saveChat, deleteChat, clearAllChats, MAX_SAVED_CHATS, type SavedChat } from '@/utils/chatHistory';
 
 import type { Message } from '@/components/tchop-ai/types';
@@ -51,6 +55,9 @@ export default function TchopAIScreen() {
   const router = useRouter();
   const { bottom } = useSafeAreaInsets();
   const imageQuota = useImageQuota();
+  // Tchopé Pro (17 oct. 2026) : 3 messages texte gratuits au total, tout le reste réservé aux abonnés.
+  const { pro, freeChatLeft, openPaywall } = usePro();
+  const pd = proDict[settings.language === 'en' ? 'en' : 'fr'];
 
   const isFr = settings.language === 'fr';
 
@@ -124,6 +131,8 @@ export default function TchopAIScreen() {
       setMessages((prev) => [...prev, { id: Date.now().toString(), role: 'assistant', content: t('tchopaiOffline') }]);
       return;
     }
+    // Messages gratuits épuisés : écran Tchopé Pro, le texte reste dans le champ.
+    if (!requireAi('chat')) return;
 
     const userMsg: Message = { id: Date.now().toString(), role: 'user', content: text };
     setMessages((prev) => [...prev, userMsg]);
@@ -152,15 +161,22 @@ export default function TchopAIScreen() {
         max_tokens: 2048,
         system: [{ type: 'text', text: getSystemPrompt(), cache_control: { type: 'ephemeral' } }],
         messages: history,
-      });
+      }, 'chat');
 
       const parsed = parseResponse(response, recipes, notes);
       setMessages((prev) => [...prev, {
         id: (Date.now() + 1).toString(), role: 'assistant',
         content: parsed.content, recipeIds: parsed.recipeIds, saveRecipe: parsed.saveRecipe, noteIds: parsed.noteIds, saveNote: parsed.saveNote,
       }]);
-    } catch {
-      setMessages((prev) => [...prev, { id: (Date.now() + 1).toString(), role: 'assistant', content: t('tchopaiError') }]);
+    } catch (e) {
+      if (isProRequired(e)) {
+        // Refus du serveur : on retire la question et on la remet dans le champ (l'écran Pro est ouvert).
+        setMessages((prev) => prev.filter((m) => m.id !== userMsg.id));
+        setInput(text);
+        return;
+      }
+      const update = e instanceof Error && e.message === 'update-app';
+      setMessages((prev) => [...prev, { id: (Date.now() + 1).toString(), role: 'assistant', content: update ? pd.errUpdate : t('tchopaiError') }]);
     } finally {
       setLoading(false);
       setLoadingMessage('');
@@ -207,6 +223,7 @@ export default function TchopAIScreen() {
   // --- Photo ---
   // Envoi de photo borné par useImageQuota (limite quotidienne d'images).
   const handlePhotoPress = () => {
+    if (!requireAi('chat-photo')) return; // photo : Tchopé Pro
     setShowSourceModal(true);
   };
 
@@ -262,14 +279,15 @@ export default function TchopAIScreen() {
         max_tokens: 1024,
         system: [{ type: 'text', text: getSystemPrompt(), cache_control: { type: 'ephemeral' } }],
         messages: messagesWithImage,
-      });
+      }, 'chat-photo');
 
       const parsed = parseResponse(response, recipes, notes);
       setMessages((prev) => [...prev, {
         id: (Date.now() + 1).toString(), role: 'assistant',
         content: parsed.content, recipeIds: parsed.recipeIds, saveRecipe: parsed.saveRecipe, noteIds: parsed.noteIds, saveNote: parsed.saveNote,
       }]);
-    } catch {
+    } catch (e) {
+      if (isProRequired(e)) return;
       setMessages((prev) => [...prev, { id: (Date.now() + 1).toString(), role: 'assistant', content: t('tchopaiError') }]);
     } finally {
       setLoading(false);
@@ -345,6 +363,23 @@ export default function TchopAIScreen() {
             </View>
           </View>
         )}
+
+        {!pro ? (
+          <TouchableOpacity
+            onPress={() => openPaywall('chat')}
+            accessibilityRole="button"
+            style={{ marginHorizontal: 16, marginBottom: 6, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6 }}
+          >
+            <Ionicons name="sparkles-outline" size={13} color={colors.accent} />
+            <Text style={{ fontSize: 12, color: colors.textSecondary }}>
+              {freeChatLeft === 0
+                ? pd.chatOfferedNone
+                : fill(freeChatLeft === 1 ? pd.chatOfferedOne : pd.chatOfferedMany, { left: freeChatLeft, n: FREE_CHAT_MESSAGES })}
+              {' · '}
+              <Text style={{ fontWeight: '800', color: colors.accent }}>{pd.chatOfferedCta}</Text>
+            </Text>
+          </TouchableOpacity>
+        ) : null}
 
         <ChatInput
           input={input}

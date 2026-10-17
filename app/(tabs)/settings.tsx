@@ -16,6 +16,7 @@ import { useRating } from '@/context/RatingContext';
 import { useShopping } from '@/context/ShoppingContext';
 import { useMealPlanner } from '@/context/MealPlannerContext';
 import type { Settings } from '@/types';
+import ProSettingsCard from '@/components/ProSettingsCard';
 
 export default function SettingsScreen() {
   const { colors, isDark } = useTheme();
@@ -100,6 +101,9 @@ export default function SettingsScreen() {
         contentContainerStyle={{ paddingBottom: 80 + bottom, paddingHorizontal: 24, gap: 40, paddingTop: 32 }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled">
+        {/* Tchopé Pro */}
+        <ProSettingsCard />
+
         {/* Appearance */}
         <View style={{ gap: 16 }}>
           <Text

@@ -22,6 +22,9 @@ import { useSettings } from '@/context/SettingsContext';
 import RecipeCard from '@/components/RecipeCard';
 import { searchByIngredients, isValidIngredient, getMissingIngredients } from '@/utils/ingredient-matcher';
 import { callClaude } from '@/utils/api';
+import { isProRequired, requireAi } from '@/utils/proBridge';
+import { usePro } from '@/context/ProContext';
+import { proDict } from '@/constants/pro-translations';
 import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 import type { Recipe } from '@/types';
 
@@ -74,7 +77,7 @@ Return ONLY a valid JSON array (no markdown):
     max_tokens: 2048,
     system: [{ type: 'text', text: systemPrompt, cache_control: { type: 'ephemeral' } }],
     messages: [{ role: 'user', content: `RECIPES:\n${recipeIndex}\n\nMY INGREDIENTS:\n${userIngredients.join(', ')}` }],
-  });
+  }, 'ingredients');
 
   const jsonMatch = text.match(/\[[\s\S]*\]/);
   if (!jsonMatch) throw new Error('Invalid response');
@@ -137,7 +140,7 @@ Return ONLY a valid JSON array (no markdown):
     max_tokens: 2048,
     system: [{ type: 'text', text: systemPrompt, cache_control: { type: 'ephemeral' } }],
     messages: [{ role: 'user', content: `RECIPES:\n${recipeIndex}\n\nREQUEST:\n${query}` }],
-  });
+  }, 'search');
 
   const jsonMatch = text.match(/\[[\s\S]*\]/);
   if (!jsonMatch) throw new Error('Invalid response');
@@ -164,6 +167,10 @@ export default function AIRecipesScreen() {
   const [results, setResults] = useState<SearchResult[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [usedFallback, setUsedFallback] = useState(false);
+  // Tchopé Pro (17 oct. 2026) : sans abonnement, « Avec mes ingrédients » donne la recherche locale (sans IA) et le dit.
+  const { pro, openPaywall } = usePro();
+  const [localForPro, setLocalForPro] = useState(false);
+  const pd = proDict[settings.language === 'en' ? 'en' : 'fr'];
   const [freeInputFocused, setFreeInputFocused] = useState(false);
 
   const isFr = settings.language === 'fr';
@@ -228,9 +235,11 @@ export default function AIRecipesScreen() {
     setResults(null);
     setError(null);
     setUsedFallback(false);
+    setLocalForPro(false);
 
-    // Skip AI call if offline — go straight to local search
-    if (!isConnected) {
+    // Skip AI call if offline (or without Tchopé Pro) — go straight to local search
+    if (!isConnected || !pro) {
+      setLocalForPro(isConnected && !pro);
       const localResults = searchByIngredients(recipes, ingredients, isFr);
       setResults(localResults.map((r) => ({ id: r.id, match: r.match, reason: r.reason })));
       setUsedFallback(true);
@@ -243,7 +252,8 @@ export default function AIRecipesScreen() {
       const aiResults = await searchIngredientsAI(recipes, ingredients, isFr);
       setResults(aiResults);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    } catch {
+    } catch (e) {
+      if (isProRequired(e)) setLocalForPro(true);
       const localResults = searchByIngredients(recipes, ingredients, isFr);
       setResults(localResults.map((r) => ({ id: r.id, match: r.match, reason: r.reason })));
       setUsedFallback(true);
@@ -261,6 +271,7 @@ export default function AIRecipesScreen() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
       return;
     }
+    if (!requireAi('search')) return;
     runFreeTextSearch();
   };
 
@@ -273,7 +284,8 @@ export default function AIRecipesScreen() {
       const aiResults = await searchFreeTextAI(recipes, freeText.trim(), isFr);
       setResults(aiResults);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    } catch {
+    } catch (e) {
+      if (isProRequired(e)) return;
       setError(t('aiError'));
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     } finally {
@@ -654,8 +666,13 @@ export default function AIRecipesScreen() {
               }}>
               <Ionicons name="information-circle-outline" size={16} color="#F59E42" />
               <Text style={{ fontSize: 12, color: colors.textSecondary, flex: 1 }}>
-                {t('aiFallback')}
+                {localForPro ? pd.localHint : t('aiFallback')}
               </Text>
+              {localForPro ? (
+                <TouchableOpacity onPress={() => openPaywall('feature')} hitSlop={8}>
+                  <Text style={{ fontSize: 12, fontWeight: '800', color: '#F59E42' }}>{pd.chatOfferedCta}</Text>
+                </TouchableOpacity>
+              ) : null}
             </View>
           )}
 

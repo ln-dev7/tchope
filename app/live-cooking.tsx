@@ -1,4 +1,6 @@
 import React from 'react';
+import { requireAi } from '@/utils/proBridge';
+import Paywall from '@/components/Paywall';
 import { View, Text } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
@@ -50,16 +52,20 @@ export default function LiveCookingRoute() {
     // LiveIntroScreen gère lui-même le top inset via useSafeAreaInsets.
     return (
       <View style={{ flex: 1, backgroundColor: colors.background }}>
-        <LiveIntroScreen onClose={() => router.back()} onStart={() => setStarted(true)} />
+        <LiveIntroScreen onClose={() => router.back()} onStart={() => requireAi('live-cooking') && setStarted(true)} />
+        <Paywall local />
       </View>
     );
   }
 
   return (
-    <LiveCookingScreen
-      recipe={recipe}
-      initialStep={step ? parseInt(step, 10) : 0}
-      onClose={() => router.back()}
-    />
+    <>
+      <LiveCookingScreen
+        recipe={recipe}
+        initialStep={step ? parseInt(step, 10) : 0}
+        onClose={() => router.back()}
+      />
+      <Paywall local />
+    </>
   );
 }

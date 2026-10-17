@@ -12,7 +12,7 @@ const MAX_IMAGE_B64 = 3_000_000;
 const IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 
 export function allowedModels(): string[] {
-  const env = process.env.ALLOWED_MODELS?.split(',').map((s) => s.trim()).filter(Boolean);
+  const env = process.env.ALLOWED_MODELS?.split(',').map((s: string) => s.trim()).filter(Boolean);
   return env?.length ? env : DEFAULT_MODELS;
 }
 

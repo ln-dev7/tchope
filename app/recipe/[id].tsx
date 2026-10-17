@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import { requireAi } from '@/utils/proBridge';
 import { View, Text, ScrollView, TouchableOpacity, Share } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import * as ClipboardModule from 'expo-clipboard';
@@ -372,7 +373,7 @@ export default function RecipeDetailScreen() {
             <TouchableOpacity onPress={() => router.push({ pathname: '/plan-meal', params: { recipeId: recipe.id, servings: String(currentServings) } })} style={{ padding: 16, borderRadius: 18, backgroundColor: colors.surface, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
               <Ionicons name="calendar-outline" size={22} color={colors.accent} /><Text style={{ color: colors.accent, fontWeight: '700', flex: 1 }}>{t('planRecipe')}</Text><Ionicons name="chevron-forward" size={18} color={colors.accent} />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => router.push(`/live-cooking?id=${recipe.id}` as any)} style={{ padding: 16, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+            <TouchableOpacity onPress={() => { if (requireAi('live-cooking')) router.push(`/live-cooking?id=${recipe.id}` as any); }} style={{ padding: 16, flexDirection: 'row', gap: 10, alignItems: 'center' }}>
               <Ionicons name="mic-outline" size={22} color={colors.accent} /><Text style={{ color: colors.text, fontWeight: '600', flex: 1 }}>{t('voiceGuide')}</Text>
             </TouchableOpacity>
             {!!getRecipeVideos(recipe.id)?.length && <TouchableOpacity onPress={() => router.push(`/recipe-videos?id=${recipe.id}&name=${encodeURIComponent(recipe.name)}` as any)} style={{ padding: 16, flexDirection: 'row', gap: 10, alignItems: 'center' }}>

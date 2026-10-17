@@ -1,4 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
+import { requireAi } from '@/utils/proBridge';
+import Paywall from '@/components/Paywall';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   View,
@@ -357,6 +359,8 @@ export default function CookingModeScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
+      {/* Plein écran modal : l'écran Tchopé Pro s'affiche ici (guidage vocal Live). */}
+      <Paywall local />
       <View style={{ flex: 1, paddingTop: top }}>
         {/* Header */}
         <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 24, paddingVertical: 12, gap: 16 }}>
@@ -372,7 +376,7 @@ export default function CookingModeScreen() {
             </Text>
           </View>
           <TouchableOpacity
-            onPress={() => router.push(`/live-cooking?id=${id}&step=${currentStep}` as any)}
+            onPress={() => { if (requireAi('live-cooking')) router.push(`/live-cooking?id=${id}&step=${currentStep}` as any); }}
             style={{ height: 36, paddingHorizontal: 12, borderRadius: 18, backgroundColor: 'rgba(168,85,247,0.12)', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
             <Ionicons name="mic" size={16} color="#A855F7" />
             <Text style={{ fontSize: 12, fontWeight: '700', color: '#A855F7' }}>Live</Text>

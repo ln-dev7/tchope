@@ -21,6 +21,8 @@ import NetworkBanner from '@/components/NetworkBanner';
 import UpdateModal from '@/components/UpdateModal';
 import WhatsNewModal from '@/components/WhatsNewModal';
 import { ShoppingProvider } from '@/context/ShoppingContext';
+import { ProProvider } from '@/context/ProContext';
+import Paywall from '@/components/Paywall';
 import { ONBOARDING_KEY } from './onboarding';
 
 export const unstable_settings = {
@@ -77,6 +79,7 @@ function InnerLayout() {
       <NetworkBanner />
       <UpdateModal />
       <WhatsNewModal />
+      <Paywall />
       <StatusBar style={isDark ? 'light' : 'dark'} />
     </ThemeProvider>
   );
@@ -94,7 +97,9 @@ export default function RootLayout() {
                   <ShoppingProvider>
                     <NotesProvider>
                       <AiConsentProvider>
-                        <InnerLayout />
+                        <ProProvider>
+                          <InnerLayout />
+                        </ProProvider>
                       </AiConsentProvider>
                     </NotesProvider>
                   </ShoppingProvider>
