@@ -8,7 +8,7 @@ export const proDict = {
     reasonChat: 'Vous avez utilisé vos {n} messages TchopAI gratuits.',
     reasonFeature: 'Cette fonction fait partie de Tchopé Pro.',
     perks:
-      'TchopAI illimité : techniques, substitutions, conseils et recettes adaptées\nPhoto de votre plat ou de votre frigo : TchopAI l’analyse\nAvec mes ingrédients et recherche libre : trouvez la bonne recette\nPlanning de la semaine et guidage vocal pendant la cuisson',
+      'TchopAI illimité : techniques, substitutions, conseils et recettes adaptées\nPhoto de votre plat ou de votre frigo : TchopAI l’analyse\nAvec mes ingrédients et recherche libre : trouvez la bonne recette\nPlanning et guidage vocal : votre semaine composée, et TchopAI qui vous guide à voix haute en cuisine',
     priceLine: '{price} / mois',
     priceLoading: 'Prix selon votre store…',
     renewal:
@@ -47,7 +47,7 @@ export const proDict = {
     reasonChat: 'You’ve used your {n} free TchopAI messages.',
     reasonFeature: 'This feature is part of Tchopé Pro.',
     perks:
-      'Unlimited TchopAI: techniques, substitutions, tips and tailored recipes\nA photo of your dish or fridge: TchopAI analyzes it\nWith my ingredients and free search: find the right recipe\nWeekly meal plan and voice guidance while you cook',
+      'Unlimited TchopAI: techniques, substitutions, tips and tailored recipes\nA photo of your dish or fridge: TchopAI analyzes it\nWith my ingredients and free search: find the right recipe\nMeal plan and voice guidance: your week planned, and TchopAI guiding you out loud as you cook',
     priceLine: '{price} / month',
     priceLoading: 'Price from your store…',
     renewal:

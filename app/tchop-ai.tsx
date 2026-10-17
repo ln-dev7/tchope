@@ -366,7 +366,7 @@ export default function TchopAIScreen() {
 
         {!pro ? (
           <TouchableOpacity
-            onPress={() => openPaywall('chat')}
+            onPress={() => openPaywall(freeChatLeft === 0 ? 'chat' : 'settings')}
             accessibilityRole="button"
             style={{ marginHorizontal: 16, marginBottom: 6, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6 }}
           >
