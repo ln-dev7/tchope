@@ -114,13 +114,6 @@ export const photoCredits: PhotoCredit[] = [
     "url": "https://commons.wikimedia.org/wiki/File:Githeri_Meal.jpg"
   },
   {
-    "id": "corn-tchap",
-    "author": "Mukuba",
-    "license": "CC BY-SA 4.0",
-    "source": "Wikimedia Commons",
-    "url": "https://commons.wikimedia.org/wiki/File:Githeri.jpg"
-  },
-  {
     "id": "crevettes-kribiennes",
     "author": "Ghay O",
     "license": "CC BY-SA 4.0",
@@ -182,13 +175,6 @@ export const photoCredits: PhotoCredit[] = [
     "license": "CC BY-SA 4.0",
     "source": "Wikimedia Commons",
     "url": "https://commons.wikimedia.org/wiki/File:Ekwang_Meal_Preparation_02.jpg"
-  },
-  {
-    "id": "escargots-sautes",
-    "author": "Emna Mizouni",
-    "license": "CC BY-SA 4.0",
-    "source": "Wikimedia Commons",
-    "url": "https://commons.wikimedia.org/wiki/File:Snails_dish.jpg"
   },
   {
     "id": "feuilles-manioc-arachides",
