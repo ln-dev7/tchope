@@ -401,13 +401,6 @@ export const photoCredits: PhotoCredit[] = [
     "url": "https://commons.wikimedia.org/wiki/File:Un_plat_de_minkong.png"
   },
   {
-    "id": "missounga",
-    "author": "Mani225",
-    "license": "CC BY-SA 4.0",
-    "source": "Wikimedia Commons",
-    "url": "https://commons.wikimedia.org/wiki/File:Une_sauce_de_tripe_qui_accompagne_le_foufou.JPG"
-  },
-  {
     "id": "mpele-macabo",
     "author": "Lexy Tchuileu",
     "license": "CC0",
