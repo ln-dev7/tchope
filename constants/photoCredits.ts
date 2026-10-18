@@ -611,13 +611,6 @@ export const photoCredits: PhotoCredit[] = [
     "url": "https://commons.wikimedia.org/wiki/File:Poulet_brais%C3%A9_au_Togo.jpg"
   },
   {
-    "id": "poulet-dg",
-    "author": "Adesolive",
-    "license": "CC BY-SA 4.0",
-    "source": "Wikimedia Commons",
-    "url": "https://commons.wikimedia.org/wiki/File:Poulet_GD_(fried_chicken_with_ripe_plantains_and_mixed_vegetables).jpg"
-  },
-  {
     "id": "poulet-roti",
     "author": "Evan Swigart from Chicago, USA",
     "license": "CC BY 2.0",
