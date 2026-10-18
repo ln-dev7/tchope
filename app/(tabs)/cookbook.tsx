@@ -59,6 +59,7 @@ export default function CookbookScreen() {
       } />
 
       <ScrollView
+        contentInsetAdjustmentBehavior="never"
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingBottom: 112 + bottom, paddingHorizontal: 24, gap: 24 }}
         showsVerticalScrollIndicator={false}>

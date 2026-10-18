@@ -93,6 +93,7 @@ export default function SettingsScreen() {
       <PageIntro title={t('settings')} subtitle={t('settingsSubtitle')} />
 
       <ScrollView
+        contentInsetAdjustmentBehavior="never"
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingBottom: 112 + bottom, paddingHorizontal: 24, gap: 28, paddingTop: 0 }}
         showsVerticalScrollIndicator={false}

@@ -13,6 +13,7 @@ import { registerProBridge, type PaywallReason } from '@/utils/proBridge';
 
 const USAGE_KEY = 'tchope_pro_usage';
 const DEV_KEY = 'tchope_pro_dev';
+type DevMode = 'store' | 'pro' | 'free';
 
 interface Ctx {
   configured: boolean;
@@ -30,6 +31,9 @@ interface Ctx {
   closePaywall: () => void;
   devPro: boolean;
   setDevPro: (v: boolean) => void;
+  /** Développement seulement : forcer le parcours gratuit, même avec un abonnement réel. */
+  devIgnoreStore: boolean;
+  setDevIgnoreStore: (v: boolean) => void;
   /** Écrans en plein écran modal (cuisson, Live) : l'écran Pro y est affiché sur place (components/Paywall.tsx `local`),
    *  car iOS ne présente pas une modale de la racine par-dessus. */
   localHosts: number;
@@ -50,6 +54,8 @@ const ProContext = createContext<Ctx>({
   closePaywall: () => {},
   devPro: false,
   setDevPro: () => {},
+  devIgnoreStore: false,
+  setDevIgnoreStore: () => {},
   localHosts: 0,
   registerLocalHost: () => () => {},
 });
@@ -58,7 +64,10 @@ export function ProProvider({ children }: { children: React.ReactNode }) {
   const [configured, setConfigured] = useState(false);
   const [ready, setReady] = useState(false);
   const [store, setStore] = useState<ProState>({ pro: false, managementURL: null });
-  const [devPro, setDevProState] = useState(false);
+  // Un seul mode garantit que les deux interrupteurs ne puissent pas se contredire.
+  const [devMode, setDevMode] = useState<DevMode>('store');
+  const devChangedRef = useRef(false);
+  const devWriteRef = useRef(Promise.resolve());
   const [chatUsed, setChatUsed] = useState(0);
   const [offer, setOffer] = useState<ProOffer | null>(null);
   const [paywall, setPaywall] = useState<PaywallReason | null>(null);
@@ -75,13 +84,19 @@ export function ProProvider({ children }: { children: React.ReactNode }) {
     let alive = true;
     (async () => {
       try {
-        const [u, d] = await Promise.all([AsyncStorage.getItem(USAGE_KEY), AsyncStorage.getItem(DEV_KEY)]);
+        const [u, d] = await Promise.all([
+          AsyncStorage.getItem(USAGE_KEY),
+          __DEV__ ? AsyncStorage.getItem(DEV_KEY) : Promise.resolve(null),
+        ]);
         if (!alive) return;
         const stored = Number(JSON.parse(u ?? '{}')?.chat ?? 0) || 0;
         // Jamais en arrière : une consommation a pu arriver pendant la lecture.
         usedRef.current = Math.max(stored, usedRef.current);
         setChatUsed(usedRef.current);
-        if (__DEV__ && d === '1') setDevProState(true);
+        if (__DEV__ && !devChangedRef.current) {
+          // '1' était la valeur de l'ancien interrupteur « Simuler Pro ».
+          setDevMode(d === '1' || d === 'pro' ? 'pro' : d === 'free' ? 'free' : 'store');
+        }
       } catch {}
       let ok = false;
       try {
@@ -103,7 +118,9 @@ export function ProProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  const pro = store.pro || (__DEV__ && devPro);
+  const devPro = __DEV__ && devMode === 'pro';
+  const devIgnoreStore = __DEV__ && devMode === 'free';
+  const pro = devIgnoreStore ? false : store.pro || devPro;
   proRef.current = pro;
 
   const consumeChat = useCallback(() => {
@@ -164,16 +181,22 @@ export function ProProvider({ children }: { children: React.ReactNode }) {
     return s.pro;
   }, []);
 
-  const setDevPro = useCallback((v: boolean) => {
+  const changeDevMode = useCallback((mode: DevMode) => {
     if (!__DEV__) return;
-    setDevProState(v);
-    AsyncStorage.setItem(DEV_KEY, v ? '1' : '0').catch(() => {});
+    devChangedRef.current = true;
+    setDevMode(mode);
+    // Sérialiser les écritures : des bascules rapides doivent persister le dernier choix.
+    devWriteRef.current = devWriteRef.current
+      .then(() => AsyncStorage.setItem(DEV_KEY, mode))
+      .catch(() => {});
   }, []);
+  const setDevPro = useCallback((v: boolean) => changeDevMode(v ? 'pro' : 'store'), [changeDevMode]);
+  const setDevIgnoreStore = useCallback((v: boolean) => changeDevMode(v ? 'free' : 'store'), [changeDevMode]);
 
   const freeChatLeft = Math.max(0, FREE_CHAT_MESSAGES - chatUsed);
   const value = useMemo<Ctx>(
-    () => ({ configured, ready, pro, managementURL: store.managementURL, offer, freeChatLeft, buy, restorePurchases, paywall, openPaywall, closePaywall, devPro, setDevPro, localHosts, registerLocalHost }),
-    [configured, ready, pro, store.managementURL, offer, freeChatLeft, buy, restorePurchases, paywall, openPaywall, closePaywall, devPro, setDevPro, localHosts, registerLocalHost]
+    () => ({ configured, ready, pro, managementURL: store.managementURL, offer, freeChatLeft, buy, restorePurchases, paywall, openPaywall, closePaywall, devPro, setDevPro, devIgnoreStore, setDevIgnoreStore, localHosts, registerLocalHost }),
+    [configured, ready, pro, store.managementURL, offer, freeChatLeft, buy, restorePurchases, paywall, openPaywall, closePaywall, devPro, setDevPro, devIgnoreStore, setDevIgnoreStore, localHosts, registerLocalHost]
   );
   return <ProContext.Provider value={value}>{children}</ProContext.Provider>;
 }

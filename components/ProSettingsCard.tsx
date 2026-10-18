@@ -1,5 +1,5 @@
 // Bloc « Tchopé Pro » des Réglages : état, découvrir l'abonnement, restaurer, gérer (réglages du store), et en
-// développement « Simuler Pro ».
+// développement : simulations Pro / sans abonnement (mutuellement exclusives).
 import React from 'react';
 import { Alert, Linking, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -13,7 +13,7 @@ export default function ProSettingsCard() {
   const { colors } = useTheme();
   const { settings } = useSettings();
   const d = proDict[settings.language === 'en' ? 'en' : 'fr'];
-  const { pro, managementURL, openPaywall, restorePurchases, devPro, setDevPro } = usePro();
+  const { pro, ready, managementURL, openPaywall, restorePurchases, devPro, setDevPro, devIgnoreStore, setDevIgnoreStore } = usePro();
   const [busy, setBusy] = React.useState(false);
 
   const manage = async () => {
@@ -52,9 +52,29 @@ export default function ProSettingsCard() {
         {pro ? row(d.manage, manage, 'card-outline') : row(d.see, () => openPaywall('settings'), 'sparkles-outline')}
         {row(d.restore, restore, 'refresh-outline')}
         {__DEV__ ? (
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: 6 }}>
-            <Text style={{ fontSize: 13, color: colors.textSecondary }}>{d.devToggle}</Text>
-            <Switch value={devPro} onValueChange={setDevPro} />
+          <View style={{ gap: 12, marginTop: 10, paddingTop: 16, borderTopWidth: 1, borderTopColor: colors.border }}>
+            <Text style={{ fontSize: 12, fontWeight: '700', color: colors.text }}>{d.devTitle}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+              <Text style={{ flex: 1, fontSize: 13, color: colors.textSecondary }}>{d.devToggle}</Text>
+              <Switch
+                accessibilityLabel={d.devToggle}
+                value={devPro}
+                disabled={!ready || busy}
+                onValueChange={setDevPro}
+                trackColor={{ true: colors.accent, false: colors.border }}
+              />
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+              <Text style={{ flex: 1, fontSize: 13, color: colors.textSecondary }}>{d.devIgnoreStore}</Text>
+              <Switch
+                accessibilityLabel={d.devIgnoreStore}
+                value={devIgnoreStore}
+                disabled={!ready || busy}
+                onValueChange={setDevIgnoreStore}
+                trackColor={{ true: colors.accent, false: colors.border }}
+              />
+            </View>
+            <Text style={{ fontSize: 12, lineHeight: 18, color: colors.textMuted }}>{d.devHint}</Text>
           </View>
         ) : null}
       </View>

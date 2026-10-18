@@ -77,6 +77,7 @@ export default function SearchScreen() {
       <PageIntro title={t('searchTitle')} subtitle={t('searchSubtitle')} />
 
       <ScrollView
+        contentInsetAdjustmentBehavior="never"
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingBottom: 112 + bottom, gap: 24 }}
         showsVerticalScrollIndicator={false}

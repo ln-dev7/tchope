@@ -345,6 +345,7 @@ export default function PlannerScreen() {
     <SafeAreaView style={{ flex: 1, width: '100%', maxWidth: 840, alignSelf: 'center', backgroundColor: colors.background }} edges={['top']}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView
+          contentInsetAdjustmentBehavior="never"
           style={{ flex: 1 }}
           contentContainerStyle={{ paddingBottom: 112 + bottom }}
           showsVerticalScrollIndicator={false}

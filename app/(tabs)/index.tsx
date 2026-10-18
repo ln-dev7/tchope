@@ -57,7 +57,7 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, width: '100%', maxWidth: 840, alignSelf: 'center', backgroundColor: colors.background }} edges={['top']}>
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 112 + bottom }} showsVerticalScrollIndicator={false}>
+      <ScrollView contentInsetAdjustmentBehavior="never" style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 112 + bottom }} showsVerticalScrollIndicator={false}>
         <View style={{ paddingHorizontal: 24, paddingTop: 16, paddingBottom: 28 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 28 }}>
             <View style={{ width: 34, height: 34, borderRadius: 11, backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center' }}>

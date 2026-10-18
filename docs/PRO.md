@@ -55,6 +55,15 @@ le chat TchopAI qui garde **3 messages texte gratuits au total** (comme Travora 
   la mise à jour passe par les stores. Les versions ≥ 2.0.0 lisent `/api/version` sur tchope.lndev.me.
 - Tests côté app : `npm run test:pro` (règles Tchopé Pro).
 
+## Simulations en développement
+- Réglages → Tchopé Pro → Mode développeur, uniquement dans les builds `__DEV__`.
+- « Simuler Pro » active le parcours abonné localement ; « Forcer sans abonnement » permet de tester le parcours
+  gratuit et le paywall même avec un abonnement RevenueCat actif. Activer l'un désactive l'autre.
+- Les deux désactivés : état réel du store. Le mode est conservé dans `tchope_pro_dev` et les mises à jour du store
+  n'écrasent pas une simulation. Les builds de production ignorent cette préférence et n'affichent pas les interrupteurs.
+- Les simulations ne modifient ni les achats ni la validation serveur des appels IA, ni les limites hebdomadaires Live.
+- `npm run test:pro` couvre aussi le provider, la persistance et l'isolation en production.
+
 ## Mise en place (stores, RevenueCat, Vercel)
 - RevenueCat, projet « LN Dev » (17 oct. 2026) : app « Tchopé (App Store) » (`com.lndev.tchope`, clé d'achats intégrés
   App Store Connect déjà utilisée par Travora), produit `tchope_pro_monthly` ; app « Tchopé (Play Store) » (18 oct. 2026, produit

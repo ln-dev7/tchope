@@ -5,7 +5,8 @@
   "license": "GPL-3.0",
   "scripts": {
     "photos": "node scripts/fetch-recipe-photos.mjs",
-    "test:pro": "node --experimental-strip-types --no-warnings tests/pro-bridge.test.mts",
+    "test:pro": "node --experimental-strip-types --no-warnings tests/pro-bridge.test.mts && node --experimental-strip-types --no-warnings --test tests/pro-provider.test.mjs",
+    "test:tabs": "node --no-warnings --test tests/tabs.test.mjs",
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo run:android",

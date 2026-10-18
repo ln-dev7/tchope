@@ -48,6 +48,9 @@ export const proDict = {
     see: "Découvrir Tchopé Pro",
     manage: "Gérer mon abonnement",
     devToggle: "Simuler Pro (développement)",
+    devTitle: "Mode développeur",
+    devIgnoreStore: "Forcer sans abonnement, même si abonné",
+    devHint: "Un seul mode à la fois. Désactivez les deux pour retrouver l’état réel du store. Ces simulations sont locales : le serveur continue de vérifier l’abonnement pour les appels IA.",
   },
   en: {
     title: "Go Tchopé Pro",
@@ -93,6 +96,9 @@ export const proDict = {
     see: "Discover Tchopé Pro",
     manage: "Manage my subscription",
     devToggle: "Simulate Pro (development)",
+    devTitle: "Developer mode",
+    devIgnoreStore: "Force free mode, even with a subscription",
+    devHint: "One mode at a time. Turn both off to use the actual store status. These simulations are local: the server still verifies the subscription for AI requests.",
   },
 } as const;
 
