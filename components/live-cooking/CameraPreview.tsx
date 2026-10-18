@@ -1,85 +1,73 @@
-import React from 'react';
-import { View, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
-import { CameraView } from 'expo-camera';
-import { Ionicons } from '@expo/vector-icons';
+import React from "react";
+import { View, TouchableOpacity } from "react-native";
+import { CameraView } from "expo-camera";
+import { Ionicons } from "@expo/vector-icons";
+import type { ThemeColors } from "@/constants/design";
+import { useSettings } from "@/context/SettingsContext";
 
 type Props = {
   cameraRef: React.RefObject<CameraView | null>;
-  facing: 'front' | 'back';
+  facing: "front" | "back";
   onFlip: () => void;
+  onReady: () => void;
+  onError: () => void;
+  disabled: boolean;
   isThinking: boolean;
   isDark: boolean;
-  colors: {
-    accent: string;
-    surface: string;
-    border: string;
-  };
+  colors: ThemeColors;
 };
-
 export default function CameraPreview({
   cameraRef,
   facing,
   onFlip,
-  isThinking,
-  isDark,
+  onReady,
+  onError,
+  disabled,
   colors,
 }: Props) {
+  const { settings } = useSettings();
   return (
-    <View style={[styles.container, { borderColor: isDark ? colors.border : '#E0E0E0' }]}>
+    <View
+      style={{
+        width: "100%",
+        maxWidth: 400,
+        height: 230,
+        borderRadius: 24,
+        overflow: "hidden",
+        borderWidth: 1,
+        borderColor: colors.border,
+      }}
+    >
       <CameraView
+        key={facing}
         ref={cameraRef}
-        style={styles.camera}
+        style={{ flex: 1 }}
         facing={facing}
+        onCameraReady={onReady}
+        onMountError={onError}
       />
-
-      {/* Flip camera button */}
       <TouchableOpacity
         onPress={onFlip}
-        style={[styles.flipButton, { backgroundColor: 'rgba(0,0,0,0.5)' }]}
+        disabled={disabled}
+        accessibilityRole="button"
+        accessibilityLabel={
+          settings.language === "fr" ? "Retourner la caméra" : "Flip camera"
+        }
+        style={{
+          position: "absolute",
+          bottom: 12,
+          right: 12,
+          width: 48,
+          height: 48,
+          borderRadius: 24,
+          backgroundColor: "#0009",
+          alignItems: "center",
+          justifyContent: "center",
+          opacity: disabled ? 0.4 : 1,
+        }}
       >
-        <Ionicons name="camera-reverse-outline" size={20} color="#FFFFFF" />
+        <Ionicons name="camera-reverse-outline" size={22} color="#fff" />
       </TouchableOpacity>
-
-      {/* Thinking overlay */}
-      {isThinking && (
-        <View style={styles.thinkingOverlay}>
-          <ActivityIndicator size="large" color="#FFFFFF" />
-        </View>
-      )}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: '80%',
-    aspectRatio: 3 / 4,
-    borderRadius: 20,
-    overflow: 'hidden',
-    borderWidth: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  camera: {
-    flex: 1,
-  },
-  flipButton: {
-    position: 'absolute',
-    bottom: 12,
-    right: 12,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  thinkingOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

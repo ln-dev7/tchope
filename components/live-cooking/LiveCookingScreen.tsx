@@ -1,603 +1,698 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { View, Text, StyleSheet, Alert, Linking, TouchableOpacity, Modal, ScrollView, AppState } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import * as Haptics from 'expo-haptics';
-import { CameraView, useCameraPermissions } from 'expo-camera';
-
-import { Ionicons } from '@expo/vector-icons';
-
-import { useTheme } from '@/hooks/useTheme';
-import { useTranslation } from '@/hooks/useTranslation';
-import { useSettings } from '@/context/SettingsContext';
-import { useLiveCooking } from '@/hooks/useLiveCooking';
-import { isSpeechRecognitionAvailable } from '@/hooks/useSpeechRecognition';
-import type { Recipe } from '@/types';
-import { useImageQuota } from '@/hooks/useImageQuota';
-
-import VoiceOrb from './VoiceOrb';
-import LiveCookingHeader from './LiveCookingHeader';
-import LiveSubtitles from './LiveSubtitles';
-import LiveCookingControls from './LiveCookingControls';
-import CameraPreview from './CameraPreview';
-
-type Props = {
-  recipe: Recipe;
-  initialStep?: number;
-  onClose: () => void;
-};
+import React, { useEffect, useState, useCallback, useRef } from "react";
+import {
+  View,
+  Text,
+  Linking,
+  TouchableOpacity,
+  Modal,
+  ScrollView,
+  AppState,
+  ActivityIndicator,
+} from "react-native";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+import * as Haptics from "expo-haptics";
+import { CameraView, useCameraPermissions } from "expo-camera";
+import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "@/hooks/useTheme";
+import { useTranslation } from "@/hooks/useTranslation";
+import { useSettings } from "@/context/SettingsContext";
+import { useLiveCooking } from "@/hooks/useLiveCooking";
+import { isSpeechRecognitionAvailable } from "@/hooks/useSpeechRecognition";
+import { useImageQuota } from "@/hooks/useImageQuota";
+import { prepareAiImage } from "@/utils/ai-image";
+import { stepCommand, type LiveImage } from "@/lib/live/session";
+import { type as typography } from "@/constants/design";
+import type { Recipe } from "@/types";
+import VoiceOrb from "./VoiceOrb";
+import LiveCookingHeader from "./LiveCookingHeader";
+import LiveSubtitles from "./LiveSubtitles";
+import LiveCookingControls from "./LiveCookingControls";
+import CameraPreview from "./CameraPreview";
+import AiLoading from "@/components/tchop-ai/AiLoading";
 
 export default function LiveCookingScreen({
   recipe,
   initialStep = 0,
   onClose,
-}: Props) {
+}: {
+  recipe: Recipe;
+  initialStep?: number;
+  onClose: () => void;
+}) {
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
   const { settings } = useSettings();
-  const [permissionState, setPermissionState] = useState<
-    'checking' | 'granted' | 'denied_can_ask' | 'denied_permanently'
-  >('checking');
-
-  const {
-    liveState,
-    subtitle,
-    userTranscript,
-    volume,
-    isConnected,
-    startListening,
-    stopListening,
-    flushResult,
-    takePhoto,
-    endSession,
-    getHistory,
-    requestPermissions,
-    checkPermissions,
-    setLiveCameraImage,
-  } = useLiveCooking(recipe, initialStep, settings.language);
-
-  const isFr = settings.language === 'fr';
+  const fr = settings.language === "fr";
   const { top, bottom } = useSafeAreaInsets();
+  const live = useLiveCooking(recipe, initialStep, settings.language);
   const imageQuota = useImageQuota();
-  const [showSourceModal, setShowSourceModal] = useState(false);
+  const [permission, setPermission] = useState<
+    "checking" | "granted" | "ask" | "settings"
+  >("checking");
   const [showHistory, setShowHistory] = useState(false);
-  const [showQuotaInfo, setShowQuotaInfo] = useState(false);
-
-  // Live Camera mode state
-  const [mode, setMode] = useState<'audio' | 'camera'>('audio');
-  const [cameraFacing, setCameraFacing] = useState<'front' | 'back'>('back');
+  const [showSource, setShowSource] = useState(false);
+  const [picking, setPicking] = useState(false);
+  const [mode, setMode] = useState<"audio" | "camera">("audio");
+  const [facing, setFacing] = useState<"front" | "back">("back");
+  const [cameraReady, setCameraReady] = useState(false);
+  const [cameraMessage, setCameraMessage] = useState("");
   const cameraRef = useRef<CameraView | null>(null);
-  const [cameraPermission, requestCameraPermission] = useCameraPermissions();
+  const [cameraPermission, requestCamera] = useCameraPermissions();
+  const captureToken = useRef(0);
+  const holding = useRef(false);
+  const alive = useRef(true);
+  const busy = live.liveState === "thinking" || picking;
+  const photosAllowed =
+    imageQuota.canSend && (live.usage?.photosRemaining ?? 0) > 0;
 
-  // Check permissions on mount
+  const { checkPermissions } = live;
+  const check = useCallback(async () => {
+    const result = await checkPermissions();
+    if (alive.current)
+      setPermission(
+        result.granted ? "granted" : result.canAskAgain ? "ask" : "settings",
+      );
+  }, [checkPermissions]);
   useEffect(() => {
-    (async () => {
-      const granted = await checkPermissions();
-      if (granted) {
-        setPermissionState('granted');
-      } else {
-        // Don't auto-request, let user tap a button
-        setPermissionState('denied_can_ask');
-      }
-    })();
-  }, []);
-
-  const handleRequestPermissions = useCallback(async () => {
-    const result = await requestPermissions();
-    if (result.granted) {
-      setPermissionState('granted');
-    } else if (!result.canAskAgain) {
-      setPermissionState('denied_permanently');
-    }
-    // If canAskAgain but not granted, stay on denied_can_ask
-  }, [requestPermissions]);
-
-  // Use a ref to always have the current mode in async callbacks
-  const modeRef = useRef(mode);
-  modeRef.current = mode;
-
-  // Switch between audio and camera mode
-  const handleModeSwitch = useCallback(async () => {
-    if (modeRef.current === 'camera') {
-      setMode('audio');
-      return;
-    }
-    // Switching to camera — check permission
-    if (!cameraPermission?.granted) {
-      const result = await requestCameraPermission();
-      if (!result.granted) {
-        Alert.alert(
-          isFr ? 'Permission caméra' : 'Camera permission',
-          t('cameraPermissionNeeded'),
-        );
-        return;
-      }
-    }
-    setMode('camera');
-  }, [cameraPermission, requestCameraPermission, isFr, t]);
-
-  // Pause camera when app goes to background
-  useEffect(() => {
-    if (mode !== 'camera') return;
-    const sub = AppState.addEventListener('change', (state) => {
-      if (state !== 'active') {
-        setMode('audio');
-      }
+    alive.current = true;
+    void check();
+    const sub = AppState.addEventListener("change", (state) => {
+      if (state !== "active") {
+        captureToken.current++;
+        holding.current = false;
+        setMode("audio");
+        setCameraReady(false);
+      } else void check();
     });
-    return () => sub.remove();
-  }, [mode]);
+    return () => {
+      alive.current = false;
+      sub.remove();
+    };
+  }, [check]);
 
-  const handleMicPress = useCallback(() => {
-    if (!isConnected) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+  const cancelTurn = () => {
+    captureToken.current++;
+    holding.current = false;
+    live.endSession();
+  };
+  const changeStep = (step: number) => {
+    captureToken.current++;
+    holding.current = false;
+    live.goToStep(step);
+  };
+  const end = () => {
+    cancelTurn();
+    onClose();
+  };
+  const allow = async () => {
+    setPermission("checking");
+    const result = await live.requestPermissions();
+    if (alive.current)
+      setPermission(
+        result.granted ? "granted" : result.canAskAgain ? "ask" : "settings",
+      );
+  };
+  const switchCamera = async () => {
+    if (busy || live.liveState === "listening") return;
+    if (mode === "camera") {
+      setMode("audio");
+      setCameraReady(false);
       return;
     }
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    startListening();
-  }, [isConnected, startListening]);
-
-  const handleMicRelease = useCallback(async () => {
-    // Stop speech recognition first (buffers the result, doesn't send yet)
-    stopListening();
-
-    // In live camera mode, capture the photo before flushing
-    if (mode === 'camera' && cameraRef.current) {
-      if (imageQuota.canSend) {
-        try {
-          const photo = await cameraRef.current.takePictureAsync({
-            quality: 0.5,
-            base64: true,
-            skipProcessing: true,
-            imageType: 'jpg',
-          });
-          if (photo?.base64) {
-            setLiveCameraImage(photo.base64);
-            await imageQuota.increment();
-          }
-        } catch {
-          // Photo capture failed — will send voice only
-        }
-      }
-    }
-
-    // Now send the buffered speech result + photo (if any) to the AI
-    flushResult();
-  }, [mode, stopListening, flushResult, setLiveCameraImage, imageQuota]);
-
-  const handlePhoto = useCallback(() => {
-    if (!imageQuota.canSend) {
-      Alert.alert(
-        isFr ? 'Limite atteinte' : 'Limit reached',
-        t('imageQuotaReached'),
+    if (!photosAllowed) {
+      setCameraMessage(
+        fr
+          ? "Le solde photo est épuisé. Le mode audio reste disponible."
+          : "Your photo balance is used up. Audio mode remains available.",
       );
       return;
     }
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setShowSourceModal(true);
-  }, [imageQuota, isFr, t]);
+    const result = cameraPermission?.granted
+      ? cameraPermission
+      : await requestCamera();
+    if (!alive.current) return;
+    if (!result.granted) {
+      setCameraMessage(
+        fr
+          ? "Autorisez la caméra dans les réglages du téléphone."
+          : "Allow camera access in your phone settings.",
+      );
+      return;
+    }
+    setCameraMessage("");
+    setCameraReady(false);
+    setMode("camera");
+  };
+  const micPress = () => {
+    if (busy || !live.isConnected || !live.usage || live.usage.remaining <= 0)
+      return;
+    captureToken.current++;
+    holding.current = live.startListening();
+    if (holding.current)
+      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  };
+  const micRelease = async () => {
+    if (!holding.current) return;
+    holding.current = false;
+    const token = captureToken.current;
+    const text = await live.stopListening();
+    if (!alive.current || token !== captureToken.current) return;
+    let image: LiveImage | undefined;
+    if (
+      text &&
+      stepCommand(text, live.currentStep, recipe.steps.length) === null &&
+      mode === "camera" &&
+      cameraReady &&
+      photosAllowed &&
+      cameraRef.current
+    ) {
+      try {
+        const photo = await cameraRef.current.takePictureAsync({
+          quality: 0.8,
+          imageType: "jpg",
+        });
+        if (photo)
+          image = await prepareAiImage(photo.uri, photo.width, photo.height);
+      } catch {
+        if (alive.current)
+          setCameraMessage(
+            fr
+              ? "Photo indisponible : votre question sera envoyée sans image."
+              : "Photo unavailable: your question will be sent without an image.",
+          );
+      }
+    }
+    if (!alive.current || token !== captureToken.current) return;
+    const sent = await live.submitTranscript(text, image);
+    if (sent && image) await imageQuota.increment();
+  };
+  const photo = async (source: "camera" | "gallery") => {
+    if (picking || busy || !photosAllowed) return;
+    setShowSource(false);
+    setPicking(true);
+    try {
+      if (await live.takePhoto(source)) await imageQuota.increment();
+    } finally {
+      if (alive.current) setPicking(false);
+    }
+  };
 
-  const handlePhotoSource = useCallback(async (source: 'camera' | 'gallery') => {
-    setShowSourceModal(false);
-    await imageQuota.increment();
-    takePhoto(source);
-  }, [takePhoto, imageQuota]);
-
-  const handleEnd = useCallback(() => {
-    endSession();
-    onClose();
-  }, [endSession, onClose]);
-
-  // Status text
-  const statusText =
-    liveState === 'listening'
-      ? t('listening')
-      : liveState === 'thinking'
-        ? t('thinking')
-        : liveState === 'speaking'
-          ? t('speaking')
-          : '';
-
-  // Native module not available (e.g. running in Expo Go)
-  if (!isSpeechRecognitionAvailable()) {
+  const button = {
+    minHeight: 48,
+    borderRadius: 16,
+    paddingHorizontal: 18,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
+    backgroundColor: colors.accent,
+  };
+  if (!isSpeechRecognitionAvailable() || permission !== "granted")
     return (
-      <View style={[styles.screen, { backgroundColor: colors.background }]}>
-        <View style={[styles.flex, { paddingTop: top }]}>
-          <View style={{ flexDirection: 'row', justifyContent: 'flex-end', paddingHorizontal: 20, paddingVertical: 12 }}>
-            <TouchableOpacity
-              onPress={onClose}
-              style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' }}
-            >
-              <Ionicons name="close" size={20} color={colors.text} />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.centered}>
-            <Ionicons name="mic-off-outline" size={48} color={colors.textMuted} />
-            <Text style={[styles.gateTitle, { color: colors.text }]}>
-              {isFr ? 'TchopAI Live non disponible' : 'TchopAI Live not available'}
-            </Text>
-            <Text style={[styles.gateDesc, { color: colors.textSecondary }]}>
-              {isFr
-                ? 'La reconnaissance vocale nécessite un development build. Lancez "npx expo prebuild" puis compilez l\'app.'
-                : 'Speech recognition requires a development build. Run "npx expo prebuild" then build the app.'}
-            </Text>
-          </View>
-        </View>
-      </View>
-    );
-  }
-
-  // Permissions not yet granted
-  if (permissionState !== 'granted') {
-    const isPermanentlyDenied = permissionState === 'denied_permanently';
-    return (
-      <View style={[styles.screen, { backgroundColor: colors.background }]}>
-        <View style={[styles.centered, { paddingTop: top }]}>
-          <Ionicons
-            name="mic-outline"
-            size={56}
-            color={colors.accent}
-            style={{ marginBottom: 20 }}
-          />
-          <Text style={[styles.gateTitle, { color: colors.text }]}>
-            {isFr ? 'Autoriser le micro' : 'Allow microphone'}
+      <View
+        style={{
+          flex: 1,
+          paddingTop: top,
+          paddingBottom: bottom,
+          backgroundColor: colors.background,
+        }}
+      >
+        <ScrollView
+          contentContainerStyle={{
+            flexGrow: 1,
+            justifyContent: "center",
+            padding: 28,
+            gap: 20,
+            alignItems: "center",
+          }}
+        >
+          <Ionicons name="mic-outline" size={48} color={colors.accent} />
+          <Text
+            style={[
+              typography.display,
+              { color: colors.text, textAlign: "center", fontSize: 30 },
+            ]}
+          >
+            {fr ? "Votre voix, en cuisine." : "Your voice, in the kitchen."}
           </Text>
-          <Text style={[styles.gateDesc, { color: colors.textSecondary }]}>
-            {isFr
-              ? 'TchopAI Live a besoin du micro et de la reconnaissance vocale pour vous guider en cuisine.'
-              : 'TchopAI Live needs microphone and speech recognition to guide you while cooking.'}
+          <Text
+            style={{
+              color: colors.textSecondary,
+              textAlign: "center",
+              lineHeight: 23,
+            }}
+          >
+            {!isSpeechRecognitionAvailable()
+              ? fr
+                ? "La reconnaissance vocale n’est pas disponible dans cette version. Utilisez l’app Tchopé sur un téléphone compatible."
+                : "Speech recognition is unavailable in this version. Use Tchopé on a compatible phone."
+              : fr
+                ? "Autorisez le micro et la reconnaissance vocale. L’écoute démarre uniquement quand vous maintenez le bouton. La caméra reste facultative."
+                : "Allow microphone and speech recognition. Listening starts only while you hold the button. Camera access is optional."}
           </Text>
-
-          {isPermanentlyDenied ? (
-            <>
-              <Text style={[styles.gateHint, { color: colors.textMuted }]}>
-                {isFr
-                  ? 'Vous avez refusé les permissions. Activez-les dans les réglages.'
-                  : 'You denied permissions. Enable them in Settings.'}
-              </Text>
+          {permission === "checking" ? (
+            <ActivityIndicator color={colors.accent} />
+          ) : (
+            isSpeechRecognitionAvailable() && (
               <TouchableOpacity
-                onPress={() => Linking.openSettings()}
-                style={[styles.gateButton, { backgroundColor: colors.accent }]}
+                accessibilityRole="button"
+                onPress={
+                  permission === "settings"
+                    ? () => void Linking.openSettings()
+                    : allow
+                }
+                style={button}
               >
-                <Ionicons name="settings-outline" size={18} color={colors.onAccent} />
-                <Text style={styles.gateButtonText}>
-                  {isFr ? 'Ouvrir les réglages' : 'Open Settings'}
+                <Text style={{ color: colors.onAccent, fontWeight: "700" }}>
+                  {permission === "settings"
+                    ? fr
+                      ? "Ouvrir les réglages"
+                      : "Open Settings"
+                    : fr
+                      ? "Autoriser le micro"
+                      : "Allow microphone"}
                 </Text>
               </TouchableOpacity>
+            )
+          )}
+          <TouchableOpacity
+            accessibilityRole="button"
+            onPress={end}
+            style={{ minHeight: 48, justifyContent: "center" }}
+          >
+            <Text style={{ color: colors.textSecondary }}>{t("back")}</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </View>
+    );
+
+  const resetDate = live.usage
+    ? new Date(live.usage.resetsAt).toLocaleDateString(fr ? "fr-FR" : "en-US", {
+        day: "numeric",
+        month: "short",
+        timeZone: "UTC",
+      })
+    : "";
+  return (
+    <View
+      style={{ flex: 1, paddingTop: top, backgroundColor: colors.background }}
+    >
+      <LiveCookingHeader
+        recipeName={recipe.name}
+        onBack={end}
+        onHistory={() => setShowHistory(true)}
+        isDark={isDark}
+        colors={colors}
+      />
+      <ScrollView
+        contentContainerStyle={{
+          padding: 20,
+          gap: 16,
+          alignSelf: "center",
+          width: "100%",
+          maxWidth: 720,
+        }}
+      >
+        <View
+          style={{
+            backgroundColor: colors.surface,
+            padding: 16,
+            borderRadius: 20,
+            gap: 8,
+          }}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: 12,
+            }}
+          >
+            <Text style={{ color: colors.text, fontWeight: "700", flex: 1 }}>
+              {live.usage
+                ? fr
+                  ? `${live.usage.remaining} réponses restantes`
+                  : `${live.usage.remaining} responses left`
+                : fr
+                  ? "Votre solde Live"
+                  : "Your Live balance"}
+            </Text>
+            <Text style={{ color: colors.accent, fontWeight: "700" }}>PRO</Text>
+          </View>
+          {live.usage && (
+            <>
+              <View
+                style={{
+                  height: 4,
+                  backgroundColor: colors.border,
+                  borderRadius: 4,
+                  overflow: "hidden",
+                }}
+              >
+                <View
+                  style={{
+                    width: `${(live.usage.remaining / live.usage.limit) * 100}%`,
+                    height: 4,
+                    backgroundColor: colors.accent,
+                  }}
+                />
+              </View>
+              <Text style={{ color: colors.textSecondary, fontSize: 12 }}>
+                {fr
+                  ? `${live.usage.photosRemaining} photos · renouvellement le ${resetDate} à 00 h UTC`
+                  : `${live.usage.photosRemaining} photos · resets ${resetDate}, 00:00 UTC`}
+              </Text>
             </>
-          ) : (
+          )}
+          {live.usageLoading && <ActivityIndicator color={colors.accent} />}
+          {!!live.usageError && (
             <TouchableOpacity
-              onPress={handleRequestPermissions}
-              disabled={permissionState === 'checking'}
-              style={[styles.gateButton, { backgroundColor: colors.accent }]}
+              onPress={() => void live.refreshUsage()}
+              accessibilityRole="button"
+              style={{ minHeight: 44 }}
             >
-              <Ionicons name="mic" size={18} color={colors.onAccent} />
-              <Text style={styles.gateButtonText}>
-                {isFr ? 'Autoriser' : 'Authorize'}
+              <Text style={{ color: colors.danger, fontSize: 13 }}>
+                {live.usageError} {fr ? "Réessayer" : "Retry"}
               </Text>
             </TouchableOpacity>
           )}
-
-          <TouchableOpacity onPress={onClose} style={{ marginTop: 16 }}>
-            <Text style={{ color: colors.textMuted, fontSize: 14 }}>
-              {isFr ? 'Annuler' : 'Cancel'}
+        </View>
+        {!live.isConnected && (
+          <Text accessibilityRole="alert" style={{ color: colors.danger }}>
+            {t("liveCookingOffline")}
+          </Text>
+        )}
+        <View style={{ alignItems: "center", gap: 14 }}>
+          <TouchableOpacity
+            accessibilityRole="button"
+            onPress={switchCamera}
+            disabled={busy || live.liveState === "listening"}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 8,
+              minHeight: 44,
+              borderRadius: 22,
+              paddingHorizontal: 18,
+              borderWidth: 1,
+              borderColor: colors.border,
+            }}
+          >
+            <Ionicons
+              name={mode === "camera" ? "videocam" : "mic-outline"}
+              size={18}
+              color={colors.accent}
+            />
+            <Text style={{ color: colors.text, fontWeight: "600" }}>
+              {mode === "camera"
+                ? fr
+                  ? "Caméra activée"
+                  : "Camera on"
+                : fr
+                  ? "Voix seule · activer la caméra"
+                  : "Voice only · enable camera"}
             </Text>
           </TouchableOpacity>
+          {mode === "camera" ? (
+            <CameraPreview
+              cameraRef={cameraRef}
+              facing={facing}
+              onFlip={() => {
+                setCameraReady(false);
+                setFacing((f) => (f === "back" ? "front" : "back"));
+              }}
+              onReady={() => setCameraReady(true)}
+              onError={() => {
+                setMode("audio");
+                setCameraMessage(
+                  fr
+                    ? "Caméra indisponible. Vous pouvez continuer en audio."
+                    : "Camera unavailable. You can continue in audio.",
+                );
+              }}
+              isThinking={live.liveState === "thinking"}
+              disabled={busy || live.liveState === "listening"}
+              isDark={isDark}
+              colors={colors}
+            />
+          ) : (
+            <VoiceOrb
+              state={live.liveState}
+              volume={live.volume}
+              isDark={isDark}
+              colors={colors}
+            />
+          )}
+          {mode === "camera" && (
+            <Text
+              style={{
+                color: colors.textMuted,
+                fontSize: 12,
+                textAlign: "center",
+              }}
+            >
+              {fr
+                ? "Une photo accompagne votre question au relâchement du micro. Aucune vidéo n’est envoyée."
+                : "One photo accompanies your question when you release the microphone. No video is sent."}
+            </Text>
+          )}
+          {!!cameraMessage && (
+            <Text
+              accessibilityRole="alert"
+              style={{ color: colors.textSecondary, fontSize: 13 }}
+            >
+              {cameraMessage}
+            </Text>
+          )}
+          {live.liveState === "thinking" ? (
+            <AiLoading
+              label={
+                fr
+                  ? "TchopAI prépare votre réponse"
+                  : "TchopAI is preparing your answer"
+              }
+              isFr={fr}
+              colors={colors}
+              onCancel={cancelTurn}
+            />
+          ) : (
+            <Text style={{ color: colors.textSecondary }}>
+              {live.liveState === "listening"
+                ? t("listening")
+                : live.liveState === "speaking"
+                  ? t("speaking")
+                  : fr
+                    ? "Une question ? Je vous écoute."
+                    : "Have a question? I’m listening."}
+            </Text>
+          )}
         </View>
-      </View>
-    );
-  }
-
-  return (
-    <View style={[styles.screen, { backgroundColor: colors.background }]}>
-      <View style={[styles.flex, { paddingTop: top }]}>
-        {/* Header */}
-        <LiveCookingHeader
-          recipeName={recipe.name}
-          onBack={handleEnd}
-          onHistory={() => setShowHistory(true)}
+        <LiveSubtitles
+          subtitle={live.subtitle}
+          userTranscript={live.userTranscript}
+          state={live.liveState}
+          error={live.hasError}
           isDark={isDark}
           colors={colors}
         />
-
-        {/* Offline banner */}
-        {!isConnected && (
-          <View
-            style={[
-              styles.offlineBanner,
-              { backgroundColor: isDark ? 'rgba(231,76,60,0.15)' : 'rgba(231,76,60,0.08)' },
-            ]}
-          >
-            <Ionicons name="cloud-offline-outline" size={14} color={isDark ? '#E74C3C' : '#C0392B'} />
-            <Text style={[styles.offlineText, { color: isDark ? '#E74C3C' : '#C0392B' }]}>
-              {t('liveCookingOffline')}
-            </Text>
-          </View>
-        )}
-
-        {/* Quota badge + Mode switch on same line — hidden while speaking/listening */}
-        {liveState === 'idle' && (
-          <View style={styles.topBadgeRow}>
-            {/* Photo quota badge — tap for info */}
-            <TouchableOpacity
-              onPress={() => setShowQuotaInfo(true)}
-              activeOpacity={0.7}
-              style={[
-                styles.quotaBadge,
-                {
-                  backgroundColor: colors.surface,
-                  borderColor: imageQuota.remaining <= 3 ? '#E74C3C' : colors.border,
-                },
-              ]}
-            >
-              <Ionicons
-                name="camera-outline"
-                size={13}
-                color={imageQuota.remaining <= 3 ? '#E74C3C' : colors.textMuted}
-              />
-              <Text style={[
-                styles.quotaBadgeText,
-                { color: imageQuota.remaining <= 3 ? '#E74C3C' : colors.textMuted },
-              ]}>
-                {imageQuota.remaining}/{imageQuota.limit}
-              </Text>
-            </TouchableOpacity>
-
-            {/* Mode switch pill */}
-            <TouchableOpacity
-              onPress={handleModeSwitch}
-              style={[
-                styles.modeSwitchPill,
-                {
-                  backgroundColor: isDark
-                    ? (mode === 'camera' ? `${colors.accent}25` : colors.surface)
-                    : (mode === 'camera' ? `${colors.accent}12` : '#F3F0EF'),
-                  borderColor: mode === 'camera' ? colors.accent : colors.border,
-                },
-              ]}
-            >
-              <Ionicons
-                name={mode === 'camera' ? 'videocam' : 'videocam-outline'}
-                size={16}
-                color={mode === 'camera' ? colors.accent : colors.textMuted}
-              />
-              <Text
-                style={{
-                  fontSize: 13,
-                  fontWeight: '600',
-                  color: mode === 'camera' ? colors.accent : colors.textMuted,
-                }}
-              >
-                {mode === 'camera' ? t('liveCameraMode') : t('audioOnlyMode')}
-              </Text>
-              {mode === 'camera' && (
-                <View style={{
-                  position: 'absolute',
-                  top: -6,
-                  right: -8,
-                  backgroundColor: colors.accent,
-                  borderRadius: 6,
-                  paddingHorizontal: 4,
-                  paddingVertical: 1,
-                }}>
-                  <Text style={{ fontSize: 8, fontWeight: '800', color: '#FFFFFF' }}>
-                    BETA
-                  </Text>
-                </View>
-              )}
-            </TouchableOpacity>
-          </View>
-        )}
-
-        {/* Center area: VoiceOrb or Camera Preview */}
-        <View style={styles.orbContainer}>
-          {mode === 'audio' ? (
-            <>
-              <VoiceOrb state={liveState} volume={volume} isDark={isDark} colors={colors} />
-              {statusText ? (
-                <Text style={[styles.statusText, { color: colors.textSecondary }]}>
-                  {statusText}
-                </Text>
-              ) : null}
-            </>
-          ) : (
-            <>
-              <CameraPreview
-                cameraRef={cameraRef}
-                facing={cameraFacing}
-                onFlip={() => setCameraFacing((f) => (f === 'back' ? 'front' : 'back'))}
-                isThinking={liveState === 'thinking'}
-                isDark={isDark}
-                colors={colors}
-              />
-              <Text style={[styles.cameraHint, { color: colors.textMuted }]}>
-                {t('cameraCaptureHint')}
-              </Text>
-              {statusText ? (
-                <Text style={[styles.statusText, { color: colors.textSecondary }]}>
-                  {statusText}
-                </Text>
-              ) : null}
-            </>
-          )}
-        </View>
-
-        {/* Subtitles */}
-        <View style={styles.subtitleContainer}>
-          <LiveSubtitles
-            subtitle={subtitle}
-            userTranscript={userTranscript}
-            state={liveState}
-            isDark={isDark}
-            colors={colors}
-          />
-        </View>
-
-        {/* Controls */}
-        <View style={[styles.controlsWrapper, { paddingBottom: bottom + 16 }]}>
-          <LiveCookingControls
-            state={liveState}
-            isDark={isDark}
-            onMicPress={handleMicPress}
-            onMicRelease={handleMicRelease}
-            onPhoto={handlePhoto}
-            onEnd={handleEnd}
-            colors={colors}
-            holdLabel={t('holdToSpeak')}
-            endLabel={t('endSession')}
-            photoLabel={t('takePhotoForAI')}
-            mode={mode}
-          />
-        </View>
-      </View>
-
-      {/* History modal */}
-      <Modal visible={showHistory} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setShowHistory(false)}>
-        <View style={{ flex: 1, backgroundColor: colors.background }}>
-          <SafeAreaView style={{ flex: 1 }} edges={['top']}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: colors.border, gap: 12 }}>
-              <TouchableOpacity
-                onPress={() => setShowHistory(false)}
-                style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' }}
-              >
-                <Ionicons name="close" size={20} color={colors.text} />
-              </TouchableOpacity>
-              <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text, flex: 1 }}>
-                {isFr ? 'Historique' : 'History'}
-              </Text>
-            </View>
-            <ScrollView
-              contentContainerStyle={{ padding: 16, gap: 12, paddingBottom: 40 }}
-              showsVerticalScrollIndicator={false}
-            >
-              {getHistory().length === 0 ? (
-                <Text style={{ fontSize: 14, color: colors.textMuted, textAlign: 'center', marginTop: 40 }}>
-                  {isFr ? 'Aucun message pour le moment' : 'No messages yet'}
-                </Text>
-              ) : (
-                getHistory().map((msg, i) => {
-                  const isUser = msg.role === 'user';
-                  const text = typeof msg.content === 'string'
-                    ? msg.content
-                    : msg.content.find((c) => c.type === 'text')?.text ?? (isFr ? '📷 Photo envoyée' : '📷 Photo sent');
-                  return (
-                    <View
-                      key={i}
-                      style={{
-                        alignSelf: isUser ? 'flex-end' : 'flex-start',
-                        maxWidth: '82%',
-                        backgroundColor: isUser ? colors.accent : (colors.surface),
-                        borderRadius: 18,
-                        borderBottomRightRadius: isUser ? 6 : 18,
-                        borderBottomLeftRadius: isUser ? 18 : 6,
-                        paddingHorizontal: 14,
-                        paddingVertical: 10,
-                      }}
-                    >
-                      <Text style={{ fontSize: 14, lineHeight: 20, color: isUser ? colors.onAccent : colors.text }}>
-                        {text}
-                      </Text>
-                    </View>
-                  );
-                })
-              )}
-            </ScrollView>
-          </SafeAreaView>
-        </View>
-      </Modal>
-
-      {/* Photo source picker modal */}
-      <Modal visible={showSourceModal} transparent animationType="fade" onRequestClose={() => setShowSourceModal(false)}>
-        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end', paddingHorizontal: 16, paddingBottom: bottom + 16 }}>
-          <View style={{
+        <View
+          style={{
             backgroundColor: colors.card,
+            borderWidth: 1,
+            borderColor: colors.border,
             borderRadius: 20,
-            overflow: 'hidden',
-            marginBottom: 8,
-          }}>
-            <TouchableOpacity
-              onPress={() => handlePhotoSource('camera')}
-              style={{
-                paddingVertical: 16,
-                alignItems: 'center',
-                flexDirection: 'row',
-                justifyContent: 'center',
-                gap: 10,
-                borderBottomWidth: 1,
-                borderBottomColor: colors.border,
-              }}>
-              <Ionicons name="camera-outline" size={20} color={colors.accent} />
-              <Text style={{ fontSize: 16, fontWeight: '600', color: colors.accent }}>
-                {isFr ? 'Prendre une photo' : 'Take a photo'}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => handlePhotoSource('gallery')}
-              style={{
-                paddingVertical: 16,
-                alignItems: 'center',
-                flexDirection: 'row',
-                justifyContent: 'center',
-                gap: 10,
-              }}>
-              <Ionicons name="images-outline" size={20} color={colors.accent} />
-              <Text style={{ fontSize: 16, fontWeight: '600', color: colors.accent }}>
-                {isFr ? 'Choisir dans la galerie' : 'Choose from gallery'}
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <TouchableOpacity
-            onPress={() => setShowSourceModal(false)}
+            padding: 18,
+            gap: 12,
+          }}
+        >
+          <Text
             style={{
-              backgroundColor: colors.card,
-              borderRadius: 20,
-              paddingVertical: 16,
-              alignItems: 'center',
-            }}>
-            <Text style={{ fontSize: 16, fontWeight: '600', color: colors.textMuted }}>
-              {isFr ? 'Annuler' : 'Cancel'}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </Modal>
-
-      {/* Photo quota info modal */}
-      <Modal visible={showQuotaInfo} transparent animationType="fade" onRequestClose={() => setShowQuotaInfo(false)}>
-        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', paddingHorizontal: 32 }}>
-          <View style={{
-            backgroundColor: colors.card,
-            borderRadius: 24,
-            padding: 24,
-            gap: 16,
-            alignItems: 'center',
-          }}>
-            <View style={{
-              width: 56, height: 56, borderRadius: 28,
-              backgroundColor: isDark ? `${colors.accent}20` : `${colors.accent}10`,
-              alignItems: 'center', justifyContent: 'center',
-            }}>
-              <Ionicons name="camera" size={28} color={colors.accent} />
-            </View>
-            <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text, textAlign: 'center' }}>
-              {isFr ? 'Quota de photos' : 'Photo quota'}
-            </Text>
-            <Text style={{ fontSize: 14, color: colors.textSecondary, textAlign: 'center', lineHeight: 20 }}>
-              {isFr
-                ? `Tu peux envoyer ${imageQuota.limit} photos par jour pour que TchopAI analyse ta préparation en temps réel.\n\nIl te reste ${imageQuota.remaining} photo${imageQuota.remaining > 1 ? 's' : ''} aujourd'hui. Le compteur se réinitialise automatiquement chaque jour à minuit.`
-                : `You can send ${imageQuota.limit} photos per day for TchopAI to analyze your cooking in real-time.\n\nYou have ${imageQuota.remaining} photo${imageQuota.remaining > 1 ? 's' : ''} remaining today. The counter resets automatically every day at midnight.`}
-            </Text>
+              color: colors.accent,
+              fontSize: 12,
+              fontWeight: "700",
+              letterSpacing: 1,
+            }}
+          >
+            {fr ? "ÉTAPE" : "STEP"} {live.currentStep + 1} / {live.totalSteps}
+          </Text>
+          <Text style={{ color: colors.text, fontSize: 15, lineHeight: 23 }}>
+            {recipe.steps[live.currentStep]}
+          </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
             <TouchableOpacity
-              onPress={() => setShowQuotaInfo(false)}
+              accessibilityRole="button"
+              accessibilityLabel={fr ? "Étape précédente" : "Previous step"}
+              disabled={live.currentStep === 0}
+              onPress={() => changeStep(live.currentStep - 1)}
+              style={{ padding: 12, opacity: live.currentStep === 0 ? 0.3 : 1 }}
+            >
+              <Ionicons name="arrow-back" size={20} color={colors.accent} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              accessibilityRole="button"
+              onPress={() => {
+                cancelTurn();
+                void live.submitTranscript("repeat");
+              }}
+              style={{ padding: 12 }}
+            >
+              <Text style={{ color: colors.accent, fontWeight: "700" }}>
+                {fr ? "Lire l’étape" : "Read step"}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              accessibilityRole="button"
+              accessibilityLabel={fr ? "Étape suivante" : "Next step"}
+              disabled={live.currentStep === live.totalSteps - 1}
+              onPress={() => changeStep(live.currentStep + 1)}
               style={{
-                backgroundColor: colors.accent,
-                borderRadius: 16,
-                paddingVertical: 14,
-                paddingHorizontal: 24,
-                width: '100%',
-                alignItems: 'center',
+                padding: 12,
+                opacity: live.currentStep === live.totalSteps - 1 ? 0.3 : 1,
               }}
             >
-              <Text style={{ fontSize: 15, fontWeight: '700', color: colors.onAccent }}>
-                {isFr ? 'Compris' : 'Got it'}
+              <Ionicons name="arrow-forward" size={20} color={colors.accent} />
+            </TouchableOpacity>
+          </View>
+          <Text style={{ color: colors.textMuted, fontSize: 11 }}>
+            {fr
+              ? "Lire et parcourir les étapes ne consomme aucune réponse."
+              : "Reading and navigating steps does not use any responses."}
+          </Text>
+        </View>
+      </ScrollView>
+      <View
+        style={{
+          paddingTop: 12,
+          paddingBottom: bottom + 10,
+          borderTopWidth: 1,
+          borderTopColor: colors.border,
+          backgroundColor: colors.background,
+        }}
+      >
+        <LiveCookingControls
+          state={live.liveState}
+          isDark={isDark}
+          onMicPress={micPress}
+          onMicRelease={() => void micRelease()}
+          onPhoto={() => setShowSource(true)}
+          onEnd={end}
+          colors={colors}
+          holdLabel={t("holdToSpeak")}
+          endLabel={t("endSession")}
+          photoLabel={t("takePhotoForAI")}
+          mode={mode}
+          disabled={
+            picking ||
+            !live.isConnected ||
+            !live.usage ||
+            live.usage.remaining === 0
+          }
+          photoDisabled={!photosAllowed}
+        />
+      </View>
+      <Modal
+        visible={showHistory}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowHistory(false)}
+      >
+        <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+          <TouchableOpacity
+            accessibilityRole="button"
+            onPress={() => setShowHistory(false)}
+            style={{ padding: 20 }}
+          >
+            <Text style={{ color: colors.accent }}>
+              {fr ? "Fermer l’historique" : "Close history"}
+            </Text>
+          </TouchableOpacity>
+          <ScrollView contentContainerStyle={{ padding: 20, gap: 16 }}>
+            {!live.getHistory().length && (
+              <Text style={{ color: colors.textSecondary }}>
+                {fr
+                  ? "Vos échanges apparaîtront ici."
+                  : "Your conversation will appear here."}
               </Text>
+            )}
+            {live.getHistory().map((message, i) => (
+              <View
+                key={i}
+                style={{
+                  padding: 16,
+                  borderRadius: 18,
+                  backgroundColor:
+                    message.role === "user"
+                      ? colors.accentSoft
+                      : colors.surface,
+                }}
+              >
+                <Text style={{ color: colors.text, lineHeight: 22 }}>
+                  {String(message.content)}
+                </Text>
+              </View>
+            ))}
+          </ScrollView>
+        </SafeAreaView>
+      </Modal>
+      <Modal
+        visible={showSource}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowSource(false)}
+      >
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: "#0008",
+            justifyContent: "flex-end",
+            padding: 20,
+            paddingBottom: bottom + 20,
+          }}
+        >
+          <View
+            style={{
+              padding: 20,
+              borderRadius: 24,
+              backgroundColor: colors.card,
+              gap: 12,
+            }}
+          >
+            {(["camera", "gallery"] as const).map((source) => (
+              <TouchableOpacity
+                key={source}
+                accessibilityRole="button"
+                onPress={() => void photo(source)}
+                style={button}
+              >
+                <Text style={{ color: colors.onAccent, fontWeight: "700" }}>
+                  {source === "camera"
+                    ? fr
+                      ? "Prendre une photo"
+                      : "Take a photo"
+                    : fr
+                      ? "Choisir une photo"
+                      : "Choose a photo"}
+                </Text>
+              </TouchableOpacity>
+            ))}
+            <TouchableOpacity
+              accessibilityRole="button"
+              onPress={() => setShowSource(false)}
+              style={{
+                minHeight: 48,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ color: colors.text }}>{t("cancel")}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -605,118 +700,3 @@ export default function LiveCookingScreen({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-  },
-  flex: {
-    flex: 1,
-  },
-  centered: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  gateTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  gateDesc: {
-    fontSize: 14,
-    textAlign: 'center',
-    marginHorizontal: 40,
-    lineHeight: 20,
-    marginBottom: 24,
-  },
-  gateHint: {
-    fontSize: 13,
-    textAlign: 'center',
-    marginHorizontal: 40,
-    lineHeight: 18,
-    marginBottom: 16,
-  },
-  gateButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 28,
-    paddingVertical: 14,
-    borderRadius: 24,
-  },
-  gateButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  topBadgeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 10,
-    paddingTop: 10,
-    marginBottom: 12,
-  },
-  quotaBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 16,
-    borderWidth: 1,
-  },
-  quotaBadgeText: {
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  modeSwitchPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1,
-  },
-  offlineBanner: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    marginHorizontal: 20,
-    borderRadius: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-  },
-  offlineText: {
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  orbContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 16,
-  },
-  statusText: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  cameraHint: {
-    fontSize: 12,
-    textAlign: 'center',
-    marginTop: 10,
-    marginHorizontal: 32,
-  },
-  subtitleContainer: {
-    minHeight: 80,
-    justifyContent: 'center',
-    marginBottom: 8,
-  },
-  controlsWrapper: {
-    paddingBottom: 16,
-  },
-});

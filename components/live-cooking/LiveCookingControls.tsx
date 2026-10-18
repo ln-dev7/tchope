@@ -1,8 +1,8 @@
-import React from 'react';
-import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import React from "react";
+import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
-import type { LiveState } from '@/hooks/useLiveCooking';
+import type { LiveState } from "@/hooks/useLiveCooking";
 
 type Props = {
   state: LiveState;
@@ -25,7 +25,9 @@ type Props = {
   holdLabel: string;
   endLabel: string;
   photoLabel: string;
-  mode?: 'audio' | 'camera';
+  mode?: "audio" | "camera";
+  disabled?: boolean;
+  photoDisabled?: boolean;
 };
 
 export default function LiveCookingControls({
@@ -37,20 +39,24 @@ export default function LiveCookingControls({
   onEnd,
   colors,
   holdLabel,
-  mode = 'audio',
+  mode = "audio",
+  disabled = false,
+  photoDisabled: noPhoto = false,
+  endLabel,
+  photoLabel,
 }: Props) {
-  const isListening = state === 'listening';
-  const isThinking = state === 'thinking';
-  const isSpeaking = state === 'speaking';
-  // Disable mic and photo when AI is processing or speaking
-  const micDisabled = isThinking || isSpeaking;
-  const photoDisabled = isThinking || isSpeaking;
+  const isListening = state === "listening";
+  const isThinking = state === "thinking";
+  const micDisabled = disabled || isThinking;
+  const photoDisabled = disabled || noPhoto || isThinking || isListening;
 
   return (
     <View style={styles.container}>
       {/* Camera button — only in audio mode */}
-      {mode === 'audio' ? (
+      {mode === "audio" ? (
         <TouchableOpacity
+          accessibilityRole="button"
+          accessibilityLabel={photoLabel}
           onPress={onPhoto}
           disabled={photoDisabled}
           style={[
@@ -72,6 +78,9 @@ export default function LiveCookingControls({
       {/* Main mic button */}
       <View style={styles.micContainer}>
         <TouchableOpacity
+          accessibilityRole="button"
+          accessibilityLabel={holdLabel}
+          accessibilityState={{ disabled: micDisabled, selected: isListening }}
           onPressIn={onMicPress}
           onPressOut={onMicRelease}
           disabled={micDisabled}
@@ -85,18 +94,20 @@ export default function LiveCookingControls({
           ]}
         >
           <Ionicons
-            name={isListening ? 'mic' : 'mic-outline'}
+            name={isListening ? "mic" : "mic-outline"}
             size={32}
             color={colors.onAccent}
           />
         </TouchableOpacity>
         <Text style={[styles.micHint, { color: colors.textMuted }]}>
-          {isListening ? '' : holdLabel}
+          {isListening ? "" : holdLabel}
         </Text>
       </View>
 
       {/* End session button */}
       <TouchableOpacity
+        accessibilityRole="button"
+        accessibilityLabel={endLabel}
         onPress={onEnd}
         style={[
           styles.sideButton,
@@ -115,30 +126,32 @@ export default function LiveCookingControls({
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 32,
-    paddingHorizontal: 24,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 16,
+    paddingHorizontal: 16,
   },
   sideButton: {
     width: 56,
     height: 56,
     borderRadius: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   micContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     gap: 8,
+    flex: 1,
+    maxWidth: 180,
   },
   micButton: {
     width: 72,
     height: 72,
     borderRadius: 36,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 4,
@@ -146,6 +159,7 @@ const styles = StyleSheet.create({
   },
   micHint: {
     fontSize: 12,
-    height: 16,
+    minHeight: 16,
+    textAlign: "center",
   },
 });

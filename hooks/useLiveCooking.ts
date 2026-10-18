@@ -1,481 +1,311 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
-import * as Speech from 'expo-speech';
-import * as ImagePicker from 'expo-image-picker';
+import { useState, useCallback, useRef, useEffect } from "react";
+import { AppState } from "react-native";
+import * as Speech from "expo-speech";
+import * as ImagePicker from "expo-image-picker";
+import { callClaudeLive, fetchLiveUsage, type LiveUsage } from "@/utils/api";
+import { aiErrorMessage } from "@/utils/ai-errors";
+import { prepareAiImage } from "@/utils/ai-image";
+import { useSpeechRecognition } from "@/hooks/useSpeechRecognition";
+import { useNetworkStatus } from "@/hooks/useNetworkStatus";
+import { LiveSession, type LiveImage } from "@/lib/live/session";
+import { buildSystemPrompt } from "@/lib/live/prompt";
+import type { Recipe } from "@/types";
+export type { LiveState } from "@/lib/live/session";
 
-import { callClaudeLive } from '@/utils/api';
-import { isProRequired } from '@/utils/proBridge';
-import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
-import { useNetworkStatus } from '@/hooks/useNetworkStatus';
-import type { Recipe } from '@/types';
-
-export type LiveState = 'idle' | 'listening' | 'thinking' | 'speaking';
-
-type Message = {
-  role: 'user' | 'assistant';
-  content: string | Array<{ type: 'text'; text: string } | { type: 'image'; source: { type: 'base64'; media_type: string; data: string } }>;
-};
-
-const MAX_HISTORY = 15;
-
-function buildSystemPrompt(
-  recipe: Recipe,
-  currentStep: number,
-  language: 'fr' | 'en',
-): string {
-  const stepsText = recipe.steps
-    .map((s, i) => `${i + 1}. ${s}`)
-    .join('\n');
-  const ingredientsText = recipe.ingredients
-    .map((ing) => `- ${ing.name}: ${ing.quantity}`)
-    .join('\n');
-
-  if (language === 'fr') {
-    return `Tu es TchopAI Live, l'assistant vocal cuisine de Tchopé. Tu guides l'utilisateur en temps réel pendant la cuisine.
-
-Recette : ${recipe.name}
-Étape actuelle : ${currentStep + 1}/${recipe.steps.length} — "${recipe.steps[currentStep]}"
-Ingrédients :
-${ingredientsText}
-Toutes les étapes :
-${stepsText}
-${recipe.tips ? `Astuces : ${recipe.tips}` : ''}
-Portions : ${recipe.servings}
-
-RÈGLES STRICTES :
-1. Réponds en français, tutoie l'utilisateur
-2. Réponds en 1-2 phrases MAX. L'utilisateur cuisine, il a pas le temps. Sois direct.
-3. Ton chaleureux, direct et encourageant, comme un guide cuisine camerounais
-4. Si l'utilisateur envoie une photo, analyse-la et donne un feedback précis sur ce que tu vois : cuisson, texture, couleur, quantité, etc.
-5. Si l'utilisateur demande un substitut d'ingrédient, propose des alternatives camerounaises
-6. Si l'utilisateur signale un problème (trop salé, brûlé, etc.), donne des solutions de rattrapage
-7. Rappelle proactivement des choses importantes : "N'oublie pas de remuer régulièrement"
-8. Si une question n'a rien à voir avec la cuisine, ramène poliment vers la recette
-9. JAMAIS de formatage markdown, de listes à puces ou de numéros — tu PARLES, tu n'écris pas. Tes réponses seront lues à haute voix.
-10. Utilise des expressions camerounaises naturellement : "c'est bon comme ça", "tu tchop ça", "c'est prêt hein"
-11. INTERDIT d'utiliser des termes genrés ou familiers supposant le genre : "ma chère", "mon cher", "ma fille", "mon fils", "ma belle", "mon grand", "frère", "sœur", "frérot", "boss", "chef", "monsieur", "madame", "mademoiselle", "bro", "king", "queen". Tu ne connais PAS le genre de l'utilisateur. Dis simplement "tu" ou "toi", jamais de surnom genré.`;
-  }
-
-  return `You are TchopAI Live, the voice cooking assistant from Tchopé. You guide the user in real-time while they cook.
-
-Recipe: ${recipe.name}
-Current step: ${currentStep + 1}/${recipe.steps.length} — "${recipe.steps[currentStep]}"
-Ingredients:
-${ingredientsText}
-All steps:
-${stepsText}
-${recipe.tips ? `Tips: ${recipe.tips}` : ''}
-Servings: ${recipe.servings}
-
-STRICT RULES:
-1. Respond in English
-2. Respond in 1-2 sentences MAX. The user is cooking, they don't have time. Be direct.
-3. Warm, direct and encouraging tone, like a Cameroonian cooking guide
-4. If the user sends a photo, analyze it and give precise feedback on what you see: cooking level, texture, color, quantity, etc.
-5. If the user asks for an ingredient substitute, suggest Cameroonian alternatives
-6. If the user reports a problem (too salty, burnt, etc.), give recovery solutions
-7. Proactively remind important things: "Don't forget to stir regularly"
-8. If a question has nothing to do with cooking, politely redirect to the recipe
-9. NEVER use markdown formatting, bullet points or numbers — you SPEAK, you don't write. Your responses will be read aloud.
-10. Use Cameroonian expressions naturally: "that's good like that", "you chop that", "it's ready oh"
-11. NEVER use gendered or familiar terms that assume gender: "my dear", "sweetie", "son", "darling", "brother", "sister", "bro", "sis", "boss", "king", "queen", "sir", "ma'am", "miss", "man", "girl". You do NOT know the user's gender. Just use "you" directly, no gendered nicknames.`;
+function speak(text: string, language: string, signal: AbortSignal) {
+  return new Promise<void>((resolve) => {
+    if (signal.aborted) {
+      resolve();
+      return;
+    }
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      signal.removeEventListener("abort", abort);
+      resolve();
+    };
+    const abort = () => {
+      void Speech.stop();
+      finish();
+    };
+    // An OS voice callback can fail to arrive. The UI must still recover.
+    const timer = setTimeout(
+      abort,
+      Math.min(90_000, Math.max(15_000, text.length * 110)),
+    );
+    signal.addEventListener("abort", abort);
+    try {
+      Speech.speak(text, {
+        language,
+        rate: 0.95,
+        onDone: finish,
+        onStopped: finish,
+        onError: finish,
+      });
+    } catch {
+      finish();
+    }
+  });
 }
 
 export function useLiveCooking(
   recipe: Recipe,
   initialStep: number,
-  language: 'fr' | 'en',
+  language: "fr" | "en",
 ) {
-  const [liveState, setLiveState] = useState<LiveState>('idle');
-  const [currentStep, setCurrentStep] = useState(initialStep);
-  const [subtitle, setSubtitle] = useState('');
-  const [userTranscript, setUserTranscript] = useState('');
-  const historyRef = useRef<Message[]>([]);
-  const isSpeakingRef = useRef(false);
+  const [, render] = useState(0);
+  const [usage, setUsage] = useState<LiveUsage | null>(null);
+  const [usageLoading, setUsageLoading] = useState(true);
+  const [usageError, setUsageError] = useState("");
+  const mounted = useRef(true);
+  const generation = useRef(0);
   const isConnected = useNetworkStatus();
-  const lang = language === 'fr' ? 'fr-FR' : 'en-US';
-  const speech = useSpeechRecognition(lang as 'fr-FR' | 'en-US');
-
-  // Sync user transcript from speech recognition
-  useEffect(() => {
-    setUserTranscript(speech.transcript);
-  }, [speech.transcript]);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      Speech.stop();
-      speech.abortListening();
-    };
-  }, []);
-
-  const speakResponse = useCallback(
-    (text: string) => {
-      return new Promise<void>((resolve) => {
-        isSpeakingRef.current = true;
-        setLiveState('speaking');
-        setSubtitle(text);
-        Speech.speak(text, {
-          language: lang,
-          rate: 0.95,
-          onDone: () => {
-            isSpeakingRef.current = false;
-            setSubtitle('');
-            setLiveState('idle');
-            resolve();
-          },
-          onStopped: () => {
-            isSpeakingRef.current = false;
-            setSubtitle('');
-            resolve();
-          },
-          onError: () => {
-            isSpeakingRef.current = false;
-            setSubtitle('');
-            setLiveState('idle');
-            resolve();
-          },
-        });
-      });
-    },
-    [lang],
-  );
-
-  const interruptSpeaking = useCallback(() => {
-    if (isSpeakingRef.current) {
-      Speech.stop();
-      isSpeakingRef.current = false;
-    }
-  }, []);
-
-  const detectStepCommand = useCallback(
-    (text: string): number | null => {
-      const lower = text.toLowerCase();
-      // Next step
-      if (
-        lower.includes('étape suivante') ||
-        lower.includes('next step') ||
-        lower.includes('prochaine étape') ||
-        lower.includes('step suivant')
-      ) {
-        if (currentStep < recipe.steps.length - 1) {
-          return currentStep + 1;
-        }
-      }
-      // Previous step
-      if (
-        lower.includes('étape précédente') ||
-        lower.includes('previous step') ||
-        lower.includes('step précédent') ||
-        lower.includes('reviens') ||
-        lower.includes('go back')
-      ) {
-        if (currentStep > 0) {
-          return currentStep - 1;
-        }
-      }
-      // Repeat step
-      if (
-        lower.includes('répète') ||
-        lower.includes('repeat') ||
-        lower.includes('relis') ||
-        lower.includes('encore')
-      ) {
-        return currentStep; // same step triggers re-read
-      }
-      return null;
-    },
-    [currentStep, recipe.steps.length],
-  );
-
-  // Store latest photo so user can talk about it after taking it
-  const pendingPhotoRef = useRef<string | null>(null);
-
-  const sendToAI = useCallback(
-    async (userContent: Message['content']) => {
-      setLiveState('thinking');
-      setUserTranscript('');
-
-      const userMessage: Message = { role: 'user', content: userContent };
-      historyRef.current.push(userMessage);
-
-      // Trim history
-      if (historyRef.current.length > MAX_HISTORY) {
-        historyRef.current = historyRef.current.slice(-MAX_HISTORY);
-      }
-
-      const systemPrompt = buildSystemPrompt(recipe, currentStep, language);
-
-      try {
-        const response = await callClaudeLive({
-          model: 'claude-haiku-4-5-20251001',
-          max_tokens: 256,
-          system: [
-            {
-              type: 'text',
-              text: systemPrompt,
-              cache_control: { type: 'ephemeral' },
-            },
-          ],
-          messages: historyRef.current.map((m) => ({
-            role: m.role,
-            content: m.content,
-          })),
-        }, 'live-cooking');
-
-        const assistantMessage: Message = {
-          role: 'assistant',
-          content: response,
-        };
-        historyRef.current.push(assistantMessage);
-
-        await speakResponse(response);
-      } catch (error: any) {
-        if (isProRequired(error)) return; // écran Tchopé Pro déjà ouvert
-        let errorMsg: string;
-        const message = error?.message ?? '';
-
-        if (message.includes('Network') || message.includes('fetch')) {
-          errorMsg = language === 'fr'
-            ? 'Impossible de contacter le serveur. Vérifie ta connexion internet et réessaie.'
-            : 'Unable to reach the server. Check your internet connection and try again.';
-        } else if (message.includes('429') || message.includes('rate')) {
-          errorMsg = language === 'fr'
-            ? 'Le serveur est surchargé. Réessaie dans quelques secondes.'
-            : 'The server is overloaded. Try again in a few seconds.';
-        } else if (message.includes('5') && message.includes('API error')) {
-          errorMsg = language === 'fr'
-            ? 'Le serveur est temporairement indisponible. Réessaie plus tard.'
-            : 'The server is temporarily unavailable. Try again later.';
-        } else {
-          errorMsg = language === 'fr'
-            ? "TchopAI n'a pas pu répondre. Réessaie ta question."
-            : "TchopAI couldn't respond. Try asking again.";
-        }
-
-        setSubtitle(errorMsg);
-        setLiveState('idle');
-      }
-    },
-    [recipe, currentStep, language, speakResponse],
-  );
-
-  // Attach pending photo if user speaks right after taking one
-  const sendWithOptionalPhoto = useCallback(
-    async (userContent: Message['content'], imageBase64?: string) => {
-      // If an image is provided directly (e.g. from live camera mode), use it
-      if (imageBase64 && typeof userContent === 'string') {
-        pendingPhotoRef.current = null;
-        await sendToAI([
-          { type: 'text', text: userContent },
+  const speech = useSpeechRecognition(language === "fr" ? "fr-FR" : "en-US");
+  const {
+    abortListening,
+    startListening: startSpeech,
+    stopListening: stopSpeech,
+  } = speech;
+  const current = useRef({ recipe, language });
+  current.current = { recipe, language };
+  const sessionRef = useRef<LiveSession | null>(null);
+  if (!sessionRef.current)
+    sessionRef.current = new LiveSession({
+      steps: recipe.steps,
+      initialStep,
+      change: () => {
+        if (mounted.current) render((n) => n + 1);
+      },
+      errorText: (error) =>
+        aiErrorMessage(error, current.current.language === "fr"),
+      speak: (text, signal) =>
+        speak(
+          text,
+          current.current.language === "fr" ? "fr-FR" : "en-US",
+          signal,
+        ),
+      ask: (messages, step, signal) =>
+        callClaudeLive(
           {
-            type: 'image',
-            source: {
-              type: 'base64',
-              media_type: 'image/jpeg',
-              data: imageBase64,
-            },
+            model: "claude-haiku-4-5-20251001",
+            max_tokens: 256,
+            system: [
+              {
+                type: "text",
+                text: buildSystemPrompt(
+                  current.current.recipe,
+                  step,
+                  current.current.language,
+                ),
+                cache_control: { type: "ephemeral" },
+              },
+            ],
+            messages,
           },
-        ]);
-        return;
-      }
-
-      // Otherwise, check for pending photo from manual capture
-      const photo = pendingPhotoRef.current;
-      if (photo && typeof userContent === 'string') {
-        pendingPhotoRef.current = null;
-        await sendToAI([
-          { type: 'text', text: userContent },
+          "live-cooking",
           {
-            type: 'image',
-            source: {
-              type: 'base64',
-              media_type: 'image/jpeg',
-              data: photo,
+            signal,
+            onUsage: (value) => {
+              if (mounted.current) setUsage(value);
             },
           },
-        ]);
-      } else {
-        pendingPhotoRef.current = null;
-        await sendToAI(userContent);
-      }
-    },
-    [sendToAI],
-  );
+        ),
+    });
+  const session = sessionRef.current;
 
-  // Ref to hold an image to attach when speech result arrives (from live camera)
-  const liveCameraImageRef = useRef<string | null>(null);
-
-  // Buffer: accumulate speech segments, only send when flushResult is called (on mic release)
-  const pendingResultRef = useRef<string>('');
-
-  const handleSpeechResult = useCallback(
-    (text: string) => {
-      // Check for step navigation commands
-      const stepCmd = detectStepCommand(text);
-      if (stepCmd !== null) {
-        setCurrentStep(stepCmd);
-      }
-
-      // Accumulate segments (continuous mode sends isFinal per phrase)
-      pendingResultRef.current = (pendingResultRef.current + ' ' + text).trim();
-    },
-    [detectStepCommand],
-  );
-
-  // Called by the screen after mic release (and photo capture if camera mode)
-  // to actually send the buffered speech result + optional photo to the AI
-  const flushResult = useCallback(() => {
-    // Use accumulated final segments, or fall back to the last interim transcript
-    // (covers the case where stop() was called before any isFinal was received)
-    const text = (pendingResultRef.current || userTranscript).trim();
-    pendingResultRef.current = '';
-
-    if (!text) {
-      // No speech was captured — go back to idle
-      setLiveState('idle');
-      return;
-    }
-
-    // Check for step navigation commands on the final text
-    const stepCmd = detectStepCommand(text);
-    if (stepCmd !== null) {
-      setCurrentStep(stepCmd);
-    }
-
-    const liveImage = liveCameraImageRef.current;
-    liveCameraImageRef.current = null;
-    sendWithOptionalPhoto(text, liveImage ?? undefined);
-  }, [sendWithOptionalPhoto, userTranscript, detectStepCommand]);
-
-  const setLiveCameraImage = useCallback((base64: string | null) => {
-    liveCameraImageRef.current = base64;
-  }, []);
-
-  const startListening = useCallback(() => {
-    if (!isConnected) return;
-    interruptSpeaking();
-    pendingResultRef.current = '';
-    setLiveState('listening');
-    speech.startListening(handleSpeechResult);
-  }, [isConnected, interruptSpeaking, speech.startListening, handleSpeechResult]);
-
-  const stopListening = useCallback(() => {
-    speech.stopListening();
-  }, [speech.stopListening]);
-
-  const takePhoto = useCallback(async (source: 'camera' | 'gallery' = 'camera') => {
+  const quotaController = useRef<AbortController | null>(null);
+  const refreshUsage = useCallback(async () => {
+    quotaController.current?.abort();
+    const ctrl = new AbortController();
+    quotaController.current = ctrl;
+    setUsageLoading(true);
+    setUsageError("");
     try {
-      let result: ImagePicker.ImagePickerResult;
-
-      if (source === 'camera') {
-        const { status } = await ImagePicker.requestCameraPermissionsAsync();
-        if (status !== 'granted') {
-          const msg = language === 'fr'
-            ? "L'accès à la caméra a été refusé. Active-le dans les réglages pour envoyer des photos."
-            : 'Camera access was denied. Enable it in Settings to send photos.';
-          setSubtitle(msg);
-          return;
-        }
-        result = await ImagePicker.launchCameraAsync({
-          mediaTypes: ['images'],
-          quality: 0.5,
-          base64: true,
-        });
-      } else {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== 'granted') {
-          const msg = language === 'fr'
-            ? "L'accès à la galerie a été refusé. Active-le dans les réglages pour choisir des photos."
-            : 'Gallery access was denied. Enable it in Settings to choose photos.';
-          setSubtitle(msg);
-          return;
-        }
-        result = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ['images'],
-          quality: 0.5,
-          base64: true,
-        });
-      }
-
-      if (result.canceled) return;
-
-      if (!result.assets[0]?.base64) {
-        const msg = language === 'fr'
-          ? 'Impossible de charger la photo. Réessaie avec une autre image.'
-          : 'Unable to load the photo. Try again with another image.';
-        setSubtitle(msg);
-        return;
-      }
-
-      interruptSpeaking();
-
-      // Store photo so next voice message includes it
-      pendingPhotoRef.current = result.assets[0].base64;
-
-      // Also send immediately with a generic prompt
-      const prompt =
-        language === 'fr'
-          ? 'Regarde cette photo de ma préparation et dis-moi ce que tu en penses.'
-          : 'Look at this photo of my preparation and tell me what you think.';
-
-      await sendToAI([
-        { type: 'text', text: prompt },
-        {
-          type: 'image',
-          source: {
-            type: 'base64',
-            media_type: 'image/jpeg',
-            data: result.assets[0].base64,
-          },
-        },
-      ]);
-    } catch (error: any) {
-      const message = error?.message ?? '';
-      // Don't show error if user just cancelled the picker
-      if (message.includes('cancel') || message.includes('Cancel')) return;
-
-      const msg = language === 'fr'
-        ? 'Impossible de charger la photo. Réessaie avec une autre image.'
-        : 'Unable to load the photo. Try again with another image.';
-      setSubtitle(msg);
+      const value = await fetchLiveUsage(ctrl.signal);
+      if (!ctrl.signal.aborted && mounted.current) setUsage(value);
+    } catch (e) {
+      if (!ctrl.signal.aborted && mounted.current)
+        setUsageError(aiErrorMessage(e, language === "fr"));
+    } finally {
+      if (!ctrl.signal.aborted && mounted.current) setUsageLoading(false);
     }
-  }, [language, interruptSpeaking, sendToAI]);
+  }, [language]);
+
+  useEffect(() => {
+    if (!usage) return;
+    const timer = setTimeout(
+      () => void refreshUsage(),
+      Math.max(1000, Date.parse(usage.resetsAt) - Date.now() + 100),
+    );
+    return () => clearTimeout(timer);
+  }, [usage, refreshUsage]);
 
   const endSession = useCallback(() => {
-    Speech.stop();
-    speech.abortListening();
-    historyRef.current = [];
-    setLiveState('idle');
-    setSubtitle('');
-    setUserTranscript('');
-  }, [speech.abortListening]);
+    generation.current++;
+    session.cancel();
+    abortListening();
+    void Speech.stop();
+  }, [session, abortListening]);
 
-  const goToStep = useCallback(
-    (step: number) => {
-      if (step >= 0 && step < recipe.steps.length) {
-        setCurrentStep(step);
+  useEffect(() => {
+    mounted.current = true;
+    void refreshUsage();
+    const sub = AppState.addEventListener("change", (state) => {
+      if (state !== "active") {
+        endSession();
+      } else void refreshUsage();
+    });
+    return () => {
+      mounted.current = false;
+      quotaController.current?.abort();
+      endSession();
+      sub.remove();
+    };
+  }, [refreshUsage, endSession]);
+
+  useEffect(() => {
+    if (speech.error) {
+      session.cancel();
+      const fr = language === "fr";
+      session.notice(
+        speech.error === "no-speech"
+          ? fr
+            ? "Je n’ai pas entendu de question. Maintenez le micro et réessayez."
+            : "I did not hear a question. Hold the microphone and try again."
+          : fr
+            ? "Le micro ou la reconnaissance vocale s’est interrompu. Vérifiez les autorisations et réessayez."
+            : "Microphone or speech recognition was interrupted. Check permissions and try again.",
+      );
+    }
+  }, [speech.error, session, language]);
+
+  const micStart = useRef<Promise<boolean> | null>(null);
+  const startListening = useCallback(() => {
+    if (!isConnected || usageLoading) return false;
+    if (!session.listen()) return false;
+    const gen = ++generation.current;
+    micStart.current = (async () => {
+      try {
+        await Speech.stop();
+      } catch {
+        /* No active voice. */
+      }
+      if (!mounted.current || gen !== generation.current) return false;
+      const started = startSpeech();
+      if (!started) session.cancel();
+      return started;
+    })();
+    return true;
+  }, [isConnected, usageLoading, session, startSpeech]);
+
+  const submitTranscript = useCallback(
+    async (text: string, image?: LiveImage) => {
+      if (!mounted.current) return false;
+      if (!text.trim()) {
+        session.cancel(
+          language === "fr"
+            ? "Aucune parole détectée. Maintenez le micro pour parler."
+            : "No speech detected. Hold the microphone to speak.",
+        );
+        return false;
+      }
+      return session.submit(text, image);
+    },
+    [session, language],
+  );
+
+  const stopListening = useCallback(async () => {
+    const gen = generation.current;
+    session.preparing();
+    await micStart.current;
+    if (!mounted.current || gen !== generation.current) return "";
+    const text = await stopSpeech();
+    return gen === generation.current && mounted.current ? text : "";
+  }, [stopSpeech, session]);
+
+  const takePhoto = useCallback(
+    async (source: "camera" | "gallery" = "camera") => {
+      if (
+        !isConnected ||
+        session.snapshot.state === "thinking" ||
+        session.snapshot.state === "listening"
+      )
+        return false;
+      endSession();
+      // Native image picker backgrounds the app. Start a fresh turn only after it returns.
+      try {
+        if (source === "camera") {
+          const permission = await ImagePicker.requestCameraPermissionsAsync();
+          if (!permission.granted) {
+            session.notice(
+              language === "fr"
+                ? "Autorisez la caméra dans les réglages du téléphone."
+                : "Allow camera access in your phone settings.",
+            );
+            return false;
+          }
+        }
+        const result =
+          source === "camera"
+            ? await ImagePicker.launchCameraAsync({
+                mediaTypes: ["images"],
+                quality: 0.8,
+              })
+            : await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ["images"],
+                quality: 0.8,
+              });
+        if (result.canceled || !result.assets[0] || !mounted.current)
+          return false;
+        const gen = generation.current;
+        const asset = result.assets[0];
+        const image = await prepareAiImage(
+          asset.uri,
+          asset.width,
+          asset.height,
+        );
+        if (!mounted.current || gen !== generation.current) return false;
+        return await session.submit(
+          language === "fr"
+            ? "Que peux-tu observer sur cette photo de ma préparation ?"
+            : "What can you observe in this photo of my preparation?",
+          image,
+        );
+      } catch (e) {
+        if (mounted.current)
+          session.notice(aiErrorMessage(e, language === "fr"));
+        return false;
       }
     },
-    [recipe.steps.length],
+    [isConnected, session, endSession, language],
   );
 
   return {
-    liveState,
-    currentStep,
+    liveState: session.snapshot.state,
+    currentStep: session.snapshot.step,
     totalSteps: recipe.steps.length,
-    subtitle,
-    userTranscript,
+    subtitle: session.snapshot.subtitle,
+    hasError: session.snapshot.error,
+    userTranscript: speech.transcript,
     volume: speech.volume,
     isConnected,
     startListening,
     stopListening,
-    flushResult,
+    submitTranscript,
     takePhoto,
     endSession,
-    goToStep,
-    getHistory: () => historyRef.current,
+    goToStep: (step: number) => {
+      endSession();
+      session.goToStep(step);
+    },
+    getHistory: () => session.history,
     requestPermissions: speech.requestPermissions,
     checkPermissions: speech.checkPermissions,
-    setLiveCameraImage,
+    usage,
+    usageLoading,
+    usageError,
+    refreshUsage,
   };
 }

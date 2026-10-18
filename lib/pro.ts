@@ -70,12 +70,12 @@ async function refreshAppUserId(m: Sdk) {
  * Appel à l'API avec réessai unique quand elle répond 403 `unknown-device` : le serveur (API v2 de RevenueCat) ne connaît
  * pas encore cet appareil, cas d'un tout premier appel avant que le SDK ait créé son client chez RevenueCat. On
  * redemande l'état au SDK (ce qui le synchronise), on attend 2 s, puis on rappelle une fois avec les en-têtes à jour.
- * Un autre 403 est rendu tel quel (le corps est lu : les appelants ne lisent pas le corps d'un 403).
+ * Un autre 403 est rendu tel quel ; la copie lue ici laisse le corps disponible pour l'appelant.
  */
 export async function fetchWithDeviceRetry(doFetch: () => Promise<Response>): Promise<Response> {
   const res = await doFetch();
   if (res.status !== 403) return res;
-  const body = (await res.json().catch(() => null)) as { error?: string } | null;
+  const body = (await res.clone().json().catch(() => null)) as { error?: string } | null;
   if (body?.error !== "unknown-device") return res;
   await fetchPro();
   const m = await load();

@@ -1,14 +1,15 @@
-import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import * as Haptics from 'expo-haptics';
-import * as ClipboardModule from 'expo-clipboard';
-import type { Recipe, UserRecipe, Note } from '@/types';
-import type { Message } from './types';
-import MiniRecipeCard from './MiniRecipeCard';
-import MiniNoteCard from './MiniNoteCard';
-import SaveRecipeButton from './SaveRecipeButton';
-import SaveNoteButton from './SaveNoteButton';
+import React from "react";
+import { View, Text, TouchableOpacity } from "react-native";
+import Animated, { FadeIn, useReducedMotion } from "react-native-reanimated";
+import { Ionicons } from "@expo/vector-icons";
+import * as Haptics from "expo-haptics";
+import * as ClipboardModule from "expo-clipboard";
+import type { Recipe, UserRecipe, Note } from "@/types";
+import type { Message } from "./types";
+import MiniRecipeCard from "./MiniRecipeCard";
+import MiniNoteCard from "./MiniNoteCard";
+import SaveRecipeButton from "./SaveRecipeButton";
+import SaveNoteButton from "./SaveNoteButton";
 
 type Props = {
   item: Message;
@@ -28,20 +29,37 @@ type Props = {
 };
 
 export default function ChatMessage({
-  item, colors, isDark, isFr, recipes, userRecipes, notes,
-  copiedId, setCopiedId, onRecipePress, onNotePress, onSaveRecipe, onSaveNote, t,
+  item,
+  colors,
+  isDark,
+  isFr,
+  recipes,
+  userRecipes,
+  notes,
+  copiedId,
+  setCopiedId,
+  onRecipePress,
+  onNotePress,
+  onSaveRecipe,
+  onSaveNote,
+  t,
 }: Props) {
-  if (item.role === 'info') {
+  const reduced = useReducedMotion();
+  if (item.role === "info") {
     return (
-      <View style={{ alignSelf: 'center', marginBottom: 8, paddingHorizontal: 20 }}>
-        <Text style={{ fontSize: 12, color: colors.textMuted, textAlign: 'center' }}>
+      <View
+        style={{ alignSelf: "center", marginBottom: 8, paddingHorizontal: 20 }}
+      >
+        <Text
+          style={{ fontSize: 12, color: colors.textMuted, textAlign: "center" }}
+        >
           {item.content}
         </Text>
       </View>
     );
   }
 
-  const isUser = item.role === 'user';
+  const isUser = item.role === "user";
   const linkedRecipes = (item.recipeIds ?? [])
     .map((id) => recipes.find((r) => r.id === id))
     .filter(Boolean) as Recipe[];
@@ -50,42 +68,82 @@ export default function ChatMessage({
     .filter(Boolean) as Note[];
 
   return (
-    <View style={{
-      alignSelf: isUser ? 'flex-end' : 'flex-start',
-      maxWidth: '82%',
-      marginBottom: 12,
-    }}>
-      <View style={{
-        backgroundColor: isUser
-          ? colors.accent
-          : colors.surface,
-        borderRadius: 20,
-        borderBottomRightRadius: isUser ? 6 : 20,
-        borderBottomLeftRadius: isUser ? 20 : 6,
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-      }}>
-        <Text style={{
-          fontSize: 15,
-          lineHeight: 22,
-          color: isUser ? colors.onAccent : colors.text,
-        }}>
+    <Animated.View
+      entering={reduced ? undefined : FadeIn.duration(180)}
+      style={{
+        alignSelf: isUser ? "flex-end" : "flex-start",
+        maxWidth: isUser ? "88%" : "100%",
+        width: isUser ? undefined : "100%",
+        marginBottom: 12,
+      }}
+    >
+      <View
+        style={{
+          backgroundColor: isUser ? colors.accent : colors.card,
+          borderWidth: isUser ? 0 : 1,
+          borderColor: colors.border,
+          borderRadius: 20,
+          borderBottomRightRadius: isUser ? 6 : 20,
+          borderBottomLeftRadius: isUser ? 20 : 6,
+          paddingHorizontal: 16,
+          paddingVertical: 12,
+        }}
+      >
+        {!isUser && (
+          <Text
+            style={{
+              fontSize: 11,
+              fontWeight: "700",
+              letterSpacing: 1.5,
+              color: colors.accent,
+              marginBottom: 10,
+            }}
+          >
+            TCHOPAI
+          </Text>
+        )}
+        <Text
+          selectable
+          style={{
+            fontSize: 16,
+            lineHeight: 25,
+            color: isUser ? colors.onAccent : colors.text,
+          }}
+        >
           {item.content}
         </Text>
       </View>
-      {!isUser && item.id !== 'welcome' && (
+      {!isUser && item.id !== "welcome" && (
         <TouchableOpacity
+          accessibilityRole="button"
+          accessibilityLabel={isFr ? "Copier la réponse" : "Copy answer"}
           onPress={() => {
             ClipboardModule.setStringAsync(item.content);
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             setCopiedId(item.id);
             setTimeout(() => setCopiedId(null), 1500);
           }}
-          style={{ alignSelf: 'flex-start', marginTop: 4, paddingHorizontal: 8, paddingVertical: 4, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-          <Ionicons name={copiedId === item.id ? 'checkmark' : 'copy-outline'} size={14} color={copiedId === item.id ? colors.green : colors.textMuted} />
+          style={{
+            alignSelf: "flex-start",
+            marginTop: 4,
+            paddingHorizontal: 8,
+            minHeight: 44,
+            paddingVertical: 8,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 4,
+          }}
+        >
+          <Ionicons
+            name={copiedId === item.id ? "checkmark" : "copy-outline"}
+            size={14}
+            color={copiedId === item.id ? colors.green : colors.textMuted}
+          />
           {copiedId === item.id && (
-            <Text style={{ fontSize: 11, color: colors.green, fontWeight: '600' }}>
-              {isFr ? 'Copié' : 'Copied'}
+            <Text
+              style={{ fontSize: 11, color: colors.green, fontWeight: "600" }}
+            >
+              {isFr ? "Copié" : "Copied"}
             </Text>
           )}
         </TouchableOpacity>
@@ -112,7 +170,7 @@ export default function ChatMessage({
               isDark={isDark}
               colors={colors}
               onPress={() => onNotePress(note.id)}
-              untitledLabel={t('untitledNote')}
+              untitledLabel={t("untitledNote")}
             />
           ))}
         </View>
@@ -137,6 +195,6 @@ export default function ChatMessage({
           t={t}
         />
       )}
-    </View>
+    </Animated.View>
   );
 }

@@ -15,7 +15,8 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "prebuild": "expo prebuild",
-    "prebuild:clean": "expo prebuild --clean"
+    "prebuild:clean": "expo prebuild --clean",
+    "test:live": "node --experimental-strip-types --no-warnings --test tests/live.test.mts tests/speech-hook.test.mjs tests/ai-transport.test.mjs"
   },
   "dependencies": {
     "@bacons/apple-targets": "^4.0.6",
@@ -36,6 +37,7 @@
     "expo-font": "~14.0.11",
     "expo-haptics": "~15.0.8",
     "expo-image": "~3.0.11",
+    "expo-image-manipulator": "~14.0.8",
     "expo-image-picker": "~17.0.10",
     "expo-keep-awake": "~15.0.8",
     "expo-linking": "~8.0.11",
@@ -72,6 +74,7 @@
     "eslint": "^9.25.0",
     "eslint-config-expo": "~10.0.0",
     "postcss": "^8.5.8",
+    "react-test-renderer": "^19.1.0",
     "sharp": "^0.35.5",
     "tailwindcss": "^4.2.2",
     "typescript": "~5.9.2"
