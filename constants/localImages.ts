@@ -125,6 +125,7 @@ export const localRecipeImages: Record<string, number> = {
   'spaghetti-sauce-avocat': require('@/assets/images/recipes/spaghetti-sauce-avocat.webp'),
   'spaghettis-sardine': require('@/assets/images/recipes/spaghettis-sardine.webp'),
   'tape-plantain': require('@/assets/images/recipes/tape-plantain.webp'),
+  'tapioca-saute': require('@/assets/images/recipes/tapioca-saute.webp'),
   'taro-sauce-jaune': require('@/assets/images/recipes/taro-sauce-jaune.webp'),
   'tchoukou': require('@/assets/images/recipes/tchoukou.webp'),
   'tenue-militaire': require('@/assets/images/recipes/tenue-militaire.webp'),
