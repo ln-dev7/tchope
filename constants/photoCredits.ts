@@ -660,13 +660,6 @@ export const photoCredits: PhotoCredit[] = [
     "url": "https://commons.wikimedia.org/wiki/File:Baobab_Leaves_(Kukah).jpg"
   },
   {
-    "id": "sauce-folere",
-    "author": "E82MAA",
-    "license": "CC BY-SA 4.0",
-    "source": "Wikimedia Commons",
-    "url": "https://commons.wikimedia.org/wiki/File:Baobab_et_fol%C3%A9r%C3%A9.jpg"
-  },
-  {
     "id": "sauce-gombo-gibier",
     "author": "Creativity special",
     "license": "CC BY-SA 4.0",
