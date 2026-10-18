@@ -2,13 +2,6 @@
 export interface PhotoCredit { id: string; author: string; license: string; source: string; url: string }
 export const photoCredits: PhotoCredit[] = [
   {
-    "id": "assok-bitetam",
-    "author": "FranckYN",
-    "license": "CC0",
-    "source": "Wikimedia Commons",
-    "url": "https://commons.wikimedia.org/wiki/File:D%C3%A9gustation_de_koki.jpg"
-  },
-  {
     "id": "avocat-ananas-concombre-penja",
     "author": "Daderot",
     "license": "CC0",
@@ -268,13 +261,6 @@ export const photoCredits: PhotoCredit[] = [
     "url": "https://commons.wikimedia.org/wiki/File:Sauce_gombo_aux_crabes_avec_poisson.jpg"
   },
   {
-    "id": "haricots-en-sauce",
-    "author": "Dan Feruzi2",
-    "license": "CC BY-SA 4.0",
-    "source": "Wikimedia Commons",
-    "url": "https://commons.wikimedia.org/wiki/File:Les_haricots_cuits.jpg"
-  },
-  {
     "id": "jus-ananas",
     "author": "El Mono Español",
     "license": "CC BY-SA 4.0",
@@ -366,20 +352,6 @@ export const photoCredits: PhotoCredit[] = [
     "url": "https://commons.wikimedia.org/wiki/File:Sombe_sauce_with_meat_and_ovacado_01_(cropped).jpg"
   },
   {
-    "id": "kwa-ni-ndong",
-    "author": "Aderiqueza",
-    "license": "CC BY-SA 4.0",
-    "source": "Wikimedia Commons",
-    "url": "https://commons.wikimedia.org/wiki/File:Eru_Soup.jpg"
-  },
-  {
-    "id": "kwaa-ndzap",
-    "author": "FranckYN",
-    "license": "CC0",
-    "source": "Wikimedia Commons",
-    "url": "https://commons.wikimedia.org/wiki/File:D%C3%A9gustation_de_koki.jpg"
-  },
-  {
     "id": "kwacoco-bible",
     "author": "Joso11",
     "license": "CC0",
@@ -427,13 +399,6 @@ export const photoCredits: PhotoCredit[] = [
     "license": "CC BY-SA 4.0",
     "source": "Wikimedia Commons",
     "url": "https://commons.wikimedia.org/wiki/File:Banga_Soup.jpg"
-  },
-  {
-    "id": "mbol",
-    "author": "Aderiqueza",
-    "license": "CC BY-SA 4.0",
-    "source": "Wikimedia Commons",
-    "url": "https://commons.wikimedia.org/wiki/File:Eru_Soup.jpg"
   },
   {
     "id": "mbongo-herisson",
@@ -485,13 +450,6 @@ export const photoCredits: PhotoCredit[] = [
     "url": "https://commons.wikimedia.org/wiki/File:Un_plat_de_sauce_graine_01.jpg"
   },
   {
-    "id": "naakiyaari",
-    "author": "Vineke",
-    "license": "CC BY-SA 4.0",
-    "source": "Wikimedia Commons",
-    "url": "https://commons.wikimedia.org/wiki/File:Couscous_jaune_au_moringa.jpg"
-  },
-  {
     "id": "ndjapche",
     "author": "Balqys237",
     "license": "CC BY-SA 4.0",
@@ -520,25 +478,11 @@ export const photoCredits: PhotoCredit[] = [
     "url": "https://commons.wikimedia.org/wiki/File:Ndomba_de_porc_et_frites_de_plantain_m%C3%BBr.jpg"
   },
   {
-    "id": "ndomba-vipere",
-    "author": "Ohconfucius ( talk ) ( Uploads )",
-    "license": "CC BY-SA 3.0",
-    "source": "Wikimedia Commons",
-    "url": "https://commons.wikimedia.org/wiki/File:Snake_soup.jpg"
-  },
-  {
     "id": "nfiang-ndoo",
     "author": "Bufh",
     "license": "CC BY-SA 4.0",
     "source": "Wikimedia Commons",
     "url": "https://commons.wikimedia.org/wiki/File:Volaile_au_ndo%27o.jpg"
-  },
-  {
-    "id": "njama-njama",
-    "author": "Adesolive",
-    "license": "CC BY-SA 4.0",
-    "source": "Wikimedia Commons",
-    "url": "https://commons.wikimedia.org/wiki/File:Fufu_corn_and_khati_khati.jpg"
   },
   {
     "id": "nkui",
@@ -555,25 +499,11 @@ export const photoCredits: PhotoCredit[] = [
     "url": "https://commons.wikimedia.org/wiki/File:Le_mets_de_pistache_(Nnam_ngon).jpg"
   },
   {
-    "id": "nnam-olis",
-    "author": "FranckYN",
-    "license": "CC0",
-    "source": "Wikimedia Commons",
-    "url": "https://commons.wikimedia.org/wiki/File:D%C3%A9gustation_de_koki.jpg"
-  },
-  {
     "id": "nnam-wondo",
     "author": "E82MAA",
     "license": "CC BY-SA 4.0",
     "source": "Wikimedia Commons",
     "url": "https://commons.wikimedia.org/wiki/File:Nkongui_Owondo_(Mets_d%27arachide)_Ep_Obala_4.jpg"
-  },
-  {
-    "id": "nsugi",
-    "author": "Aderiqueza",
-    "license": "CC BY-SA 4.0",
-    "source": "Wikimedia Commons",
-    "url": "https://commons.wikimedia.org/wiki/File:Eru_Soup.jpg"
   },
   {
     "id": "pate-arachides",
@@ -609,13 +539,6 @@ export const photoCredits: PhotoCredit[] = [
     "license": "CC BY-SA 4.0",
     "source": "Wikimedia Commons",
     "url": "https://commons.wikimedia.org/wiki/File:Cat_Fish_pepper_soup.png"
-  },
-  {
-    "id": "pile-plantains",
-    "author": "daSupremo",
-    "license": "CC BY-SA 4.0",
-    "source": "Wikimedia Commons",
-    "url": "https://commons.wikimedia.org/wiki/File:Wrapped_fufu.jpg"
   },
   {
     "id": "pile-pommes-de-terre",
@@ -672,13 +595,6 @@ export const photoCredits: PhotoCredit[] = [
     "license": "CC BY-SA 4.0",
     "source": "Wikimedia Commons",
     "url": "https://commons.wikimedia.org/wiki/File:Smoky_grilled_pork_and_dodo.jpg"
-  },
-  {
-    "id": "porc-epic-sauce-tomate",
-    "author": "Eric Freyssinge",
-    "license": "CC BY-SA 4.0",
-    "source": "Wikimedia Commons",
-    "url": "https://commons.wikimedia.org/wiki/File:Cuisson_du_porc-%C3%A9pic_(Cameroun).jpg"
   },
   {
     "id": "porc-fume-moutarde",
@@ -856,25 +772,11 @@ export const photoCredits: PhotoCredit[] = [
     "url": "https://commons.wikimedia.org/wiki/File:Plantains_tap%C3%A9s.jpg"
   },
   {
-    "id": "tapioca-saute",
-    "author": "Aggarsandeep at English Wikipedia",
-    "license": "CC BY-SA 3.0",
-    "source": "Wikimedia Commons",
-    "url": "https://commons.wikimedia.org/wiki/File:Spicy_and_Non_Spicy_Tapioca_Chips.jpeg"
-  },
-  {
     "id": "tchoukou",
     "author": "Noahalorwu",
     "license": "CC BY-SA 4.0",
     "source": "Wikimedia Commons",
     "url": "https://commons.wikimedia.org/wiki/File:Waagashi.jpg"
-  },
-  {
-    "id": "tenue-militaire",
-    "author": "Sid Mbog",
-    "license": "CC BY-SA 4.0",
-    "source": "Wikimedia Commons",
-    "url": "https://commons.wikimedia.org/wiki/File:Beignets_-_Bouillie_-_haricots.jpg"
   },
   {
     "id": "water-fufu",

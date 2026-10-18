@@ -57,11 +57,6 @@
       "commons": "Spaghetti aux avocats.jpg"
     },
     {
-      "id": "assok-bitetam",
-      "commons": "Dégustation de koki.jpg",
-      "note": "à remplacer : aucune photo libre exacte trouvée"
-    },
-    {
       "id": "banane-malaxee",
       "commons": "Cameroonian Porridge Plantain.jpg"
     },
@@ -142,18 +137,8 @@
       "commons": "Sauce gombo aux crabes avec poisson.jpg"
     },
     {
-      "id": "haricots-en-sauce",
-      "commons": "Les haricots cuits.jpg",
-      "note": "à remplacer : aucune photo libre exacte trouvée"
-    },
-    {
       "id": "kati-kati",
       "commons": "Kati-kati.jpg"
-    },
-    {
-      "id": "njama-njama",
-      "commons": "Fufu corn and khati khati.jpg",
-      "note": "à remplacer : aucune photo libre exacte trouvée"
     },
     {
       "id": "kelen-kelen",
@@ -170,21 +155,6 @@
     {
       "id": "kpem-sans-sel",
       "commons": "Un plat de feuille de Manioc et du fufu.jpg"
-    },
-    {
-      "id": "kwa-ni-ndong",
-      "commons": "Eru Soup.jpg",
-      "note": "à remplacer : aucune photo libre exacte trouvée"
-    },
-    {
-      "id": "kwaa-ndzap",
-      "commons": "Dégustation de koki.jpg",
-      "note": "à remplacer : aucune photo libre exacte trouvée"
-    },
-    {
-      "id": "mbol",
-      "commons": "Eru Soup.jpg",
-      "note": "à remplacer : aucune photo libre exacte trouvée"
     },
     {
       "id": "minkong",
@@ -215,11 +185,6 @@
       "commons": "Nkui.jpg"
     },
     {
-      "id": "nnam-olis",
-      "commons": "Dégustation de koki.jpg",
-      "note": "à remplacer : aucune photo libre exacte trouvée"
-    },
-    {
       "id": "nnam-wondo",
       "commons": "Nkongui Owondo (Mets d'arachide) Ep Obala 4.jpg"
     },
@@ -230,16 +195,6 @@
     {
       "id": "ndomba-porc",
       "commons": "Ndomba de porc et frites de plantain mûr.jpg"
-    },
-    {
-      "id": "ndomba-vipere",
-      "commons": "Snake soup.jpg",
-      "note": "à remplacer : aucune photo libre exacte trouvée"
-    },
-    {
-      "id": "nsugi",
-      "commons": "Eru Soup.jpg",
-      "note": "à remplacer : aucune photo libre exacte trouvée"
     },
     {
       "id": "pate-arachides",
@@ -260,11 +215,6 @@
     {
       "id": "pepper-soup",
       "commons": "Cat Fish pepper soup.png"
-    },
-    {
-      "id": "pile-plantains",
-      "commons": "Wrapped fufu.jpg",
-      "note": "à remplacer : aucune photo libre exacte trouvée"
     },
     {
       "id": "pile-pommes-de-terre",
@@ -313,16 +263,6 @@
     {
       "id": "spaghettis-sardine",
       "commons": "Spaghetti with a tomatoes-sardine sauce and broccoli トマトとイワシのスパゲティ、ブロッコリー添え.jpg"
-    },
-    {
-      "id": "tapioca-saute",
-      "commons": "Spicy and Non Spicy Tapioca Chips.jpeg",
-      "note": "à remplacer : aucune photo libre exacte trouvée"
-    },
-    {
-      "id": "tenue-militaire",
-      "commons": "Beignets - Bouillie - haricots.jpg",
-      "note": "à remplacer : aucune photo libre exacte trouvée"
     },
     {
       "id": "porc-fume-moutarde",
@@ -461,11 +401,6 @@
       "commons": "Bouillie de petit mil aux galettes de petit mil aux arachides sucré et salé.jpg"
     },
     {
-      "id": "naakiyaari",
-      "commons": "Couscous jaune au moringa.jpg",
-      "note": "à remplacer : aucune photo libre exacte trouvée"
-    },
-    {
       "id": "dakkere-au-lait",
       "commons": "Gambia Chakery 0001.jpg"
     },
@@ -492,11 +427,6 @@
     {
       "id": "feuilles-manioc-arachides",
       "commons": "Sombe sauce served with kalo and avocado.jpg"
-    },
-    {
-      "id": "porc-epic-sauce-tomate",
-      "commons": "Cuisson du porc-épic (Cameroun).jpg",
-      "note": "à remplacer : aucune photo libre exacte trouvée"
     },
     {
       "id": "sauce-arachide-poisson-fume",
@@ -553,6 +483,10 @@
     {
       "id": "shaa",
       "commons": "Benin - Tchouk photo 9.jpg"
+    },
+    {
+      "id": "poulet-dg",
+      "commons": "Poulet GD (fried chicken with ripe plantains and mixed vegetables).jpg"
     }
   ]
 }

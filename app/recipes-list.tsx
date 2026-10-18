@@ -10,6 +10,7 @@ import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
 import { useUserRecipes } from '@/context/UserRecipesContext';
 import RecipeCard from '@/components/RecipeCard';
 import type { Region, Recipe } from '@/types';
+import { photosFirst } from '@/constants/images';
 
 export default function RecipesListScreen() {
   const { region, title } = useLocalSearchParams<{ region?: string; title?: string }>();
@@ -39,8 +40,9 @@ export default function RecipesListScreen() {
       });
     }
 
-    return list.sort((a, b) => a.name.localeCompare(b.name));
-  }, [region, query]);
+    // Ordre alphabétique, mais les plats sans photo fiable toujours à la fin.
+    return photosFirst([...list].sort((a, b) => a.name.localeCompare(b.name)));
+  }, [allRecipes, region, query]);
 
   const screenTitle = title || (region ? `${region}` : t('allRecipes'));
 

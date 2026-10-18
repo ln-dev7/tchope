@@ -51,17 +51,17 @@ function LogoPlaceholder({ category, isDark }: { category: Category; isDark?: bo
 }
 
 /**
- * Fallback chain: remote URL → category placeholder + logo
- *
- * 1. Tries the remote URL first (expo-image caches it automatically)
- * 2. On error, shows the category-colored placeholder with the app logo
+ * Photo de la recette (intégrée à l'app, ou imageUri d'une recette de l'utilisateur).
+ * Sans photo, ou si elle ne charge pas : placeholder de la catégorie avec le logo.
  */
 export default function RecipeImage({ recipeId, category, imageUri, style, borderRadius = 18, isDark: darkOverride }: Props) {
   const { isDark: themeDark, colors } = useTheme();
   const isDark = darkOverride ?? themeDark;
   const [showLogo, setShowLogo] = useState(true);
 
-  const isUserWithoutPhoto = !imageUri && recipeId.startsWith('user-');
+  const resolvedImage = imageUri ? imageUri : getRecipeImage(recipeId, category);
+  // Recette de l'utilisateur sans photo, ou plat sans photo fiable : placeholder (jamais de fausse image).
+  const isWithoutPhoto = resolvedImage == null;
 
   const handleLoad = useCallback(() => {
     setShowLogo(false);
@@ -71,8 +71,7 @@ export default function RecipeImage({ recipeId, category, imageUri, style, borde
     setShowLogo(true);
   }, []);
 
-  // User recipe without photo -> logo only
-  if (isUserWithoutPhoto) {
+  if (isWithoutPhoto) {
     return (
       <View style={[{ overflow: 'hidden', borderRadius }, style]}>
         <LogoPlaceholder category={category} isDark={isDark} />
@@ -80,7 +79,6 @@ export default function RecipeImage({ recipeId, category, imageUri, style, borde
     );
   }
 
-  const resolvedImage = imageUri ? imageUri : getRecipeImage(recipeId, category);
   const imageSource = typeof resolvedImage === 'string'
     ? { uri: resolvedImage }
     : resolvedImage;

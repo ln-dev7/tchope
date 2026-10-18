@@ -3,20 +3,22 @@ import { useSettings } from '@/context/SettingsContext';
 import { recipes as baseRecipes } from '@/data/recipes';
 import { recipesEn } from '@/data/recipes-en';
 import type { Recipe } from '@/types';
+import { photosFirst } from '@/constants/images';
 
 export type LocalizedRecipe = Recipe;
 
 /**
  * Returns all recipes localized to the current language.
  * French = original data, English = merged with translations.
+ * Les plats sans photo fiable sont toujours en fin de liste (photosFirst).
  */
 export function useLocalizedRecipes(): LocalizedRecipe[] {
   const { settings } = useSettings();
 
   return useMemo(() => {
-    if (settings.language === 'fr') return baseRecipes;
+    if (settings.language === 'fr') return photosFirst(baseRecipes);
 
-    return baseRecipes.map((recipe) => {
+    return photosFirst(baseRecipes).map((recipe) => {
       const en = recipesEn[recipe.id];
       if (!en) return recipe;
 
