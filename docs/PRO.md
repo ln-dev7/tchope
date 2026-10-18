@@ -23,27 +23,37 @@ le chat TchopAI qui garde **3 messages texte gratuits au total** (comme Travora 
   (`utils/proBridge.ts`) AVANT le cache ; sans abonnement : écran Pro ouvert + `ProRequiredError` (les écrans se taisent
   avec `isProRequired(e)`). Les écrans appellent aussi `requireAi(feature)` au début de l'action (rien d'affiché).
 - `feature` : `chat`, `chat-photo`, `ingredients`, `search`, `plan`, `plan-adjust`, `live-cooking` (même liste que
-  `server/lib/pro-check.ts`). Toute nouvelle fonction IA DOIT passer par `callClaude*` avec sa `feature`.
+  `tchope-web/lib/server/pro-check.ts`). Toute nouvelle fonction IA DOIT passer par `callClaude*` avec sa `feature`.
 - État : `context/ProContext.tsx` (RevenueCat via `lib/pro.ts`, monté dans `app/_layout.tsx`), écran
   `components/Paywall.tsx` (prix du store uniquement, règle Apple 3.1.2), bloc `components/ProSettingsCard.tsx`
   (Réglages). Plein écran modal (cuisson, Live) : `<Paywall local />` sur place, iOS ne présentant pas la modale de la
   racine par-dessus.
 - Libellés : `constants/pro-translations.ts` (FR vouvoiement, EN).
 
-## Serveur (`server/`, projet Vercel `tchope-api`)
-- `api/claude.ts` : relais VERROUILLÉ (`lib/claude-policy.ts` : modèles autorisés `ALLOWED_MODELS`, défaut Haiku 4.5 ;
-  max_tokens ≤ 2048 ; 60 messages, 120 000 caractères, 2 images au plus) + contrôle Pro (`lib/pro-check.ts`).
-- Contrôle Pro : en-têtes `x-tchope-user` (identifiant anonyme RevenueCat) / `x-tchope-pro` ; API v2 de RevenueCat
-  (`REVENUECAT_SECRET_KEY` v2 + `REVENUECAT_PROJECT_ID`, droits en lecture « Customer information » et « Project
-  configuration »). Modes off / legacy / verified ; `PRO_REQUIRE_DEVICE=on` refuse les anciennes apps (le chat de
-  l'ancienne app affiche « mettez à jour » + lien du store). 402 `pro-required` → écran Pro ; 403 `unknown-device` →
-  réessai unique après 2 s (`fetchWithDeviceRetry`).
-- Limites : anciennes apps 60/min, 1 500/jour par IP (lien de recette 300) ; abonné 30/min, 400/jour par appareil ;
-  avant-goût 5/jour par appareil, 300/jour par IP.
-- `api/fetch-recipe-url.ts` : même contrôle, hôtes internes refusés, redirections revérifiées.
-- `api/pro-status.ts` : diagnostic (`"active": true` attendu). `api/version.ts` : `MIN_APP_VERSION` (Vercel) → l'app
-  (UpdateModal) invite à mettre à jour ; `FORCE_UPDATE=on` l'impose.
-- Tests : `cd server && npm test` (serveur), `npm run test:pro` (règles côté app).
+## API IA : dans le site tchope-web (18 oct. 2026, comme Travora)
+- L'app ≥ 2.0.0 appelle `https://tchope.lndev.me/api/…` (`EXPO_PUBLIC_API_URL`, `eas.json` et `.env` ; défaut de
+  `constants/api.ts`). Routes du dépôt `ln-dev7/tchope-web` (déployé à chaque push, open source : les secrets restent dans
+  les variables Vercel) :
+  - `app/api/claude/route.ts` : relais VERROUILLÉ (`lib/server/claude-policy.ts` : modèles autorisés `ALLOWED_MODELS`,
+    défaut Haiku 4.5 ; max_tokens ≤ 2048 ; 60 messages, 120 000 caractères, 2 images au plus) + contrôle Pro ;
+  - `app/api/fetch-recipe-url/route.ts` : même contrôle, hôtes internes refusés, redirections revérifiées ;
+  - `app/api/pro-status/route.ts` (diagnostic, `"active": true` et `"anthropicKey": true` attendus) et
+    `app/api/version/route.ts` (`MIN_APP_VERSION`, `LATEST_APP_VERSION`, `FORCE_UPDATE` → UpdateModal de l'app).
+- Contrôle Pro (`lib/server/pro-check.ts`) : en-têtes `x-tchope-user` (identifiant anonyme RevenueCat) / `x-tchope-pro` ;
+  API v2 de RevenueCat (`REVENUECAT_SECRET_KEY` v2 + `REVENUECAT_PROJECT_ID`, droits en lecture « Customer information »
+  et « Project configuration »). Fermé par défaut : sans clé → 503 `not-configured` ; sans identifiant → 403 `update-app` ;
+  appel depuis un navigateur → 403 `app-only`. 402 `pro-required` → écran Pro ; 403 `unknown-device` → réessai unique
+  après 2 s (`fetchWithDeviceRetry`). Limites : abonné 30/min, 400/jour par appareil ; avant-goût 5/jour par appareil,
+  300/jour par IP. Tests : `pnpm test:pro` (tchope-web).
+- Variables Vercel du projet tchope-web : `ANTHROPIC_API_KEY`, `REVENUECAT_SECRET_KEY` (clé v2 du projet LN Dev, la même
+  que Travora), `REVENUECAT_PROJECT_ID`, plus tard `MIN_APP_VERSION`.
+
+## Ancienne API (`server/`, projet Vercel `tchope-api`, versions ≤ 1.10)
+- Plus aucun appel à Anthropic : `api/claude.ts` répond « Mettez l'application à jour » + lien du store du téléphone
+  (réponse 200 au format d'Anthropic, affichée par l'ancien chat) ; `api/fetch-recipe-url.ts` → 403 `update-app` ;
+  `api/version.ts` reste (mettre `MIN_APP_VERSION=2.0.0` sur tchope-api une fois la 2.0.0 en ligne : l'ancienne app
+  propose alors la mise à jour). Déployé à la main : `cd server && npx vercel deploy --prod`. Tests : `cd server && npm test`.
+- Tests côté app : `npm run test:pro` (règles Tchopé Pro).
 
 ## Mise en place (stores, RevenueCat, Vercel)
 - RevenueCat, projet « LN Dev » (17 oct. 2026) : app « Tchopé (App Store) » (`com.lndev.tchope`, clé d'achats intégrés
@@ -56,8 +66,9 @@ le chat TchopAI qui garde **3 messages texte gratuits au total** (comme Travora 
 - App Store Connect : groupe « Tchopé Pro », produit `tchope_pro_monthly`, 1 mois, 2,99 $ ; Play Console : abonnement
   `tchope_pro_monthly`, plan de base `monthly` (exige d'abord un build contenant la permission BILLING).
 - Clés publiques RevenueCat dans `constants/revenuecat.ts`. Rebuild natif (module `react-native-purchases`).
-- Vercel `tchope-api` : `REVENUECAT_SECRET_KEY` (la clé v2 du projet LN Dev, la même que Travora), `REVENUECAT_PROJECT_ID` ; puis `/api/pro-status` → `active: true`.
-  Une fois la 2.0.0 en ligne : `MIN_APP_VERSION=2.0.0` (invitation à mettre à jour) et `PRO_REQUIRE_DEVICE=on`.
+- Vercel tchope-web : variables ci-dessus, puis `https://tchope.lndev.me/api/pro-status` → `active: true`. Vercel
+  tchope-api : déployer `server/` une fois (ancienne API « mettez à jour »), puis `MIN_APP_VERSION=2.0.0` quand la 2.0.0
+  est en ligne. La clé Anthropic de tchope-api peut être supprimée.
 
 ## Build Android (R8, 18 oct. 2026)
 - `expo-build-properties` : `enableMinifyInReleaseBuilds` + `enableShrinkResourcesInReleaseBuilds` (Google Play signalait
