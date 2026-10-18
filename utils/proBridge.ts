@@ -5,7 +5,7 @@
  */
 export type PaywallReason = 'chat' | 'feature' | 'settings';
 
-/** Fonctions IA (même liste que server/lib/pro-check.ts). */
+/** Fonctions IA (même liste que tchope-web : lib/server/pro-check.ts). */
 export type AiFeature = 'chat' | 'chat-photo' | 'ingredients' | 'search' | 'plan' | 'plan-adjust' | 'live-cooking';
 
 interface Bridge {

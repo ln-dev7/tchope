@@ -48,11 +48,11 @@ le chat TchopAI qui garde **3 messages texte gratuits au total** (comme Travora 
 - Variables Vercel du projet tchope-web : `ANTHROPIC_API_KEY`, `REVENUECAT_SECRET_KEY` (clé v2 du projet LN Dev, la même
   que Travora), `REVENUECAT_PROJECT_ID`, plus tard `MIN_APP_VERSION`.
 
-## Ancienne API (`server/`, projet Vercel `tchope-api`, versions ≤ 1.10)
-- Plus aucun appel à Anthropic : `api/claude.ts` répond « Mettez l'application à jour » + lien du store du téléphone
-  (réponse 200 au format d'Anthropic, affichée par l'ancien chat) ; `api/fetch-recipe-url.ts` → 403 `update-app` ;
-  `api/version.ts` reste (mettre `MIN_APP_VERSION=2.0.0` sur tchope-api une fois la 2.0.0 en ligne : l'ancienne app
-  propose alors la mise à jour). Déployé à la main : `cd server && npx vercel deploy --prod`. Tests : `cd server && npm test`.
+## Ancienne API supprimée (18 oct. 2026, décision de LN)
+- Le dossier `server/` et le projet Vercel `tchope-api` (tchope-api.vercel.app, appelé par les versions ≤ 1.10) sont
+  supprimés : tout passe par tchope-web. Conséquence acceptée : dans les versions ≤ 1.10, l'IA ne répond plus (erreur
+  habituelle de chaque écran) et l'invitation à mettre à jour de l'app (UpdateModal, `/api/version`) ne s'affiche plus ;
+  la mise à jour passe par les stores. Les versions ≥ 2.0.0 lisent `/api/version` sur tchope.lndev.me.
 - Tests côté app : `npm run test:pro` (règles Tchopé Pro).
 
 ## Mise en place (stores, RevenueCat, Vercel)
@@ -66,9 +66,7 @@ le chat TchopAI qui garde **3 messages texte gratuits au total** (comme Travora 
 - App Store Connect : groupe « Tchopé Pro », produit `tchope_pro_monthly`, 1 mois, 2,99 $ ; Play Console : abonnement
   `tchope_pro_monthly`, plan de base `monthly` (exige d'abord un build contenant la permission BILLING).
 - Clés publiques RevenueCat dans `constants/revenuecat.ts`. Rebuild natif (module `react-native-purchases`).
-- Vercel tchope-web : variables ci-dessus, puis `https://tchope.lndev.me/api/pro-status` → `active: true`. Vercel
-  tchope-api : déployer `server/` une fois (ancienne API « mettez à jour »), puis `MIN_APP_VERSION=2.0.0` quand la 2.0.0
-  est en ligne. La clé Anthropic de tchope-api peut être supprimée.
+- Vercel tchope-web : variables ci-dessus, puis `https://tchope.lndev.me/api/pro-status` → `active: true`.
 
 ## Build Android (R8, 18 oct. 2026)
 - `expo-build-properties` : `enableMinifyInReleaseBuilds` + `enableShrinkResourcesInReleaseBuilds` (Google Play signalait

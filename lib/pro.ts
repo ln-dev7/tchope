@@ -53,7 +53,7 @@ async function load(): Promise<Sdk | null> {
 }
 
 let configured = false;
-// Pour le contrôle de l'abonnement côté serveur (server/lib/pro-check.ts) : identifiant ANONYME RevenueCat de
+// Pour le contrôle de l'abonnement côté serveur (tchope-web : lib/server/pro-check.ts) : identifiant ANONYME RevenueCat de
 // l'appareil et dernier état Pro connu (simple indice : le serveur revérifie toujours auprès de RevenueCat).
 let appUserId: string | null = null;
 let lastPro = false;
