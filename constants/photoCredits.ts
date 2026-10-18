@@ -709,13 +709,6 @@ export const photoCredits: PhotoCredit[] = [
     "url": "https://commons.wikimedia.org/wiki/File:Pork_tenderloin_with_onion_sauce.jpg"
   },
   {
-    "id": "sauce-pistache",
-    "author": "Cyriac Gbogou",
-    "license": "CC BY-SA 4.0",
-    "source": "Wikimedia Commons",
-    "url": "https://commons.wikimedia.org/wiki/File:Sauce_pistache_au_poulet.jpg"
-  },
-  {
     "id": "sauce-tomate-champignons",
     "author": "pelican from Tokyo, Japan",
     "license": "CC BY-SA 2.0",
