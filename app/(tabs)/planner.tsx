@@ -14,6 +14,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
+import PageIntro from '@/components/ui/PageIntro';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
@@ -341,20 +342,15 @@ export default function PlannerScreen() {
   }, [currentPlan]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, width: '100%', maxWidth: 840, alignSelf: 'center', backgroundColor: colors.background }} edges={['top']}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={{ paddingBottom: 80 + bottom }}
+          contentContainerStyle={{ paddingBottom: 112 + bottom }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled">
 
-          {/* Header */}
-          <View style={{ paddingHorizontal: 24, paddingVertical: 16 }}>
-            <Text style={{ fontSize: 24, fontWeight: '800', color: colors.text, letterSpacing: -1.2 }}>
-              {t('plannerTitle')}
-            </Text>
-          </View>
+          <PageIntro title={t('plannerTitle')} subtitle={t('plannerSubtitle')} />
 
           <View style={{ paddingHorizontal: 24, gap: 10, marginBottom: 20 }}>
             <TouchableOpacity onPress={() => router.push('/plan-meal')} style={{ padding: 16, borderRadius: 18, backgroundColor: colors.accent, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
@@ -367,7 +363,7 @@ export default function PlannerScreen() {
           {currentPlan ? (
             <View style={{ paddingHorizontal: 24 }}>
               {/* Period badge */}
-              <View style={{ backgroundColor: colors.accent + '10', borderRadius: 16, padding: 14, flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
+              <View style={{ backgroundColor: colors.accentSoft, borderRadius: 16, padding: 14, flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
                 <Ionicons name="calendar-outline" size={18} color={colors.accent} />
                 <Text style={{ fontSize: 13, fontWeight: '600', color: colors.accent, marginLeft: 8, flex: 1 }}>
                   {formatDate(currentPlan.startDate, settings.language)} → {formatDate(currentPlan.endDate, settings.language)}
@@ -419,17 +415,17 @@ export default function PlannerScreen() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: 8,
-                  backgroundColor: 'rgba(168,85,247,0.08)',
+                  backgroundColor: colors.accentSoft,
                   borderRadius: 16,
                   padding: 14,
                   borderWidth: 1,
-                  borderColor: 'rgba(168,85,247,0.15)',
+                  borderColor: colors.accentSoft,
                 }}>
-                <Ionicons name="sparkles" size={18} color="#A855F7" />
-                <Text style={{ fontSize: 14, fontWeight: '700', color: '#A855F7' }}>
+                <Ionicons name="sparkles" size={18} color={colors.accent} />
+                <Text style={{ fontSize: 14, fontWeight: '700', color: colors.accent }}>
                   {t('plannerAdjust')}
                 </Text>
-                <Ionicons name={showAdjust ? 'chevron-up' : 'chevron-down'} size={16} color="#A855F7" />
+                <Ionicons name={showAdjust ? 'chevron-up' : 'chevron-down'} size={16} color={colors.accent} />
               </TouchableOpacity>
 
               {showAdjust && (
@@ -456,7 +452,7 @@ export default function PlannerScreen() {
                     onPress={handleAdjust}
                     disabled={isAdjusting || !adjustText.trim()}
                     style={{
-                      backgroundColor: '#A855F7',
+                      backgroundColor: colors.accent,
                       borderRadius: 14,
                       padding: 14,
                       flexDirection: 'row',
@@ -492,9 +488,9 @@ export default function PlannerScreen() {
 
                 <TouchableOpacity
                   onPress={handleExportPdf}
-                  style={{ backgroundColor: isDark ? 'rgba(168,85,247,0.1)' : 'rgba(168,85,247,0.08)', borderRadius: 16, padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                  <Ionicons name="document-text-outline" size={18} color="#A855F7" />
-                  <Text style={{ fontSize: 15, fontWeight: '700', color: '#A855F7' }}>{t('plannerExportPdf')}</Text>
+                  style={{ backgroundColor: colors.accentSoft, borderRadius: 16, padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                  <Ionicons name="document-text-outline" size={18} color={colors.accent} />
+                  <Text style={{ fontSize: 15, fontWeight: '700', color: colors.accent }}>{t('plannerExportPdf')}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -508,14 +504,14 @@ export default function PlannerScreen() {
           ) : (
             /* No plan — generation form */
             <View style={{ paddingHorizontal: 24 }}>
-              <View style={{ alignItems: 'center', paddingVertical: 16 }}>
-                <View style={{ width: 56, height: 56, borderRadius: 18, backgroundColor: colors.accent + '12', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+              <View style={{ alignItems: 'center', paddingVertical: 24 }}>
+                <View style={{ width: 64, height: 64, borderRadius: 20, backgroundColor: colors.accent + '12', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
                   <Ionicons name="restaurant-outline" size={36} color={colors.accent} />
                 </View>
-                <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text, textAlign: 'center' }}>
+                <Text style={{ fontSize: 21, fontWeight: '700', color: colors.text, textAlign: 'center' }}>
                   {t('planWithAI')}
                 </Text>
-                <Text style={{ fontSize: 13, color: colors.textSecondary, textAlign: 'center', marginTop: 6, lineHeight: 18 }}>
+                <Text style={{ fontSize: 14, color: colors.textSecondary, textAlign: 'center', marginTop: 8, lineHeight: 22 }}>
                   {t('plannerEmptyStateSubtitle')}
                 </Text>
               </View>
@@ -586,8 +582,8 @@ export default function PlannerScreen() {
                         </TouchableOpacity>
                         <TouchableOpacity
                           onPress={() => handleDeleteSaved(plan.id)}
-                          style={{ backgroundColor: 'rgba(220,38,38,0.08)', borderRadius: 10, padding: 10, paddingHorizontal: 16, alignItems: 'center' }}>
-                          <Text style={{ fontSize: 12, fontWeight: '700', color: '#DC2626' }}>{t('plannerDelete')}</Text>
+                          style={{ backgroundColor: colors.dangerSoft, borderRadius: 10, padding: 10, paddingHorizontal: 16, alignItems: 'center' }}>
+                          <Text style={{ fontSize: 12, fontWeight: '700', color: colors.danger }}>{t('plannerDelete')}</Text>
                         </TouchableOpacity>
                       </View>
                     </View>

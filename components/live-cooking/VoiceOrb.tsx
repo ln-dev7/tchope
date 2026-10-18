@@ -19,6 +19,8 @@ type Props = {
   volume: number;
   isDark: boolean;
   colors: {
+    onAccent: string;
+    card: string;
     accent: string;
     accentLight: string;
     green: string;
@@ -165,7 +167,7 @@ export default function VoiceOrb({ state, volume, isDark, colors }: Props) {
   const iconColor =
     state === 'idle' && !isDark
       ? colors.textMuted
-      : '#FFFFFF';
+      : colors.onAccent;
 
   const iconName: keyof typeof Ionicons.glyphMap =
     state === 'listening'

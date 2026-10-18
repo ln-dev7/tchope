@@ -13,7 +13,7 @@ import type { Region, Recipe } from '@/types';
 
 export default function RecipesListScreen() {
   const { region, title } = useLocalSearchParams<{ region?: string; title?: string }>();
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
   const { bottom } = useSafeAreaInsets();
@@ -45,7 +45,7 @@ export default function RecipesListScreen() {
   const screenTitle = title || (region ? `${region}` : t('allRecipes'));
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, width: '100%', maxWidth: 840, alignSelf: 'center', backgroundColor: colors.background }} edges={['top']}>
       {/* Header */}
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 24, paddingVertical: 16, gap: 16 }}>
         <TouchableOpacity

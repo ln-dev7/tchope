@@ -19,16 +19,18 @@ type Props = {
 };
 
 export default function IngredientItem({ name, active = false, onPress }: Props) {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
   return (
     <TouchableOpacity
+      accessibilityRole="button" accessibilityState={{ selected: active }}
       onPress={onPress}
       activeOpacity={0.7}
       style={{
-        backgroundColor: active ? colors.accent : (isDark ? colors.surface : colors.surface),
-        borderRadius: 32,
-        padding: 16,
+        backgroundColor: active ? colors.accent : colors.card,
+        borderRadius: 18,
+        borderWidth: 1, borderColor: active ? colors.accent : colors.border,
+        padding: 12,
         alignItems: 'center',
         gap: 12,
         flex: 1,
@@ -45,14 +47,14 @@ export default function IngredientItem({ name, active = false, onPress }: Props)
         <Ionicons
           name={(ingredientIcons[name] || 'nutrition-outline') as any}
           size={22}
-          color={active ? '#FFFFFF' : colors.accent}
+          color={active ? colors.onAccent : colors.accent}
         />
       </View>
       <Text
         style={{
-          fontSize: 12,
+          fontSize: 13, textAlign: 'center',
           fontWeight: '600',
-          color: active ? '#FFFFFF' : colors.textSecondary,
+          color: active ? colors.onAccent : colors.textSecondary,
         }}>
         {name}
       </Text>

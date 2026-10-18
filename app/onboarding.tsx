@@ -3,7 +3,8 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Dimensions,
+  useWindowDimensions,
+  ScrollView,
   FlatList,
   ViewToken,
   Linking,
@@ -14,59 +15,51 @@ import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 
+import RecipeImage from '@/components/RecipeImage';
+import { type } from '@/constants/design';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useSettings } from '@/context/SettingsContext';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 export const ONBOARDING_KEY = 'tchope_onboarding_done';
 
 type Slide = {
   icon: string;
-  iconBg: string;
-  iconColor: string;
+  recipeId: string;
   titleKey: string;
   descKey: string;
-  emoji: string;
 };
 
 const SLIDES: Slide[] = [
   {
     icon: 'restaurant',
-    iconBg: 'rgba(145,71,0,0.12)',
-    iconColor: '#914700',
+    recipeId: 'ndole',
     titleKey: 'onboarding1Title',
     descKey: 'onboarding1Desc',
-    emoji: '🇨🇲',
   },
   {
     icon: 'book',
-    iconBg: 'rgba(168,85,247,0.12)',
-    iconColor: '#A855F7',
+    recipeId: 'poisson-braise',
     titleKey: 'onboarding2Title',
     descKey: 'onboarding2Desc',
-    emoji: '👨‍🍳',
   },
   {
     icon: 'sparkles',
-    iconBg: 'rgba(168,85,247,0.12)',
-    iconColor: '#A855F7',
+    recipeId: 'poulet-dg',
     titleKey: 'onboarding3Title',
     descKey: 'onboarding3Desc',
-    emoji: '🤖',
   },
   {
     icon: 'shield-checkmark',
-    iconBg: 'rgba(34,197,94,0.12)',
-    iconColor: '#22C55E',
+    recipeId: 'eru',
     titleKey: 'onboarding4Title',
     descKey: 'onboarding4Desc',
-    emoji: '🔒',
   },
 ];
 
 export default function OnboardingScreen() {
   const { colors } = useTheme();
+  const { width: SCREEN_WIDTH, height } = useWindowDimensions();
   const { t } = useTranslation();
   const { settings, updateLanguage } = useSettings();
   const router = useRouter();
@@ -105,55 +98,16 @@ export default function OnboardingScreen() {
   const isLast = currentIndex === SLIDES.length - 1;
 
   const renderSlide = ({ item }: { item: Slide }) => (
-    <View
-      style={{
-        width: SCREEN_WIDTH,
-        paddingHorizontal: 40,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}>
-      {/* Icon circle */}
-      <View
-        style={{
-          width: 120,
-          height: 120,
-          borderRadius: 60,
-          backgroundColor: item.iconBg,
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginBottom: 16,
-        }}>
-        <Ionicons name={item.icon as any} size={48} color={item.iconColor} />
+    <ScrollView style={{ width: SCREEN_WIDTH }} contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 16, paddingBottom: 24, flexGrow: 1, justifyContent: 'center' }} showsVerticalScrollIndicator={false}>
+      <View style={{ height: Math.min(280, height * 0.29), borderRadius: 24, overflow: 'hidden', marginBottom: 24 }}>
+        <RecipeImage recipeId={item.recipeId} category="Plat" style={{ width: '100%', height: '100%' }} borderRadius={0} />
+        <View style={{ position: 'absolute', bottom: 16, left: 16, width: 48, height: 48, borderRadius: 16, backgroundColor: colors.photoControl, alignItems: 'center', justifyContent: 'center' }}>
+          <Ionicons name={item.icon as any} size={24} color={colors.photoInk} />
+        </View>
       </View>
-
-      {/* Emoji */}
-      <Text style={{ fontSize: 32, marginBottom: 24 }}>{item.emoji}</Text>
-
-      {/* Title */}
-      <Text
-        style={{
-          fontSize: 28,
-          fontWeight: '800',
-          color: colors.text,
-          textAlign: 'center',
-          letterSpacing: -1,
-          marginBottom: 16,
-        }}>
-        {t(item.titleKey as any)}
-      </Text>
-
-      {/* Description */}
-      <Text
-        style={{
-          fontSize: 16,
-          color: colors.textSecondary,
-          textAlign: 'center',
-          lineHeight: 24,
-          maxWidth: 300,
-        }}>
-        {t(item.descKey as any)}
-      </Text>
-    </View>
+      <Text style={[type.display, { color: colors.text, fontSize: 32, lineHeight: 39, marginBottom: 12 }]}>{t(item.titleKey as any)}</Text>
+      <Text style={{ fontSize: 16, color: colors.textSecondary, lineHeight: 25 }}>{t(item.descKey as any)}</Text>
+    </ScrollView>
   );
 
   return (
@@ -168,9 +122,9 @@ export default function OnboardingScreen() {
               alignItems: 'center',
               gap: 6,
               backgroundColor: colors.surface,
-              borderRadius: 20,
+              borderRadius: 14,
               paddingHorizontal: 14,
-              paddingVertical: 8,
+              paddingVertical: 12,
             }}>
             <Ionicons name="globe-outline" size={16} color={colors.textSecondary} />
             <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text }}>
@@ -193,6 +147,7 @@ export default function OnboardingScreen() {
           renderItem={renderSlide}
           keyExtractor={(_, i) => i.toString()}
           horizontal
+          getItemLayout={(_, index) => ({ length: SCREEN_WIDTH, offset: SCREEN_WIDTH * index, index })}
           pagingEnabled
           showsHorizontalScrollIndicator={false}
           onViewableItemsChanged={onViewableItemsChanged}
@@ -201,7 +156,7 @@ export default function OnboardingScreen() {
         />
 
         {/* Bottom section */}
-        <View style={{ paddingHorizontal: 40, paddingBottom: 24, gap: 24 }}>
+        <View style={{ paddingHorizontal: 24, paddingBottom: 24, gap: 16 }}>
           {/* Dots */}
           <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 8 }}>
             {SLIDES.map((_, i) => (
@@ -211,7 +166,7 @@ export default function OnboardingScreen() {
                   width: i === currentIndex ? 28 : 8,
                   height: 8,
                   borderRadius: 4,
-                  backgroundColor: i === currentIndex ? SLIDES[currentIndex].iconColor : colors.border,
+                  backgroundColor: i === currentIndex ? colors.accent : colors.border,
                 }}
               />
             ))}
@@ -222,18 +177,18 @@ export default function OnboardingScreen() {
             onPress={handleNext}
             activeOpacity={0.85}
             style={{
-              backgroundColor: SLIDES[currentIndex].iconColor,
-              borderRadius: 20,
+              backgroundColor: colors.accent,
+              borderRadius: 14,
               paddingVertical: 18,
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
               gap: 8,
             }}>
-            <Text style={{ fontSize: 17, fontWeight: '700', color: '#FFFFFF' }}>
+            <Text style={{ fontSize: 17, fontWeight: '700', color: colors.onAccent }}>
               {isLast ? t('onboardingStart') : t('onboardingNext')}
             </Text>
-            {!isLast && <Ionicons name="arrow-forward" size={18} color="#FFFFFF" />}
+            {!isLast && <Ionicons name="arrow-forward" size={18} color={colors.onAccent} />}
           </TouchableOpacity>
 
           {/* Dev credit */}

@@ -131,7 +131,7 @@ export default function RecipeDetailScreen() {
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 24 + bottom }} showsVerticalScrollIndicator={false}>
         {/* Hero Image */}
-        <View style={{ height: 260, overflow: 'hidden' }}>
+        <View style={{ height: 310, overflow: 'hidden' }}>
           <RecipeImage recipeId={recipe.id} category={recipe.category} imageUri={(recipe as any).imageUri} isDark={isDark} style={{ width: '100%', height: '100%' }} borderRadius={0} />
           {/* Back + Share buttons */}
           <SafeAreaView
@@ -152,11 +152,11 @@ export default function RecipeDetailScreen() {
                 width: 48,
                 height: 48,
                 borderRadius: 24,
-                backgroundColor: isDark ? 'rgba(26,26,26,0.8)' : 'rgba(255,255,255,0.9)',
+                backgroundColor: colors.photoControl,
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-              <Ionicons name="arrow-back" size={20} color={isDark ? '#F5F5F5' : '#2F2F2E'} />
+              <Ionicons name="arrow-back" size={20} color={colors.photoInk} />
             </TouchableOpacity>
             <TouchableOpacity
               onPress={handleShare}
@@ -164,11 +164,11 @@ export default function RecipeDetailScreen() {
                 width: 48,
                 height: 48,
                 borderRadius: 24,
-                backgroundColor: isDark ? 'rgba(26,26,26,0.8)' : 'rgba(255,255,255,0.9)',
+                backgroundColor: colors.photoControl,
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
-              <Ionicons name="share-outline" size={20} color={isDark ? '#F5F5F5' : '#2F2F2E'} />
+              <Ionicons name="share-outline" size={20} color={colors.photoInk} />
             </TouchableOpacity>
           </SafeAreaView>
         </View>
@@ -180,12 +180,12 @@ export default function RecipeDetailScreen() {
             borderTopLeftRadius: 28,
             borderTopRightRadius: 28,
             marginTop: -24,
-            paddingTop: 20,
+            paddingTop: 26,
             paddingHorizontal: 24,
           }}>
           {/* Title + Actions */}
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Text style={{ fontSize: 28, fontWeight: '800', color: colors.text, letterSpacing: -0.7, flex: 1 }}>
+            <Text style={{ fontSize: 30, fontWeight: '700', color: colors.text, letterSpacing: -0.7, flex: 1 }}>
               {recipe.name}
             </Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
@@ -241,19 +241,19 @@ export default function RecipeDetailScreen() {
           {/* Tab Switcher */}
           <View
             style={{
-              backgroundColor: isDark ? '#3A3A3A' : '#E4E2E1',
-              borderRadius: 9999,
-              padding: 6,
+              backgroundColor: colors.surface,
+              borderRadius: 13,
+              padding: 4,
               flexDirection: 'row',
               marginTop: 20,
             }}>
             <TouchableOpacity
-              onPress={() => setActiveTab('ingredients')}
+              accessibilityRole="tab" accessibilityState={{ selected: activeTab === 'ingredients' }} onPress={() => setActiveTab('ingredients')}
               style={{
                 flex: 1,
                 paddingVertical: 12,
-                borderRadius: 9999,
-                backgroundColor: activeTab === 'ingredients' ? (isDark ? colors.card : colors.chipActiveText) : 'transparent',
+                borderRadius: 13,
+                backgroundColor: activeTab === 'ingredients' ? (colors.card) : 'transparent',
                 alignItems: 'center',
                 ...(activeTab === 'ingredients'
                   ? { shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2 }
@@ -269,12 +269,12 @@ export default function RecipeDetailScreen() {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => setActiveTab('steps')}
+              accessibilityRole="tab" accessibilityState={{ selected: activeTab === 'steps' }} onPress={() => setActiveTab('steps')}
               style={{
                 flex: 1,
                 paddingVertical: 12,
-                borderRadius: 9999,
-                backgroundColor: activeTab === 'steps' ? (isDark ? colors.card : colors.chipActiveText) : 'transparent',
+                borderRadius: 13,
+                backgroundColor: activeTab === 'steps' ? (colors.card) : 'transparent',
                 alignItems: 'center',
               }}>
               <Text
@@ -295,7 +295,7 @@ export default function RecipeDetailScreen() {
                 <Text style={{ fontSize: 24, fontWeight: '700', color: colors.text }}>
                   {t('ingredients')}
                 </Text>
-                <View style={{ backgroundColor: colors.surface, paddingHorizontal: 12, paddingVertical: 4, borderRadius: 9999 }}>
+                <View style={{ backgroundColor: colors.surface, paddingHorizontal: 12, paddingVertical: 4, borderRadius: 13 }}>
                   <Text style={{ fontSize: 14, color: colors.textSecondary }}>
                     {scaledIngredients.length} {t('items')}
                   </Text>
@@ -306,8 +306,9 @@ export default function RecipeDetailScreen() {
                   <View
                     key={index}
                     style={{
-                      backgroundColor: isDark ? colors.card : colors.chipActiveText,
-                      borderRadius: 18,
+                      backgroundColor: colors.card,
+                      borderRadius: 14,
+                      borderWidth: 1, borderColor: colors.border,
                       padding: 14,
                       flexDirection: 'row',
                       alignItems: 'center',
@@ -385,13 +386,13 @@ export default function RecipeDetailScreen() {
             <View
               style={{
                 marginTop: 32,
-                backgroundColor: isDark ? 'rgba(157,248,152,0.1)' : 'rgba(157,248,152,0.3)',
-                borderLeftWidth: 8,
+                backgroundColor: colors.greenLight,
+                borderLeftWidth: 3,
                 borderLeftColor: colors.green,
-                borderRadius: 48,
-                paddingLeft: 40,
-                paddingRight: 32,
-                paddingVertical: 32,
+                borderRadius: 20,
+                paddingLeft: 20,
+                paddingRight: 20,
+                paddingVertical: 22,
                 gap: 16,
               }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>

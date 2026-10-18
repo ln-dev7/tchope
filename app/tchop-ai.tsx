@@ -297,7 +297,7 @@ export default function TchopAIScreen() {
 
   // --- Render ---
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top', 'bottom']}>
+    <SafeAreaView style={{ flex: 1, width: '100%', maxWidth: 840, alignSelf: 'center', backgroundColor: colors.background }} edges={['top', 'bottom']}>
       {!settings.aiConsent ? (
       <AiConsent
         colors={colors}
@@ -351,7 +351,7 @@ export default function TchopAIScreen() {
           <View style={{ paddingHorizontal: 20, paddingBottom: 8 }}>
             <View style={{
               alignSelf: 'flex-start',
-              backgroundColor: isDark ? '#2A2A2A' : '#F3F0EF',
+              backgroundColor: colors.surface,
               borderRadius: 20, borderBottomLeftRadius: 6,
               paddingHorizontal: 16, paddingVertical: 12,
               flexDirection: 'row', alignItems: 'center', gap: 10,
@@ -398,7 +398,7 @@ export default function TchopAIScreen() {
       {/* Photo source picker */}
       <Modal visible={showSourceModal} transparent animationType="fade" onRequestClose={() => setShowSourceModal(false)}>
         <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end', paddingHorizontal: 16, paddingBottom: bottom + 16 }}>
-          <View style={{ backgroundColor: isDark ? colors.card : '#FFFFFF', borderRadius: 20, overflow: 'hidden', marginBottom: 8 }}>
+          <View style={{ backgroundColor: colors.card, borderRadius: 20, overflow: 'hidden', marginBottom: 8 }}>
             <TouchableOpacity
               onPress={() => pickAndSendPhoto('camera')}
               style={{ paddingVertical: 16, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 10, borderBottomWidth: 1, borderBottomColor: colors.border }}>
@@ -414,7 +414,7 @@ export default function TchopAIScreen() {
           </View>
           <TouchableOpacity
             onPress={() => setShowSourceModal(false)}
-            style={{ backgroundColor: isDark ? colors.card : '#FFFFFF', borderRadius: 20, paddingVertical: 16, alignItems: 'center' }}>
+            style={{ backgroundColor: colors.card, borderRadius: 20, paddingVertical: 16, alignItems: 'center' }}>
             <Text style={{ fontSize: 16, fontWeight: '600', color: colors.textMuted }}>{isFr ? 'Annuler' : 'Cancel'}</Text>
           </TouchableOpacity>
         </View>
@@ -433,7 +433,7 @@ export default function TchopAIScreen() {
               <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text, flex: 1 }}>{t('chatHistory')}</Text>
               {chatHistoryList.length > 0 && (
                 <TouchableOpacity onPress={handleClearAllHistory}>
-                  <Text style={{ fontSize: 14, fontWeight: '600', color: '#E74C3C' }}>{t('deleteAllHistory')}</Text>
+                  <Text style={{ fontSize: 14, fontWeight: '600', color: colors.danger }}>{t('deleteAllHistory')}</Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -473,8 +473,8 @@ export default function TchopAIScreen() {
                         flexDirection: 'row', alignItems: 'center', gap: 12,
                         borderWidth: 1, borderColor: isDark ? '#3A3A3A' : '#E8E5E4',
                       }}>
-                      <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: isDark ? 'rgba(168,85,247,0.15)' : 'rgba(168,85,247,0.1)', alignItems: 'center', justifyContent: 'center' }}>
-                        <Ionicons name="chatbubble-outline" size={18} color="#A855F7" />
+                      <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: colors.accentSoft, alignItems: 'center', justifyContent: 'center' }}>
+                        <Ionicons name="chatbubble-outline" size={18} color={colors.accent} />
                       </View>
                       <View style={{ flex: 1 }}>
                         <Text style={{ fontSize: 14, fontWeight: '600', color: colors.text }} numberOfLines={1}>{item.title}</Text>
@@ -551,7 +551,7 @@ function AiConsent({ colors, isDark, t, locale, onAgree, onBack }: {
         <TouchableOpacity
           onPress={onAgree}
           style={{ marginTop: 24, backgroundColor: colors.accent, borderRadius: 16, paddingVertical: 15, alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={{ fontSize: 15, fontWeight: '800', color: '#FFFFFF' }}>{t('aiConsentAgree')}</Text>
+          <Text style={{ fontSize: 15, fontWeight: '800', color: colors.onAccent }}>{t('aiConsentAgree')}</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>

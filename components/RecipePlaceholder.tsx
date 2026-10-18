@@ -13,13 +13,13 @@ const categoryEmoji: Record<Category, string> = {
 };
 
 const categoryColors: Record<Category, { bg: string; darkBg: string }> = {
-  Plat: { bg: '#FED3C7', darkBg: '#3A2520' },
-  Entrée: { bg: '#D1FFC8', darkBg: '#1A3A1A' },
-  Sauce: { bg: '#FFE4C8', darkBg: '#3A2A1A' },
-  Accompagnement: { bg: '#FFF3C8', darkBg: '#3A3520' },
-  Boisson: { bg: '#C8E4FF', darkBg: '#1A2A3A' },
-  Grillade: { bg: '#FFD1C8', darkBg: '#3A201A' },
-  Dessert: { bg: '#F3C8FF', darkBg: '#2A1A3A' },
+  Plat: { bg: '#EFE0D4', darkBg: '#382C24' },
+  Entrée: { bg: '#E5EBDD', darkBg: '#2B3325' },
+  Sauce: { bg: '#EDE1CC', darkBg: '#373022' },
+  Accompagnement: { bg: '#F1EBDC', darkBg: '#353124' },
+  Boisson: { bg: '#DFE8EB', darkBg: '#263237' },
+  Grillade: { bg: '#EFDFD7', darkBg: '#382925' },
+  Dessert: { bg: '#EAE0E5', darkBg: '#352B32' },
 };
 
 type Props = {

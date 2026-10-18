@@ -41,7 +41,7 @@ export default function PlanMealScreen() {
   }, [currentPlan]);
   const filtered = recipes.filter(r => r.name.toLocaleLowerCase().includes(query.toLocaleLowerCase()));
   const chip = (active: boolean) => ({ padding: 12, borderRadius: 16, backgroundColor: active ? colors.accent : colors.surface, minHeight: 44, justifyContent: 'center' as const });
-  return <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+  return <SafeAreaView style={{ flex: 1, width: '100%', maxWidth: 840, alignSelf: 'center', backgroundColor: colors.background }}>
     <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, gap: 12 }}>
       <TouchableOpacity accessibilityLabel={t('back')} accessibilityRole="button" onPress={() => router.back()} style={{ padding: 12 }}><Ionicons name="close" size={24} color={colors.text} /></TouchableOpacity>
       <Text style={{ fontSize: 24, fontWeight: '800', color: colors.text, flex: 1 }}>{t('manualMeal')}</Text>

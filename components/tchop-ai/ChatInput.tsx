@@ -1,4 +1,5 @@
 import React from 'react';
+import type { TranslationKey } from '@/constants/translations';
 import { View, TextInput, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -11,7 +12,7 @@ type Props = {
   colors: any;
   onSend: () => void;
   onPhoto: () => void;
-  t: (k: any) => string;
+  t: (k: TranslationKey) => string;
 };
 
 export default function ChatInput({ input, setInput, loading, canSend, canPhoto, colors, onSend, onPhoto, t }: Props) {
@@ -25,17 +26,18 @@ export default function ChatInput({ input, setInput, loading, canSend, canPhoto,
     }}>
       <View style={{
         flexDirection: 'row',
-        backgroundColor: colors.surface,
-        borderRadius: 24,
+        backgroundColor: colors.card,
+        borderWidth: 1, borderColor: colors.border,
+        borderRadius: 18,
         paddingLeft: 4,
         paddingRight: 4,
         alignItems: 'flex-end',
       }}>
         <TouchableOpacity
-          onPress={onPhoto}
+          accessibilityRole="button" accessibilityLabel={t('tchopaiPhoto')} onPress={onPhoto}
           disabled={loading || !canPhoto}
           style={{
-            width: 40, height: 40, borderRadius: 20,
+            width: 44, height: 44, borderRadius: 14,
             alignItems: 'center', justifyContent: 'center',
             marginBottom: 4,
             opacity: loading || !canPhoto ? 0.4 : 1,
@@ -58,18 +60,18 @@ export default function ChatInput({ input, setInput, loading, canSend, canPhoto,
           }}
         />
         <TouchableOpacity
-          onPress={onSend}
+          accessibilityRole="button" accessibilityLabel={t('tchopaiSend')} onPress={onSend}
           disabled={!input.trim() || loading || !canSend}
           style={{
-            width: 40, height: 40, borderRadius: 20,
-            backgroundColor: input.trim() && !loading && canSend ? '#A855F7' : 'transparent',
+            width: 44, height: 44, borderRadius: 14,
+            backgroundColor: input.trim() && !loading && canSend ? colors.accent : 'transparent',
             alignItems: 'center', justifyContent: 'center',
             marginBottom: 4,
           }}>
           <Ionicons
             name="send"
             size={18}
-            color={input.trim() && !loading && canSend ? '#FFFFFF' : colors.textMuted}
+            color={input.trim() && !loading && canSend ? colors.onAccent : colors.textMuted}
           />
         </TouchableOpacity>
       </View>

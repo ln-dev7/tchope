@@ -12,13 +12,14 @@ import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
 import RecipeGridCard from '@/components/RecipeGridCard';
 import RecipeCard from '@/components/RecipeCard';
 import CategoryChip from '@/components/CategoryChip';
+import PageIntro from '@/components/ui/PageIntro';
 import EmptyState from '@/components/EmptyState';
 
 type Tab = 'myRecipes' | 'favorites';
 type Filter = 'all' | 'breakfast' | 'sundayFeast' | 'starters' | 'sauces';
 
 export default function CookbookScreen() {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
   const { bottom } = useSafeAreaInsets();
@@ -49,69 +50,33 @@ export default function CookbookScreen() {
   ];
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
-      {/* Header */}
-      <View style={{ paddingHorizontal: 24, paddingVertical: 16 }}>
-        <Text style={{ fontSize: 24, fontWeight: '800', color: colors.accent, letterSpacing: -1.2 }}>
-          Tchopé
-        </Text>
-      </View>
+    <SafeAreaView style={{ flex: 1, width: '100%', maxWidth: 840, alignSelf: 'center', backgroundColor: colors.background }} edges={['top']}>
+      <PageIntro title={t('myCookbook')} subtitle={t('cookbookSubtitle')} action={
+        <TouchableOpacity onPress={() => router.push('/add-recipe')} accessibilityRole="button" accessibilityLabel={t('addRecipe')}
+          style={{ width: 48, height: 48, borderRadius: 16, backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center' }}>
+          <Ionicons name="add" size={25} color={colors.onAccent} />
+        </TouchableOpacity>
+      } />
 
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: 80 + bottom, paddingHorizontal: 24, gap: 24 }}
+        contentContainerStyle={{ paddingBottom: 112 + bottom, paddingHorizontal: 24, gap: 24 }}
         showsVerticalScrollIndicator={false}>
-        {/* Title + Add button */}
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-          <View style={{ gap: 4, flex: 1 }}>
-            <Text
-              style={{
-                fontSize: 12,
-                fontWeight: '500',
-                color: colors.textMuted,
-                textTransform: 'uppercase',
-                letterSpacing: 0.6,
-              }}>
-              {t('personalSpace')}
-            </Text>
-            <Text style={{ fontSize: 28, fontWeight: '800', color: colors.text, letterSpacing: -0.9 }}>
-              {t('myCookbook')}
-            </Text>
-          </View>
-          <TouchableOpacity
-            onPress={() => router.push('/add-recipe')}
-            accessibilityRole="button" accessibilityLabel={t('addRecipe')}
-            style={{
-              width: 48,
-              height: 48,
-              borderRadius: 24,
-              backgroundColor: colors.accent,
-              alignItems: 'center',
-              justifyContent: 'center',
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.1,
-              shadowRadius: 8,
-            }}>
-            <Ionicons name="add" size={24} color="#FFFFFF" />
-          </TouchableOpacity>
-        </View>
-
         {/* Tabs */}
         <View
           style={{
             backgroundColor: colors.surface,
-            borderRadius: 32,
-            padding: 6,
+            borderRadius: 14,
+            padding: 4,
             flexDirection: 'row',
           }}>
           <TouchableOpacity
-            onPress={() => setActiveTab('myRecipes')}
+            accessibilityRole="tab" accessibilityState={{ selected: activeTab === 'myRecipes' }} onPress={() => setActiveTab('myRecipes')}
             style={{
               flex: 1,
               paddingVertical: 12,
-              borderRadius: 32,
-              backgroundColor: activeTab === 'myRecipes' ? (isDark ? colors.card : '#FFFFFF') : 'transparent',
+              borderRadius: 14,
+              backgroundColor: activeTab === 'myRecipes' ? (colors.card) : 'transparent',
               alignItems: 'center',
               ...(activeTab === 'myRecipes'
                 ? { shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2 }
@@ -127,12 +92,12 @@ export default function CookbookScreen() {
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => setActiveTab('favorites')}
+            accessibilityRole="tab" accessibilityState={{ selected: activeTab === 'favorites' }} onPress={() => setActiveTab('favorites')}
             style={{
               flex: 1,
               paddingVertical: 12,
-              borderRadius: 32,
-              backgroundColor: activeTab === 'favorites' ? (isDark ? colors.card : '#FFFFFF') : 'transparent',
+              borderRadius: 14,
+              backgroundColor: activeTab === 'favorites' ? (colors.card) : 'transparent',
               alignItems: 'center',
             }}>
             <Text
@@ -153,21 +118,22 @@ export default function CookbookScreen() {
               <View style={{ gap: 16 }}>
                 {userRecipes.map((recipe) => (
                   <View key={recipe.id} style={{ position: 'relative' }}>
-                    <RecipeCard recipe={recipe} titlePaddingRight={80} />
-                    <View style={{ position: 'absolute', top: 12, right: 12, flexDirection: 'row', gap: 8 }}>
+                    <RecipeCard recipe={recipe} />
+                    <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 8, marginTop: 8 }}>
                       <TouchableOpacity
-                        onPress={() => router.push(`/add-recipe?edit=${recipe.id}` as any)}
+                        accessibilityRole="button" accessibilityLabel={`${t('editRecipe')} · ${recipe.name}`} onPress={() => router.push(`/add-recipe?edit=${recipe.id}` as any)}
                         style={{
-                          width: 32,
-                          height: 32,
+                          width: 44,
+                          height: 44,
                           borderRadius: 16,
-                          backgroundColor: isDark ? 'rgba(145,71,0,0.15)' : 'rgba(145,71,0,0.1)',
+                          backgroundColor: colors.accentSoft,
                           alignItems: 'center',
                           justifyContent: 'center',
                         }}>
                         <Ionicons name="pencil-outline" size={14} color={colors.accent} />
                       </TouchableOpacity>
                       <TouchableOpacity
+                        accessibilityRole="button" accessibilityLabel={`${t('delete')} · ${recipe.name}`}
                         onPress={() => {
                           Alert.alert(
                             t('clearConfirm'),
@@ -179,14 +145,14 @@ export default function CookbookScreen() {
                           );
                         }}
                         style={{
-                          width: 32,
-                          height: 32,
+                          width: 44,
+                          height: 44,
                           borderRadius: 16,
-                          backgroundColor: 'rgba(231,76,60,0.1)',
+                          backgroundColor: colors.dangerSoft,
                           alignItems: 'center',
                           justifyContent: 'center',
                         }}>
-                        <Ionicons name="trash-outline" size={14} color="#E74C3C" />
+                        <Ionicons name="trash-outline" size={14} color={colors.danger} />
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -217,11 +183,7 @@ export default function CookbookScreen() {
                   variant={activeFilter === f.key ? 'default' : 'peach'}
                 />
               ))}
-              <TouchableOpacity onPress={() => router.push('/notes')} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 16, borderTopWidth: 1, borderTopColor: colors.border, gap: 10 }}>
-          <Ionicons name="document-text-outline" size={20} color={colors.accent} />
-          <Text style={{ flex: 1, color: colors.text, fontWeight: '600' }}>{t('myNotes')} · {notes.length}</Text>
-          <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
-        </TouchableOpacity>
+
       </ScrollView>
 
             {/* Grid */}

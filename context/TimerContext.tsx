@@ -370,7 +370,7 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
             activeOpacity={0.9}
             onPress={() => setMinimized(!minimized)}
             style={{
-              backgroundColor: widgetDone ? '#0A6A1D' : widgetTimer.isPaused ? '#6B5B00' : '#914700',
+              backgroundColor: widgetDone ? '#41634B' : widgetTimer.isPaused ? '#6B5B00' : '#A84027',
               borderRadius: minimized ? 32 : 24,
               padding: minimized ? 14 : 16,
               minWidth: minimized ? 64 : 200,

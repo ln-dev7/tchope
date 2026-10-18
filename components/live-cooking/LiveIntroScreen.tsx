@@ -37,7 +37,7 @@ export default function LiveIntroScreen({ onClose, onStart }: {
       <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
         <TouchableOpacity
           onPress={onClose}
-          style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' }}
+          style={{ width: 44, height: 44, borderRadius: 20, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' }}
         >
           <Ionicons name="close" size={20} color={colors.text} />
         </TouchableOpacity>
@@ -49,21 +49,21 @@ export default function LiveIntroScreen({ onClose, onStart }: {
           style={{
             width: 80,
             height: 80,
-            borderRadius: 40,
-            backgroundColor: isDark ? 'rgba(168,85,247,0.15)' : 'rgba(168,85,247,0.08)',
+            borderRadius: 24,
+            backgroundColor: colors.accentSoft,
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <Ionicons name="mic" size={40} color="#A855F7" />
+          <Ionicons name="mic" size={40} color={colors.accent} />
         </View>
       </View>
 
       {/* Title + Description */}
       <Text
         style={{
-          fontSize: 24,
-          fontWeight: '800',
+          fontSize: 30,
+          fontWeight: '700',
           color: colors.text,
           textAlign: 'center',
           letterSpacing: -0.5,
@@ -106,12 +106,12 @@ export default function LiveIntroScreen({ onClose, onStart }: {
                 width: 40,
                 height: 40,
                 borderRadius: 20,
-                backgroundColor: isDark ? 'rgba(168,85,247,0.12)' : 'rgba(168,85,247,0.06)',
+                backgroundColor: colors.accentSoft,
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
             >
-              <Ionicons name={f.icon as any} size={20} color="#A855F7" />
+              <Ionicons name={f.icon as any} size={20} color={colors.accent} />
             </View>
             <Text style={{ fontSize: 15, color: colors.text, flex: 1, fontWeight: '500' }}>
               {t(f.key as any)}
@@ -135,8 +135,8 @@ export default function LiveIntroScreen({ onClose, onStart }: {
           gap: 8,
         }}
       >
-        <Ionicons name="play" size={18} color="#FFFFFF" />
-        <Text style={{ fontSize: 16, fontWeight: '700', color: '#FFFFFF' }}>
+        <Ionicons name="play" size={18} color={colors.onAccent} />
+        <Text style={{ fontSize: 16, fontWeight: '700', color: colors.onAccent }}>
           {t('liveStartCta')}
         </Text>
       </TouchableOpacity>

@@ -186,14 +186,14 @@ export default function CookingModeScreen() {
         showsVerticalScrollIndicator={false}>
         <View
           style={{
-            width: 64, height: 64, borderRadius: 32,
+            width: 72, height: 72, borderRadius: 22,
             backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center',
             alignSelf: 'center', marginBottom: 24,
           }}>
-          <Text style={{ fontSize: 28, fontWeight: '800', color: '#FFFFFF' }}>{index + 1}</Text>
+          <Text style={{ fontSize: 28, fontWeight: '800', color: colors.onAccent }}>{index + 1}</Text>
         </View>
         <Text
-          style={{ fontSize: 20, fontWeight: '500', color: colors.text, lineHeight: 32, textAlign: 'center' }}>
+          style={{ fontSize: 22, fontWeight: '500', color: colors.text, lineHeight: 35, textAlign: 'left' }}>
           {item}
         </Text>
 
@@ -204,7 +204,7 @@ export default function CookingModeScreen() {
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
                 <TouchableOpacity
                   onPress={() => setCustomMinutes((m) => Math.max(1, m - 1))}
-                  style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' }}>
+                  style={{ width: 44, height: 44, borderRadius: 14, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' }}>
                   <Ionicons name="remove" size={20} color={colors.text} />
                 </TouchableOpacity>
                 <Text style={{ fontSize: 24, fontWeight: '800', color: colors.text, fontVariant: ['tabular-nums'], minWidth: 70, textAlign: 'center' }}>
@@ -212,15 +212,15 @@ export default function CookingModeScreen() {
                 </Text>
                 <TouchableOpacity
                   onPress={() => setCustomMinutes((m) => Math.min(180, m + 1))}
-                  style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' }}>
+                  style={{ width: 44, height: 44, borderRadius: 14, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' }}>
                   <Ionicons name="add" size={20} color={colors.text} />
                 </TouchableOpacity>
               </View>
               <TouchableOpacity
                 onPress={() => { startTimer(id!, `${recipe!.name} — ${t('steps')} ${index + 1}`, customMinutes * 60, index); setShowCustomTimer(null); }}
                 style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: colors.accent, borderRadius: 16, paddingVertical: 12, paddingHorizontal: 24 }}>
-                <Ionicons name="timer-outline" size={18} color="#FFFFFF" />
-                <Text style={{ fontSize: 14, fontWeight: '700', color: '#FFFFFF' }}>{t('startStepTimer')}</Text>
+                <Ionicons name="timer-outline" size={18} color={colors.onAccent} />
+                <Text style={{ fontSize: 14, fontWeight: '700', color: colors.onAccent }}>{t('startStepTimer')}</Text>
               </TouchableOpacity>
             </View>
           ) : stepTimes[index] != null ? (
@@ -235,7 +235,7 @@ export default function CookingModeScreen() {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => { setShowCustomTimer(index); setCustomMinutes(Math.ceil(stepTimes[index]! / 60)); }}
-                style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' }}>
+                style={{ width: 44, height: 44, borderRadius: 14, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' }}>
                 <Ionicons name="pencil" size={16} color={colors.textSecondary} />
               </TouchableOpacity>
             </View>
@@ -261,7 +261,7 @@ export default function CookingModeScreen() {
     return (
       <View
         style={{
-          backgroundColor: isDone ? '#0A6A1D' : entry.isPaused ? '#6B5B00' : '#914700',
+          backgroundColor: isDone ? '#41634B' : entry.isPaused ? '#6B5B00' : '#A84027',
           borderRadius: 20,
           padding: 16,
           gap: 10,
@@ -289,7 +289,7 @@ export default function CookingModeScreen() {
             {!isDone && (
               <TouchableOpacity
                 onPress={() => { if (entry.isPaused) resumeTimer(entry.id); else pauseTimer(entry.id); }}
-                style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.25)', alignItems: 'center', justifyContent: 'center' }}>
+                style={{ width: 44, height: 44, borderRadius: 14, backgroundColor: 'rgba(255,255,255,0.25)', alignItems: 'center', justifyContent: 'center' }}>
                 <Ionicons name={entry.isPaused ? 'play' : 'pause'} size={20} color="#FFFFFF" />
               </TouchableOpacity>
             )}
@@ -320,7 +320,7 @@ export default function CookingModeScreen() {
         activeOpacity={0.8}
         onPress={() => entry.stepIndex != null && goToStep(entry.stepIndex)}
         style={{
-          backgroundColor: isDone ? '#0A6A1D' : entry.isPaused ? '#6B5B00' : '#914700',
+          backgroundColor: isDone ? '#41634B' : entry.isPaused ? '#6B5B00' : '#A84027',
           borderRadius: 22,
           flexDirection: 'row',
           alignItems: 'center',
@@ -363,10 +363,10 @@ export default function CookingModeScreen() {
       <Paywall local />
       <View style={{ flex: 1, paddingTop: top }}>
         {/* Header */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 24, paddingVertical: 12, gap: 16 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 12, gap: 8 }}>
           <TouchableOpacity
             onPress={() => { Speech.stop(); router.back(); }}
-            style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' }}>
+            style={{ width: 44, height: 44, borderRadius: 14, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' }}>
             <Ionicons name="arrow-back" size={20} color={colors.text} />
           </TouchableOpacity>
           <View style={{ flex: 1 }}>
@@ -377,13 +377,13 @@ export default function CookingModeScreen() {
           </View>
           <TouchableOpacity
             onPress={() => { if (requireAi('live-cooking')) router.push(`/live-cooking?id=${id}&step=${currentStep}` as any); }}
-            style={{ height: 36, paddingHorizontal: 12, borderRadius: 18, backgroundColor: 'rgba(168,85,247,0.12)', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
-            <Ionicons name="mic" size={16} color="#A855F7" />
-            <Text style={{ fontSize: 12, fontWeight: '700', color: '#A855F7' }}>Live</Text>
+            style={{ height: 44, paddingHorizontal: 12, borderRadius: 18, backgroundColor: colors.accentSoft, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+            <Ionicons name="mic" size={16} color={colors.accent} />
+            <Text style={{ fontSize: 12, fontWeight: '700', color: colors.accent }}>Live</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={toggleVoice}
-            style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: (voiceEnabled ?? true) ? colors.accent + '15' : colors.surface, alignItems: 'center', justifyContent: 'center' }}>
+            style={{ width: 44, height: 44, borderRadius: 14, backgroundColor: (voiceEnabled ?? true) ? colors.accent + '15' : colors.surface, alignItems: 'center', justifyContent: 'center' }}>
             <Ionicons name={(voiceEnabled ?? true) ? 'volume-high' : 'volume-mute'} size={20} color={(voiceEnabled ?? true) ? colors.accent : colors.textMuted} />
           </TouchableOpacity>
         </View>
@@ -451,23 +451,23 @@ export default function CookingModeScreen() {
               disabled={currentStep === 0}
               style={{
                 flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
-                backgroundColor: colors.surface, borderRadius: 20, paddingVertical: 16,
+                backgroundColor: colors.surface, borderRadius: 14, paddingVertical: 16,
                 opacity: currentStep === 0 ? 0.4 : 1,
               }}>
               <Ionicons name="arrow-back" size={18} color={colors.text} />
-              <Text style={{ fontSize: 15, fontWeight: '600', color: colors.text }}>{t('previousStep')}</Text>
+              <Text style={{ fontSize: 15, fontWeight: '600', color: colors.text, flexShrink: 1, textAlign: 'center' }}>{t('previousStep')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={currentStep === totalSteps - 1 ? handleFinish : handleNext}
               style={{
                 flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6,
                 backgroundColor: currentStep === totalSteps - 1 ? colors.green : colors.accent,
-                borderRadius: 20, paddingVertical: 16,
+                borderRadius: 14, paddingVertical: 16,
               }}>
-              <Text style={{ fontSize: 15, fontWeight: '700', color: '#FFFFFF' }}>
+              <Text style={{ fontSize: 15, fontWeight: '700', color: colors.onAccent, flexShrink: 1, textAlign: 'center' }}>
                 {currentStep === totalSteps - 1 ? t('finishCooking') : t('nextStep')}
               </Text>
-              <Ionicons name={currentStep === totalSteps - 1 ? 'checkmark-circle' : 'arrow-forward'} size={18} color="#FFFFFF" />
+              <Ionicons name={currentStep === totalSteps - 1 ? 'checkmark-circle' : 'arrow-forward'} size={18} color={colors.onAccent} />
             </TouchableOpacity>
           </View>
         </View>

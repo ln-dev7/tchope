@@ -13,17 +13,17 @@ export default function EmptyState({ icon = 'book-outline', title, subtitle }: P
   const { colors } = useTheme();
 
   return (
-    <View style={{ alignItems: 'center', justifyContent: 'center', padding: 48, gap: 16 }}>
+    <View style={{ alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24, paddingVertical: 36, gap: 16 }}>
       <View
         style={{
-          width: 80,
-          height: 80,
-          borderRadius: 40,
-          backgroundColor: colors.surface,
+          width: 72,
+          height: 72,
+          borderRadius: 22,
+          backgroundColor: colors.accentSoft,
           alignItems: 'center',
           justifyContent: 'center',
         }}>
-        <Ionicons name={icon as any} size={36} color={colors.textMuted} />
+        <Ionicons name={icon as any} size={30} color={colors.accent} />
       </View>
       <Text
         style={{

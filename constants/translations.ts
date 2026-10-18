@@ -1,5 +1,20 @@
 export const translations = {
   fr: {
+    tchopaiNewChat: "Nouvelle conversation",
+    tchopaiHistory: "Historique des conversations",
+    tchopaiPhoto: "Joindre une photo",
+    tchopaiSend: "Envoyer le message",
+
+    homeEyebrow: "LA CUISINE, EN PARTAGE",
+    homeSelection: "À cuisiner aujourd’hui",
+    searchTitle: "Une envie, une recette.",
+    searchSubtitle: "Trouvez votre prochain plat, à votre façon.",
+    cookbookSubtitle: "Vos favoris, vos créations, vos petits secrets.",
+    plannerSubtitle: "De bonnes idées pour chaque jour.",
+    settingsSubtitle: "Tchopé, à votre goût.",
+    regionSubtitle: "Dix régions. Mille façons de se régaler.",
+    aiEyebrow: "UN COUP DE MAIN EN CUISINE",
+
     homeHeadline: "On mange quoi aujourd’hui ?",
     homeSubtitle: "Les saveurs du Cameroun, à votre table.",
     quickRecipes: "Prêt en moins de 30 min",
@@ -491,6 +506,21 @@ export const translations = {
   },
 
   en: {
+    tchopaiNewChat: "New conversation",
+    tchopaiHistory: "Conversation history",
+    tchopaiPhoto: "Attach a photo",
+    tchopaiSend: "Send message",
+
+    homeEyebrow: "GOOD FOOD, SHARED",
+    homeSelection: "On the menu today",
+    searchTitle: "Find your next favourite.",
+    searchSubtitle: "Discover a dish that fits your mood.",
+    cookbookSubtitle: "Your favourites, your recipes, your kitchen secrets.",
+    plannerSubtitle: "Good ideas for every day.",
+    settingsSubtitle: "Make Tchopé your own.",
+    regionSubtitle: "Ten regions. A world of flavour.",
+    aiEyebrow: "A HELPING HAND IN THE KITCHEN",
+
     homeHeadline: "What’s cooking today?",
     homeSubtitle: "Bring the flavours of Cameroon to your table.",
     quickRecipes: "Ready in under 30 min",

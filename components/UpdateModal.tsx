@@ -29,7 +29,7 @@ function compareVersions(current: string, min: string): boolean {
 
 export default function UpdateModal() {
   const { t } = useTranslation();
-  const { isDark } = useTheme();
+  const { colors } = useTheme();
   const [visible, setVisible] = useState(false);
   const [forceUpdate, setForceUpdate] = useState(false);
 
@@ -69,16 +69,16 @@ export default function UpdateModal() {
     }
   }
 
-  const bgColor = isDark ? '#1E1E1E' : '#FFFFFF';
-  const textColor = isDark ? '#F5F5F5' : '#1A1A1A';
-  const subtextColor = isDark ? '#A0A0A0' : '#666666';
+  const bgColor = colors.card;
+  const textColor = colors.text;
+  const subtextColor = colors.textSecondary;
 
   return (
     <Modal visible={visible} transparent animationType="fade" statusBarTranslucent>
       <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: 24 }}>
         <View style={{ backgroundColor: bgColor, borderRadius: 20, padding: 28, width: '100%', maxWidth: 340, alignItems: 'center' }}>
-          <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: isDark ? '#2A2A2A' : '#FFF3E0', justifyContent: 'center', alignItems: 'center', marginBottom: 16 }}>
-            <Ionicons name="arrow-up-circle-outline" size={36} color="#F59E0B" />
+          <View style={{ width: 64, height: 64, borderRadius: 20, backgroundColor: colors.accentSoft, justifyContent: 'center', alignItems: 'center', marginBottom: 16 }}>
+            <Ionicons name="arrow-up-circle-outline" size={36} color={colors.accent} />
           </View>
 
           <Text style={{ fontSize: 20, fontWeight: '700', color: textColor, textAlign: 'center', marginBottom: 8 }}>
@@ -93,7 +93,7 @@ export default function UpdateModal() {
             onPress={handleUpdate}
             activeOpacity={0.85}
             style={{
-              backgroundColor: '#F59E0B',
+              backgroundColor: colors.accent,
               borderRadius: 12,
               paddingVertical: 14,
               paddingHorizontal: 24,
@@ -101,7 +101,7 @@ export default function UpdateModal() {
               alignItems: 'center',
               marginBottom: forceUpdate ? 0 : 10,
             }}>
-            <Text style={{ fontSize: 16, fontWeight: '700', color: '#FFFFFF' }}>
+            <Text style={{ fontSize: 16, fontWeight: '700', color: colors.onAccent }}>
               {t('updateNow')}
             </Text>
           </TouchableOpacity>

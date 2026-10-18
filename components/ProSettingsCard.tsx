@@ -10,7 +10,7 @@ import { proDict } from '@/constants/pro-translations';
 import { MANAGE_URL, showManageSubscriptions } from '@/lib/pro';
 
 export default function ProSettingsCard() {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const { settings } = useSettings();
   const d = proDict[settings.language === 'en' ? 'en' : 'fr'];
   const { pro, managementURL, openPaywall, restorePurchases, devPro, setDevPro } = usePro();
@@ -41,10 +41,10 @@ export default function ProSettingsCard() {
 
   return (
     <View style={{ gap: 16 }}>
-      <Text style={{ fontSize: 14, fontWeight: '700', color: colors.textSecondary, textTransform: 'uppercase', letterSpacing: 1.4, paddingHorizontal: 8 }}>{d.block}</Text>
-      <View style={{ backgroundColor: colors.surface, borderRadius: 32, padding: 20, gap: 6 }}>
+      <Text style={{ fontSize: 11, fontWeight: '700', color: colors.textSecondary, textTransform: 'uppercase', letterSpacing: 1.4, paddingHorizontal: 0 }}>{d.block}</Text>
+      <View style={{ backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border, borderRadius: 20, padding: 20, gap: 6 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 6 }}>
-          <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: isDark ? 'rgba(245,158,66,0.15)' : 'rgba(145,71,0,0.08)', alignItems: 'center', justifyContent: 'center' }}>
+          <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: colors.accentSoft, alignItems: 'center', justifyContent: 'center' }}>
             <Ionicons name={pro ? 'star' : 'star-outline'} size={20} color={colors.accent} />
           </View>
           <Text style={{ flex: 1, fontSize: 14, lineHeight: 20, color: colors.text }}>{pro ? d.active : d.inactive}</Text>

@@ -58,7 +58,7 @@ export default function ChatMessage({
       <View style={{
         backgroundColor: isUser
           ? colors.accent
-          : isDark ? '#2A2A2A' : '#F3F0EF',
+          : colors.surface,
         borderRadius: 20,
         borderBottomRightRadius: isUser ? 6 : 20,
         borderBottomLeftRadius: isUser ? 20 : 6,
@@ -68,7 +68,7 @@ export default function ChatMessage({
         <Text style={{
           fontSize: 15,
           lineHeight: 22,
-          color: isUser ? '#FFFFFF' : colors.text,
+          color: isUser ? colors.onAccent : colors.text,
         }}>
           {item.content}
         </Text>

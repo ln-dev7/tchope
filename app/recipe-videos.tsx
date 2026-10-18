@@ -75,7 +75,7 @@ export default function RecipeVideosScreen() {
         {showTabs && (
           <View
             style={{
-              backgroundColor: isDark ? '#3A3A3A' : '#E4E2E1',
+              backgroundColor: colors.surface,
               borderRadius: 9999,
               padding: 4,
               flexDirection: 'row',
@@ -86,7 +86,7 @@ export default function RecipeVideosScreen() {
                 flex: 1,
                 paddingVertical: 10,
                 borderRadius: 9999,
-                backgroundColor: lang === 'fr' ? (isDark ? colors.card : '#FFFFFF') : 'transparent',
+                backgroundColor: lang === 'fr' ? (colors.card) : 'transparent',
                 alignItems: 'center',
                 flexDirection: 'row',
                 justifyContent: 'center',
@@ -111,7 +111,7 @@ export default function RecipeVideosScreen() {
                 flex: 1,
                 paddingVertical: 10,
                 borderRadius: 9999,
-                backgroundColor: lang === 'en' ? (isDark ? colors.card : '#FFFFFF') : 'transparent',
+                backgroundColor: lang === 'en' ? (colors.card) : 'transparent',
                 alignItems: 'center',
                 flexDirection: 'row',
                 justifyContent: 'center',
@@ -168,7 +168,7 @@ export default function RecipeVideosScreen() {
             onPress={() => openVideo(video.id)}
             activeOpacity={0.85}
             style={{
-              backgroundColor: isDark ? colors.card : '#FFFFFF',
+              backgroundColor: colors.card,
               borderRadius: 28,
               overflow: 'hidden',
               shadowColor: '#000',

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTheme } from '@/hooks/useTheme';
 import { TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -6,6 +7,7 @@ import { usePathname, useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 
 export default function TchopAIButton() {
+  const { colors } = useTheme();
   const { bottom } = useSafeAreaInsets();
   const pathname = usePathname();
   const router = useRouter();
@@ -28,17 +30,17 @@ export default function TchopAIButton() {
         width: 56,
         height: 56,
         borderRadius: 28,
-        backgroundColor: '#A855F7',
+        backgroundColor: colors.accent,
         alignItems: 'center',
         justifyContent: 'center',
         zIndex: 9999,
-        shadowColor: '#A855F7',
+        shadowColor: colors.accent,
         shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.35,
+        shadowOpacity: 0.15,
         shadowRadius: 8,
         elevation: 8,
       }}>
-      <Ionicons name="chatbubble-ellipses" size={26} color="#FFFFFF" />
+      <Ionicons name="chatbubble-ellipses" size={26} color={colors.onAccent} />
     </TouchableOpacity>
   );
 }

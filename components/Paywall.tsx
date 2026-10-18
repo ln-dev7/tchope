@@ -86,10 +86,10 @@ function PaywallSheet({ reason }: { reason: PaywallReason }) {
     <Modal visible transparent animationType="slide" onRequestClose={close}>
       <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}>
         <View style={{ backgroundColor: colors.background, borderTopLeftRadius: 28, borderTopRightRadius: 28, maxHeight: '92%' }}>
-          <ScrollView contentContainerStyle={{ padding: 22, paddingBottom: 34 }} bounces={false}>
+          <ScrollView contentContainerStyle={{ padding: 24, paddingBottom: 34 }} bounces={false}>
             <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' }}>
               <View style={{ width: 52, height: 52, borderRadius: 16, backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center' }}>
-                <Ionicons name="star" size={26} color="#fff" />
+                <Ionicons name="star" size={26} color={colors.onAccent} />
               </View>
               <Pressable
                 onPress={close}
@@ -97,12 +97,12 @@ function PaywallSheet({ reason }: { reason: PaywallReason }) {
                 hitSlop={10}
                 accessibilityRole="button"
                 accessibilityLabel={d.later}
-                style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.surface, opacity: busy ? 0.4 : 1 }}
+                style={{ width: 44, height: 44, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.surface, opacity: busy ? 0.4 : 1 }}
               >
                 <Ionicons name="close" size={20} color={colors.text} />
               </Pressable>
             </View>
-            <Text accessibilityRole="header" style={{ marginTop: 14, fontSize: 24, fontWeight: '800', color: colors.text }}>{d.title}</Text>
+            <Text accessibilityRole="header" style={{ marginTop: 14, fontSize: 30, fontWeight: '800', color: colors.text }}>{d.title}</Text>
             <Text style={{ marginTop: 6, fontSize: 15, lineHeight: 22, color: colors.textSecondary }}>{d.subtitle}</Text>
             {why ? <Text style={{ marginTop: 10, fontSize: 13, lineHeight: 19, color: colors.textMuted }}>{why}</Text> : null}
 
@@ -121,8 +121,8 @@ function PaywallSheet({ reason }: { reason: PaywallReason }) {
               })}
             </View>
 
-            <View style={{ marginTop: 20, borderRadius: 16, padding: 14, backgroundColor: colors.surface }}>
-              <Text style={{ fontSize: 20, fontWeight: '900', color: colors.accent }}>{price ? fill(d.priceLine, { price }) : d.priceLoading}</Text>
+            <View style={{ marginTop: 20, borderRadius: 16, padding: 14, backgroundColor: colors.accentSoft, borderWidth: 1, borderColor: colors.border }}>
+              <Text style={{ fontSize: 20, fontWeight: '700', color: colors.accent }}>{price ? fill(d.priceLine, { price }) : d.priceLoading}</Text>
               <Text style={{ marginTop: 4, fontSize: 12, lineHeight: 18, color: colors.textSecondary }}>{d.renewal}</Text>
             </View>
 
@@ -134,8 +134,8 @@ function PaywallSheet({ reason }: { reason: PaywallReason }) {
               accessibilityRole="button"
               style={{ marginTop: 16, backgroundColor: colors.accent, borderRadius: 14, paddingVertical: 15, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 8, opacity: busy || (configured && !price) ? 0.6 : 1 }}
             >
-              {busy === 'buy' ? <ActivityIndicator color="#fff" /> : <Ionicons name="lock-open-outline" size={18} color="#fff" />}
-              <Text style={{ color: '#fff', fontWeight: '800', fontSize: 16 }}>{busy === 'buy' ? d.buying : price ? fill(d.buy, { price }) : d.buyNoPrice}</Text>
+              {busy === 'buy' ? <ActivityIndicator color={colors.onAccent} /> : <Ionicons name="lock-open-outline" size={18} color={colors.onAccent} />}
+              <Text style={{ color: colors.onAccent, fontWeight: '800', fontSize: 16 }}>{busy === 'buy' ? d.buying : price ? fill(d.buy, { price }) : d.buyNoPrice}</Text>
             </Pressable>
             <Pressable onPress={onRestore} disabled={!!busy} accessibilityRole="button" style={{ marginTop: 8, paddingVertical: 12, alignItems: 'center' }}>
               {busy === 'restore' ? <ActivityIndicator color={colors.accent} /> : <Text style={{ fontSize: 14, fontWeight: '700', color: colors.accent }}>{d.restore}</Text>}

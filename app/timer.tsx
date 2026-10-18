@@ -374,7 +374,7 @@ export default function TimerScreen() {
           width: 72,
           height: 72,
           borderRadius: 16,
-          backgroundColor: isDark ? colors.card : '#FFFFFF',
+          backgroundColor: colors.card,
           alignItems: 'center',
           justifyContent: 'center',
           borderWidth: 2,
@@ -422,8 +422,8 @@ export default function TimerScreen() {
         <TouchableOpacity
           onPress={() => router.back()}
           style={{
-            width: 40,
-            height: 40,
+            width: 44,
+            height: 44,
             borderRadius: 20,
             backgroundColor: colors.chipBg,
             alignItems: 'center',
@@ -500,7 +500,7 @@ export default function TimerScreen() {
               marginBottom: 8,
               padding: 16,
               borderRadius: 20,
-              backgroundColor: isDark ? '#2A1800' : '#FFF3E0',
+              backgroundColor: colors.accentSoft,
               borderWidth: 1,
               borderColor: colors.accent + '30',
             }}>
@@ -581,7 +581,7 @@ export default function TimerScreen() {
                 style={{
                   height: 48,
                   borderRadius: 14,
-                  backgroundColor: isDark ? colors.card : '#FFFFFF',
+                  backgroundColor: colors.card,
                   paddingHorizontal: 16,
                   fontSize: 15,
                   color: colors.text,
@@ -626,8 +626,8 @@ export default function TimerScreen() {
                   shadowRadius: 12,
                   elevation: 8,
                 }}>
-                <Ionicons name="play" size={22} color={totalPickerSeconds > 0 ? '#FFFFFF' : colors.textMuted} />
-                <Text style={{ fontSize: 17, fontWeight: '700', color: totalPickerSeconds > 0 ? '#FFFFFF' : colors.textMuted }}>
+                <Ionicons name="play" size={22} color={totalPickerSeconds > 0 ? colors.onAccent : colors.textMuted} />
+                <Text style={{ fontSize: 17, fontWeight: '700', color: totalPickerSeconds > 0 ? colors.onAccent : colors.textMuted }}>
                   {t('timerStart')}
                 </Text>
               </TouchableOpacity>
@@ -656,7 +656,7 @@ export default function TimerScreen() {
                       paddingHorizontal: 16,
                       paddingVertical: 10,
                       borderRadius: 14,
-                      backgroundColor: isDark ? colors.card : '#FFFFFF',
+                      backgroundColor: colors.card,
                       borderWidth: 1,
                       borderColor: colors.border,
                     }}>
@@ -694,7 +694,7 @@ export default function TimerScreen() {
                       gap: 14,
                       padding: 14,
                       borderRadius: 16,
-                      backgroundColor: isDark ? colors.card : '#FFFFFF',
+                      backgroundColor: colors.card,
                       borderWidth: 1,
                       borderColor: colors.border,
                     }}>
@@ -862,7 +862,7 @@ export default function TimerScreen() {
                       shadowColor: colors.accent, shadowOffset: { width: 0, height: 4 },
                       shadowOpacity: 0.3, shadowRadius: 8, elevation: 6,
                     }}>
-                    <Ionicons name="refresh" size={28} color="#FFFFFF" />
+                    <Ionicons name="refresh" size={28} color={colors.onAccent} />
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => stopLocalTimer(activeTimer.id)}
@@ -899,7 +899,7 @@ export default function TimerScreen() {
                       shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.35,
                       shadowRadius: 12, elevation: 8,
                     }}>
-                    <Ionicons name={activeTimer.isPaused ? 'play' : 'pause'} size={32} color="#FFFFFF" />
+                    <Ionicons name={activeTimer.isPaused ? 'play' : 'pause'} size={32} color={activeTimer.isPaused ? colors.onAccent : '#29241F'} />
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() =>
@@ -945,7 +945,7 @@ export default function TimerScreen() {
                 marginTop: 20, paddingHorizontal: 24, paddingVertical: 12,
                 borderRadius: 16, backgroundColor: colors.accent,
               }}>
-              <Text style={{ fontSize: 15, fontWeight: '600', color: '#FFFFFF' }}>
+              <Text style={{ fontSize: 15, fontWeight: '600', color: colors.onAccent }}>
                 {t('timerCreateNew')}
               </Text>
             </TouchableOpacity>
@@ -972,7 +972,7 @@ export default function TimerScreen() {
                     activeOpacity={0.7}
                     style={{
                       padding: 16, borderRadius: 18,
-                      backgroundColor: isActive ? colors.accent + '12' : isDark ? colors.card : '#FFFFFF',
+                      backgroundColor: isActive ? colors.accent + '12' : colors.card,
                       borderWidth: isActive ? 2 : 1,
                       borderColor: isActive ? colors.accent : colors.border,
                       overflow: 'hidden',

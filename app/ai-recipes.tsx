@@ -309,7 +309,7 @@ export default function AIRecipesScreen() {
   }, [results, recipes, mode, ingredients]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, width: '100%', maxWidth: 840, alignSelf: 'center', backgroundColor: colors.background }} edges={['top']}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -344,11 +344,11 @@ export default function AIRecipesScreen() {
               width: 36,
               height: 36,
               borderRadius: 18,
-              backgroundColor: isDark ? 'rgba(168,85,247,0.15)' : 'rgba(168,85,247,0.1)',
+              backgroundColor: colors.accentSoft,
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-            <Ionicons name="sparkles" size={18} color="#A855F7" />
+            <Ionicons name="sparkles" size={18} color={colors.accent} />
           </View>
         </View>
 
@@ -362,8 +362,8 @@ export default function AIRecipesScreen() {
           {/* Mode switcher */}
           <View
             style={{
-              backgroundColor: isDark ? '#3A3A3A' : '#E4E2E1',
-              borderRadius: 9999,
+              backgroundColor: colors.surface,
+              borderRadius: 12,
               padding: 4,
               flexDirection: 'row',
             }}>
@@ -372,8 +372,8 @@ export default function AIRecipesScreen() {
               style={{
                 flex: 1,
                 paddingVertical: 10,
-                borderRadius: 9999,
-                backgroundColor: mode === 'ingredients' ? (isDark ? colors.card : '#FFFFFF') : 'transparent',
+                borderRadius: 12,
+                backgroundColor: mode === 'ingredients' ? (colors.card) : 'transparent',
                 alignItems: 'center',
                 flexDirection: 'row',
                 justifyContent: 'center',
@@ -401,8 +401,8 @@ export default function AIRecipesScreen() {
               style={{
                 flex: 1,
                 paddingVertical: 10,
-                borderRadius: 9999,
-                backgroundColor: mode === 'free' ? (isDark ? colors.card : '#FFFFFF') : 'transparent',
+                borderRadius: 12,
+                backgroundColor: mode === 'free' ? (colors.card) : 'transparent',
                 alignItems: 'center',
                 flexDirection: 'row',
                 justifyContent: 'center',
@@ -414,13 +414,13 @@ export default function AIRecipesScreen() {
               <Ionicons
                 name="chatbubble-outline"
                 size={15}
-                color={mode === 'free' ? '#A855F7' : colors.textSecondary}
+                color={mode === 'free' ? colors.accent : colors.textSecondary}
               />
               <Text
                 style={{
                   fontSize: 13,
                   fontWeight: mode === 'free' ? '700' : '500',
-                  color: mode === 'free' ? '#A855F7' : colors.textSecondary,
+                  color: mode === 'free' ? colors.accent : colors.textSecondary,
                 }}>
                 {t('aiModeFree')}
               </Text>
@@ -475,7 +475,7 @@ export default function AIRecipesScreen() {
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}>
-                    <Ionicons name="add" size={20} color={input.trim() ? '#FFFFFF' : colors.textMuted} />
+                    <Ionicons name="add" size={20} color={input.trim() ? colors.onAccent : colors.textMuted} />
                   </TouchableOpacity>
                 </View>
 
@@ -487,7 +487,7 @@ export default function AIRecipesScreen() {
                         key={s}
                         onPress={() => addIngredient(s)}
                         style={{
-                          backgroundColor: isDark ? 'rgba(168,85,247,0.12)' : 'rgba(168,85,247,0.08)',
+                          backgroundColor: colors.accentSoft,
                           borderRadius: 16,
                           paddingHorizontal: 12,
                           paddingVertical: 6,
@@ -495,8 +495,8 @@ export default function AIRecipesScreen() {
                           alignItems: 'center',
                           gap: 4,
                         }}>
-                        <Ionicons name="add-circle-outline" size={14} color="#A855F7" />
-                        <Text style={{ fontSize: 13, color: '#A855F7', fontWeight: '500' }}>{s}</Text>
+                        <Ionicons name="add-circle-outline" size={14} color={colors.accent} />
+                        <Text style={{ fontSize: 13, color: colors.accent, fontWeight: '500' }}>{s}</Text>
                       </TouchableOpacity>
                     ))}
                   </View>
@@ -614,7 +614,7 @@ export default function AIRecipesScreen() {
 
           {/* Error */}
           {error && (
-            <Text style={{ fontSize: 13, color: '#E74C3C', paddingHorizontal: 4 }}>
+            <Text style={{ fontSize: 13, color: colors.danger, paddingHorizontal: 4 }}>
               {error}
             </Text>
           )}
@@ -625,7 +625,7 @@ export default function AIRecipesScreen() {
             disabled={!canSearch || loading || (mode === 'free' && !aiAvailable)}
             activeOpacity={0.85}
             style={{
-              backgroundColor: canSearch && !loading && (mode === 'ingredients' || aiAvailable) ? '#A855F7' : colors.surface,
+              backgroundColor: canSearch && !loading && (mode === 'ingredients' || aiAvailable) ? colors.accent : colors.surface,
               borderRadius: 20,
               paddingVertical: 16,
               flexDirection: 'row',
@@ -634,19 +634,19 @@ export default function AIRecipesScreen() {
               gap: 8,
             }}>
             {loading ? (
-              <ActivityIndicator color="#FFFFFF" size="small" />
+              <ActivityIndicator color={colors.onAccent} size="small" />
             ) : (
               <Ionicons
                 name={mode === 'free' ? 'sparkles' : 'search'}
                 size={18}
-                color={canSearch && (mode === 'ingredients' || aiAvailable) ? '#FFFFFF' : colors.textMuted}
+                color={canSearch && (mode === 'ingredients' || aiAvailable) ? colors.onAccent : colors.textMuted}
               />
             )}
             <Text
               style={{
                 fontSize: 16,
                 fontWeight: '700',
-                color: canSearch && !loading && (mode === 'ingredients' || aiAvailable) ? '#FFFFFF' : colors.textMuted,
+                color: canSearch && !loading && (mode === 'ingredients' || aiAvailable) ? colors.onAccent : colors.textMuted,
               }}>
               {loading ? t('aiSearching') : t('aiSearch')}
             </Text>

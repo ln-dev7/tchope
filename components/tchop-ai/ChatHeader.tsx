@@ -1,4 +1,5 @@
 import React from 'react';
+import type { TranslationKey } from '@/constants/translations';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -9,36 +10,29 @@ type Props = {
   onBack: () => void;
   onNewChat: () => void;
   onOpenHistory: () => void;
-  t: (k: any) => string;
+  t: (k: TranslationKey) => string;
 };
 
 export default function ChatHeader({ colors, isDark, messageCount, onBack, onNewChat, onOpenHistory, t }: Props) {
   return (
     <View style={{
       paddingBottom: 12,
-      paddingHorizontal: 20,
+      paddingHorizontal: 16, paddingTop: 8,
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 12,
+      gap: 8,
       borderBottomWidth: 1,
       borderBottomColor: colors.border,
     }}>
       <TouchableOpacity
-        onPress={onBack}
+        accessibilityRole="button" accessibilityLabel={t('back')} onPress={onBack}
         style={{
-          width: 40, height: 40, borderRadius: 20,
+          width: 44, height: 44, borderRadius: 14,
           backgroundColor: colors.surface,
           alignItems: 'center', justifyContent: 'center',
         }}>
         <Ionicons name="arrow-back" size={20} color={colors.text} />
       </TouchableOpacity>
-      <View style={{
-        width: 36, height: 36, borderRadius: 18,
-        backgroundColor: isDark ? 'rgba(168,85,247,0.15)' : 'rgba(168,85,247,0.1)',
-        alignItems: 'center', justifyContent: 'center',
-      }}>
-        <Ionicons name="sparkles" size={18} color="#A855F7" />
-      </View>
       <View style={{ flex: 1 }}>
         <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text }}>
           {t('tchopaiTitle')}
@@ -48,10 +42,10 @@ export default function ChatHeader({ colors, isDark, messageCount, onBack, onNew
         </Text>
       </View>
       <TouchableOpacity
-        onPress={onNewChat}
+        accessibilityRole="button" accessibilityLabel={t('tchopaiNewChat')} onPress={onNewChat}
         disabled={messageCount <= 1}
         style={{
-          width: 36, height: 36, borderRadius: 18,
+          width: 44, height: 44, borderRadius: 14,
           backgroundColor: colors.surface,
           alignItems: 'center', justifyContent: 'center',
           opacity: messageCount <= 1 ? 0.4 : 1,
@@ -59,9 +53,9 @@ export default function ChatHeader({ colors, isDark, messageCount, onBack, onNew
         <Ionicons name="create-outline" size={18} color={colors.text} />
       </TouchableOpacity>
       <TouchableOpacity
-        onPress={onOpenHistory}
+        accessibilityRole="button" accessibilityLabel={t('tchopaiHistory')} onPress={onOpenHistory}
         style={{
-          width: 36, height: 36, borderRadius: 18,
+          width: 44, height: 44, borderRadius: 14,
           backgroundColor: colors.surface,
           alignItems: 'center', justifyContent: 'center',
         }}>

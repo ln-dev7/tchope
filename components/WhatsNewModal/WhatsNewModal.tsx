@@ -78,7 +78,7 @@ export default function WhatsNewModal() {
           <View style={{ alignItems: 'center', paddingBottom: 8 }}>
             <View
               style={{
-                width: 40,
+                width: 44,
                 height: 4,
                 borderRadius: 2,
                 backgroundColor: isDark ? '#3A3A3A' : '#E0DDDC',

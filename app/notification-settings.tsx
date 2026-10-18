@@ -117,7 +117,7 @@ export default function NotificationSettingsScreen() {
       key: 'recipeOfTheDay',
       timeKey: 'recipeOfTheDayTime',
       icon: 'sparkles-outline',
-      iconColor: '#A855F7',
+      iconColor: colors.accent,
       title: t('notifRecipeOfTheDay'),
       desc: t('notifRecipeOfTheDayDesc'),
     },
@@ -132,7 +132,7 @@ export default function NotificationSettingsScreen() {
   ];
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, width: '100%', maxWidth: 840, alignSelf: 'center', backgroundColor: colors.background }} edges={['top']}>
       {/* Header */}
       <View
         style={{
@@ -264,7 +264,7 @@ export default function NotificationSettingsScreen() {
                       flexDirection: 'row',
                       alignItems: 'center',
                       gap: 8,
-                      backgroundColor: isDark ? colors.card : '#FFFFFF',
+                      backgroundColor: colors.card,
                       borderRadius: 14,
                       paddingHorizontal: 14,
                       paddingVertical: 10,
@@ -317,7 +317,7 @@ export default function NotificationSettingsScreen() {
             />
             <View
               style={{
-                backgroundColor: isDark ? colors.card : '#FFFFFF',
+                backgroundColor: colors.card,
                 borderTopLeftRadius: 24,
                 borderTopRightRadius: 24,
                 paddingBottom: bottom + 16,
@@ -358,7 +358,7 @@ export default function NotificationSettingsScreen() {
                     paddingVertical: 16,
                     alignItems: 'center',
                   }}>
-                  <Text style={{ fontSize: 16, fontWeight: '700', color: '#FFFFFF' }}>OK</Text>
+                  <Text style={{ fontSize: 16, fontWeight: '700', color: colors.onAccent }}>OK</Text>
                 </TouchableOpacity>
               </View>
             </View>

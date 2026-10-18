@@ -29,7 +29,7 @@ export default function SaveNoteButton({ note, isDark, colors, onSave, alreadySa
         justifyContent: 'center',
         gap: 8,
         backgroundColor: saved
-          ? (isDark ? '#2A2A2A' : '#F3F0EF')
+          ? colors.surface
           : colors.accent,
         borderRadius: 14,
         paddingVertical: 12,
@@ -38,12 +38,12 @@ export default function SaveNoteButton({ note, isDark, colors, onSave, alreadySa
       <Ionicons
         name={saved ? 'checkmark-circle' : 'document-text-outline'}
         size={18}
-        color={saved ? colors.textMuted : '#FFFFFF'}
+        color={saved ? colors.textMuted : colors.onAccent}
       />
       <Text style={{
         fontSize: 14,
         fontWeight: '600',
-        color: saved ? colors.textMuted : '#FFFFFF',
+        color: saved ? colors.textMuted : colors.onAccent,
       }}>
         {saved ? t('noteSaved') : t('addNote')}
       </Text>

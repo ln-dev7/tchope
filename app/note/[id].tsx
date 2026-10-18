@@ -27,7 +27,7 @@ import { isNoteEmpty } from '@/components/notes/utils';
 
 export default function NoteEditorScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
   const { bottom } = useSafeAreaInsets();
@@ -251,8 +251,8 @@ export default function NoteEditorScreen() {
           <TouchableOpacity
             onPress={() => router.back()}
             style={{
-              width: 40,
-              height: 40,
+              width: 44,
+              height: 44,
               borderRadius: 20,
               backgroundColor: colors.surface,
               alignItems: 'center',
@@ -264,14 +264,14 @@ export default function NoteEditorScreen() {
           <TouchableOpacity
             onPress={handleDelete}
             style={{
-              width: 40,
-              height: 40,
+              width: 44,
+              height: 44,
               borderRadius: 20,
-              backgroundColor: 'rgba(231,76,60,0.1)',
+              backgroundColor: colors.dangerSoft,
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-            <Ionicons name="trash-outline" size={18} color="#E74C3C" />
+            <Ionicons name="trash-outline" size={18} color={colors.danger} />
           </TouchableOpacity>
         </View>
 

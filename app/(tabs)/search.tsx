@@ -11,6 +11,7 @@ import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
 import CategoryChip from '@/components/CategoryChip';
 import IngredientItem from '@/components/IngredientItem';
 import SearchResultCard from '@/components/SearchResultCard';
+import PageIntro from '@/components/ui/PageIntro';
 import EmptyState from '@/components/EmptyState';
 import type { Spiciness } from '@/types';
 
@@ -21,7 +22,7 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 }
 
 export default function SearchScreen() {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const { t } = useTranslation();
   const recipes = useLocalizedRecipes();
   const { bottom } = useSafeAreaInsets();
@@ -72,17 +73,12 @@ export default function SearchScreen() {
   const hasActiveFilters = query || filters.duration || filters.spiciness || filters.ingredient;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
-      {/* Header */}
-      <View style={{ paddingHorizontal: 24, paddingVertical: 16 }}>
-        <Text style={{ fontSize: 24, fontWeight: '800', color: colors.accent, letterSpacing: -1.2 }}>
-          Tchopé
-        </Text>
-      </View>
+    <SafeAreaView style={{ flex: 1, width: '100%', maxWidth: 840, alignSelf: 'center', backgroundColor: colors.background }} edges={['top']}>
+      <PageIntro title={t('searchTitle')} subtitle={t('searchSubtitle')} />
 
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: 80 + bottom, gap: 32 }}
+        contentContainerStyle={{ paddingBottom: 112 + bottom, gap: 24 }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled">
 
@@ -95,11 +91,12 @@ export default function SearchScreen() {
             placeholder={t('searchPlaceholder')}
             placeholderTextColor={colors.textSecondary}
             style={{
-              backgroundColor: colors.inputBg,
-              borderRadius: 20,
+              backgroundColor: colors.card,
+              borderWidth: 1, borderColor: colors.border,
+              borderRadius: 16,
               paddingLeft: 48,
               paddingRight: query ? 48 : 16,
-              paddingVertical: 18,
+              paddingVertical: 16,
               fontSize: 16,
               color: colors.text,
             }}
@@ -113,7 +110,7 @@ export default function SearchScreen() {
           {query ? (
             <TouchableOpacity
               onPress={() => setQuery('')}
-              style={{ position: 'absolute', right: 16, top: 18, padding: 2 }}>
+              style={{ position: 'absolute', right: 4, top: 4, width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}>
               <Ionicons name="close-circle" size={20} color={colors.textSecondary} />
             </TouchableOpacity>
           ) : null}
@@ -214,7 +211,7 @@ export default function SearchScreen() {
                   style={{
                     paddingHorizontal: 14,
                     paddingVertical: 6,
-                    borderRadius: 20,
+                    borderRadius: 16,
                     backgroundColor: showFilters ? colors.accent : colors.surface,
                     flexDirection: 'row',
                     alignItems: 'center',
@@ -235,7 +232,7 @@ export default function SearchScreen() {
                   style={{
                     paddingHorizontal: 14,
                     paddingVertical: 6,
-                    borderRadius: 20,
+                    borderRadius: 16,
                     backgroundColor: colors.surface,
                   }}>
                   <Text style={{ fontSize: 13, fontWeight: '600', color: colors.accent }}>
@@ -292,7 +289,7 @@ export default function SearchScreen() {
             {showFilters && (
               <View
                 style={{
-                  backgroundColor: isDark ? colors.card : '#FFFFFF',
+                  backgroundColor: colors.card,
                   borderRadius: 24,
                   padding: 16,
                   gap: 16,

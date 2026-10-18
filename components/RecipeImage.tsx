@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
+import { useTheme } from '@/hooks/useTheme';
 import { Image } from 'expo-image';
 import { getRecipeImage } from '@/constants/images';
 import type { Category } from '@/types';
@@ -14,29 +15,29 @@ type Props = {
 };
 
 const categoryColors: Record<Category, string> = {
-  Plat: '#FED3C7',
-  Entrée: '#D1FFC8',
-  Sauce: '#FFE4C8',
-  Accompagnement: '#FFF3C8',
-  Boisson: '#C8E4FF',
-  Grillade: '#FFD1C8',
-  Dessert: '#F3C8FF',
+  Plat: '#EFE0D4',
+  Entrée: '#E5EBDD',
+  Sauce: '#EDE1CC',
+  Accompagnement: '#F1EBDC',
+  Boisson: '#DFE8EB',
+  Grillade: '#EFDFD7',
+  Dessert: '#EAE0E5',
 };
 
 const categoryColorsDark: Record<Category, string> = {
-  Plat: '#3A2520',
-  Entrée: '#1A3A1A',
-  Sauce: '#3A2A1A',
-  Accompagnement: '#3A3520',
-  Boisson: '#1A2A3A',
-  Grillade: '#3A201A',
-  Dessert: '#2A1A3A',
+  Plat: '#382C24',
+  Entrée: '#2B3325',
+  Sauce: '#373022',
+  Accompagnement: '#353124',
+  Boisson: '#263237',
+  Grillade: '#382925',
+  Dessert: '#352B32',
 };
 
 function LogoPlaceholder({ category, isDark }: { category: Category; isDark?: boolean }) {
   const bg = isDark
-    ? (categoryColorsDark[category] || '#3A2520')
-    : (categoryColors[category] || '#FED3C7');
+    ? (categoryColorsDark[category] || '#382C24')
+    : (categoryColors[category] || '#EFE0D4');
 
   return (
     <View style={[StyleSheet.absoluteFill, { backgroundColor: bg, alignItems: 'center', justifyContent: 'center' }]}>
@@ -55,7 +56,9 @@ function LogoPlaceholder({ category, isDark }: { category: Category; isDark?: bo
  * 1. Tries the remote URL first (expo-image caches it automatically)
  * 2. On error, shows the category-colored placeholder with the app logo
  */
-export default function RecipeImage({ recipeId, category, imageUri, style, borderRadius = 24, isDark }: Props) {
+export default function RecipeImage({ recipeId, category, imageUri, style, borderRadius = 18, isDark: darkOverride }: Props) {
+  const { isDark: themeDark, colors } = useTheme();
+  const isDark = darkOverride ?? themeDark;
   const [showLogo, setShowLogo] = useState(true);
 
   const isUserWithoutPhoto = !imageUri && recipeId.startsWith('user-');
@@ -83,7 +86,7 @@ export default function RecipeImage({ recipeId, category, imageUri, style, borde
     : resolvedImage;
 
   return (
-    <View style={[{ overflow: 'hidden', borderRadius, backgroundColor: isDark ? '#1A1A1A' : '#F5F5F5' }, style]}>
+    <View style={[{ overflow: 'hidden', borderRadius, backgroundColor: colors.surface }, style]}>
       {showLogo && <LogoPlaceholder category={category} isDark={isDark} />}
       <Image
         source={imageSource}

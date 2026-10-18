@@ -18,25 +18,27 @@ export default function RecipeCard({ recipe, titlePaddingRight }: Props) {
 
   return (
     <TouchableOpacity
+      accessibilityRole="button" accessibilityLabel={recipe.name}
       onPress={() => router.push(`/recipe/${recipe.id}`)}
       activeOpacity={0.8}
       style={{
-        backgroundColor: isDark ? colors.surface : colors.surface,
-        borderRadius: 24,
+        backgroundColor: colors.card,
+        borderRadius: 18,
+        borderWidth: 1, borderColor: colors.border,
         padding: 12,
         flexDirection: 'row',
-        gap: 16,
+        gap: 14,
         alignItems: 'center',
       }}>
       {/* Thumbnail */}
-      <RecipeImage recipeId={recipe.id} category={recipe.category} imageUri={(recipe as any).imageUri} isDark={isDark} style={{ width: 96, height: 96 }} borderRadius={32} />
+      <RecipeImage recipeId={recipe.id} category={recipe.category} imageUri={(recipe as any).imageUri} isDark={isDark} style={{ width: 88, height: 88 }} borderRadius={12} />
       {/* Info */}
       <View style={{ flex: 1, gap: 4 }}>
         <Text
           numberOfLines={2}
           style={{
-            fontSize: 18,
-            fontWeight: '600',
+            fontSize: 17,
+            fontWeight: '700',
             color: colors.text,
             ...(titlePaddingRight ? { paddingRight: titlePaddingRight } : {}),
           }}>
@@ -48,7 +50,7 @@ export default function RecipeCard({ recipe, titlePaddingRight }: Props) {
             {recipe.region}
           </Text>
         </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16, paddingTop: 4 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14, paddingTop: 4 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
             <Ionicons name="time-outline" size={13} color={colors.text} />
             <Text style={{ fontSize: 12, fontWeight: '500', color: colors.text }}>

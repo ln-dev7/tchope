@@ -15,7 +15,7 @@ type Props = {
 };
 
 export default function NoteCard({ note, onPress, onDelete }: Props) {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const { t } = useTranslation();
   const { settings } = useSettings();
   const isFr = settings.language === 'fr';
@@ -41,9 +41,9 @@ export default function NoteCard({ note, onPress, onDelete }: Props) {
       onPress={onPress}
       activeOpacity={0.75}
       style={{
-        backgroundColor: isDark ? colors.card : '#FFFFFF',
+        backgroundColor: colors.card,
         borderRadius: 18,
-        padding: 16,
+        padding: 20,
         borderWidth: 1,
         borderColor: colors.border,
         gap: 8,
@@ -51,16 +51,16 @@ export default function NoteCard({ note, onPress, onDelete }: Props) {
       <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 12 }}>
         <View style={{ flex: 1, gap: 4 }}>
           <Text
-            style={{ fontSize: 16, fontWeight: '700', color: colors.text }}
-            numberOfLines={1}>
+            style={{ fontSize: 19, fontWeight: '700', color: colors.text }}
+            numberOfLines={2}>
             {title}
           </Text>
           {preview ? (
-            <Text style={{ fontSize: 13, color: colors.textSecondary, lineHeight: 18 }} numberOfLines={2}>
+            <Text style={{ fontSize: 14, color: colors.textSecondary, lineHeight: 22 }} numberOfLines={2}>
               {preview}
             </Text>
           ) : (
-            <Text style={{ fontSize: 13, color: colors.textMuted, fontStyle: 'italic' }}>
+            <Text style={{ fontSize: 14, color: colors.textMuted, fontStyle: 'italic' }}>
               {t('noteEmpty')}
             </Text>
           )}
@@ -73,11 +73,11 @@ export default function NoteCard({ note, onPress, onDelete }: Props) {
             width: 32,
             height: 32,
             borderRadius: 16,
-            backgroundColor: 'rgba(231,76,60,0.1)',
+            backgroundColor: colors.dangerSoft,
             alignItems: 'center',
             justifyContent: 'center',
           }}>
-          <Ionicons name="trash-outline" size={14} color="#E74C3C" />
+          <Ionicons name="trash-outline" size={14} color={colors.danger} />
         </TouchableOpacity>
       </View>
     </TouchableOpacity>

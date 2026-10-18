@@ -67,7 +67,7 @@ export default function ShoppingListScreen() {
   }, [formatListAsText]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, width: '100%', maxWidth: 840, alignSelf: 'center', backgroundColor: colors.background }} edges={['top']}>
       {/* Header */}
       <View
         style={{
@@ -80,8 +80,8 @@ export default function ShoppingListScreen() {
         <TouchableOpacity
           onPress={() => router.back()}
           style={{
-            width: 40,
-            height: 40,
+            width: 44,
+            height: 44,
             borderRadius: 20,
             backgroundColor: colors.surface,
             alignItems: 'center',

@@ -25,26 +25,27 @@ type Props = {
 };
 
 export default function RegionItem({ region, active = false, onPress }: Props) {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
   return (
     <TouchableOpacity
+      accessibilityRole="button" accessibilityState={{ selected: active }}
       onPress={onPress}
       activeOpacity={0.7}
-      style={{ alignItems: 'center', gap: 8, width: 80 }}>
+      style={{ alignItems: 'center', gap: 8, width: 86 }}>
       <View
         style={{
-          width: 64,
-          height: 64,
-          borderRadius: 32,
-          backgroundColor: active ? colors.accent : (isDark ? colors.surface : colors.surface),
+          width: 66,
+          height: 66,
+          borderRadius: 20,
+          backgroundColor: active ? colors.accent : colors.surface,
           alignItems: 'center',
           justifyContent: 'center',
         }}>
         <Ionicons
           name={regionIcons[region] as any}
           size={22}
-          color={active ? '#FFFFFF' : colors.textSecondary}
+          color={active ? colors.onAccent : colors.accent}
         />
       </View>
       <Text
@@ -54,7 +55,7 @@ export default function RegionItem({ region, active = false, onPress }: Props) {
           color: active ? colors.accent : colors.textSecondary,
           textAlign: 'center',
         }}
-        numberOfLines={1}>
+        numberOfLines={2}>
         {region}
       </Text>
     </TouchableOpacity>

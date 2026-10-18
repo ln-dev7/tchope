@@ -38,7 +38,7 @@ export function useRating() {
 }
 
 export function RatingProvider({ children }: { children: React.ReactNode }) {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const { t } = useTranslation();
   const { timer } = useTimer();
   const [showModal, setShowModal] = useState(false);
@@ -126,8 +126,8 @@ export function RatingProvider({ children }: { children: React.ReactNode }) {
           }}>
           <View
             style={{
-              backgroundColor: isDark ? colors.card : '#FFFFFF',
-              borderRadius: 32,
+              backgroundColor: colors.card,
+              borderRadius: 22,
               padding: 32,
               width: '100%',
               alignItems: 'center',
@@ -137,8 +137,8 @@ export function RatingProvider({ children }: { children: React.ReactNode }) {
               style={{
                 width: 64,
                 height: 64,
-                borderRadius: 32,
-                backgroundColor: isDark ? 'rgba(245,158,66,0.15)' : 'rgba(145,71,0,0.08)',
+                borderRadius: 22,
+                backgroundColor: colors.accentSoft,
                 alignItems: 'center',
                 justifyContent: 'center',
               }}>
@@ -176,8 +176,8 @@ export function RatingProvider({ children }: { children: React.ReactNode }) {
                   justifyContent: 'center',
                   gap: 8,
                 }}>
-                <Ionicons name="star" size={18} color="#FFFFFF" />
-                <Text style={{ fontSize: 16, fontWeight: '700', color: '#FFFFFF' }}>
+                <Ionicons name="star" size={18} color={colors.onAccent} />
+                <Text style={{ fontSize: 16, fontWeight: '700', color: colors.onAccent }}>
                   {t('rateNow')}
                 </Text>
               </TouchableOpacity>

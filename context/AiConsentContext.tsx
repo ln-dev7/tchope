@@ -90,7 +90,7 @@ export function AiConsentProvider({ children }: { children: React.ReactNode }) {
               <TouchableOpacity
                 onPress={() => finish(true)}
                 style={{ marginTop: 24, backgroundColor: colors.accent, borderRadius: 16, paddingVertical: 15, alignItems: 'center', justifyContent: 'center' }}>
-                <Text style={{ fontSize: 15, fontWeight: '800', color: '#FFFFFF' }}>{t('aiConsentAgree')}</Text>
+                <Text style={{ fontSize: 15, fontWeight: '800', color: colors.onAccent }}>{t('aiConsentAgree')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity onPress={() => finish(false)} style={{ marginTop: 10, alignItems: 'center', paddingVertical: 8 }}>

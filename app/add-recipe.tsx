@@ -135,21 +135,22 @@ export default function AddRecipeScreen() {
   const filledIngredients = ingredients.filter((i) => i.name.trim()).length;
 
   const inputStyle = {
-    backgroundColor: isDark ? colors.card : '#FFFFFF',
-    borderRadius: 20,
+    backgroundColor: colors.card,
+    borderWidth: 1, borderColor: colors.border,
+    borderRadius: 14,
     paddingHorizontal: 20,
     paddingVertical: 16,
     fontSize: 16,
     color: colors.text,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
+    shadowOpacity: 0,
     shadowRadius: 3,
-    elevation: 1,
+    elevation: 0,
   } as const;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, width: '100%', maxWidth: 840, alignSelf: 'center', backgroundColor: colors.background }} edges={['top']}>
       {/* Header */}
       <View
         style={{
@@ -171,7 +172,7 @@ export default function AddRecipeScreen() {
           }}>
           <Ionicons name="arrow-back" size={20} color={colors.text} />
         </TouchableOpacity>
-        <Text style={{ fontSize: 20, fontWeight: '700', color: colors.accent, letterSpacing: -0.5, flex: 1 }}>
+        <Text style={{ fontSize: 22, fontWeight: '700', color: colors.text, letterSpacing: -0.5, flex: 1 }}>
           {isEditing ? t('editRecipe') : t('newRecipe')}
         </Text>
       </View>
@@ -188,7 +189,7 @@ export default function AddRecipeScreen() {
           activeOpacity={0.8}
           style={{
             backgroundColor: colors.surface,
-            borderRadius: 32,
+            borderRadius: 20,
             borderWidth: 2,
             borderColor: 'rgba(175,173,172,0.3)',
             borderStyle: 'dashed',
@@ -207,13 +208,13 @@ export default function AddRecipeScreen() {
               style={{
                 width: 64,
                 height: 64,
-                borderRadius: 32,
-                backgroundColor: isDark ? colors.card : '#FFFFFF',
+                borderRadius: 20,
+                backgroundColor: colors.card,
                 alignItems: 'center',
                 justifyContent: 'center',
                 shadowColor: '#000',
                 shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.05,
+                shadowOpacity: 0,
                 shadowRadius: 2,
               }}>
               <Ionicons name="camera-outline" size={28} color={colors.textMuted} />
@@ -273,7 +274,7 @@ export default function AddRecipeScreen() {
           {showRegionPicker && (
             <View
               style={{
-                backgroundColor: isDark ? colors.card : '#FFFFFF',
+                backgroundColor: colors.card,
                 borderRadius: 24,
                 overflow: 'hidden',
                 shadowColor: '#000',
@@ -353,7 +354,7 @@ export default function AddRecipeScreen() {
               {t('ingredients')}
             </Text>
             {filledIngredients > 0 && (
-              <View style={{ backgroundColor: colors.ingredientBg, paddingHorizontal: 12, paddingVertical: 4, borderRadius: 9999 }}>
+              <View style={{ backgroundColor: colors.ingredientBg, paddingHorizontal: 12, paddingVertical: 4, borderRadius: 12 }}>
                 <Text style={{ fontSize: 12, fontWeight: '500', color: colors.chipPeachText }}>
                   {filledIngredients} {t('ingredientsAdded')}
                 </Text>
@@ -383,7 +384,7 @@ export default function AddRecipeScreen() {
                     width: 36,
                     height: 36,
                     borderRadius: 18,
-                    backgroundColor: ing.name.trim() ? 'rgba(231,76,60,0.1)' : colors.surface,
+                    backgroundColor: ing.name.trim() ? colors.dangerSoft : colors.surface,
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}>
@@ -430,7 +431,7 @@ export default function AddRecipeScreen() {
                     width: 36,
                     height: 36,
                     borderRadius: 18,
-                    backgroundColor: step.trim() ? colors.accentLight : (isDark ? '#3A3A3A' : '#E4E2E1'),
+                    backgroundColor: step.trim() ? colors.accentLight : (colors.surface),
                     alignItems: 'center',
                     justifyContent: 'center',
                     marginTop: 6,
@@ -439,7 +440,7 @@ export default function AddRecipeScreen() {
                     style={{
                       fontSize: 14,
                       fontWeight: '700',
-                      color: step.trim() ? '#FFFFFF' : colors.textSecondary,
+                      color: step.trim() ? colors.onAccent : colors.textSecondary,
                     }}>
                     {index + 1}
                   </Text>
@@ -468,11 +469,11 @@ export default function AddRecipeScreen() {
                         width: 28,
                         height: 28,
                         borderRadius: 14,
-                        backgroundColor: 'rgba(231,76,60,0.1)',
+                        backgroundColor: colors.dangerSoft,
                         alignItems: 'center',
                         justifyContent: 'center',
                       }}>
-                      <Ionicons name="close" size={14} color="#E74C3C" />
+                      <Ionicons name="close" size={14} color={colors.danger} />
                     </TouchableOpacity>
                   )}
                 </View>
@@ -507,7 +508,7 @@ export default function AddRecipeScreen() {
             activeOpacity={0.85}
             style={{
               height: 64,
-              borderRadius: 32,
+              borderRadius: 20,
               backgroundColor: colors.accent,
               flexDirection: 'row',
               alignItems: 'center',
@@ -519,8 +520,8 @@ export default function AddRecipeScreen() {
               shadowRadius: 15,
               elevation: 6,
             }}>
-            <Ionicons name="save-outline" size={18} color="#FFFFFF" />
-            <Text style={{ fontSize: 18, fontWeight: '600', color: '#FFFFFF' }}>
+            <Ionicons name="save-outline" size={18} color={colors.onAccent} />
+            <Text style={{ fontSize: 18, fontWeight: '600', color: colors.onAccent }}>
               {t('saveRecipe')}
             </Text>
           </TouchableOpacity>
@@ -529,7 +530,7 @@ export default function AddRecipeScreen() {
             activeOpacity={0.7}
             style={{
               height: 64,
-              borderRadius: 32,
+              borderRadius: 20,
               backgroundColor: colors.surface,
               alignItems: 'center',
               justifyContent: 'center',

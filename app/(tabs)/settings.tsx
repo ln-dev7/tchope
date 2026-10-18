@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import Constants from 'expo-constants';
 
+import PageIntro from '@/components/ui/PageIntro';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useSettings } from '@/context/SettingsContext';
@@ -88,17 +89,12 @@ export default function SettingsScreen() {
   ];
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
-      {/* Header */}
-      <View style={{ paddingHorizontal: 24, paddingVertical: 16 }}>
-        <Text style={{ fontSize: 24, fontWeight: '800', color: colors.accent, letterSpacing: -1.2 }}>
-          {t('settings')}
-        </Text>
-      </View>
+    <SafeAreaView style={{ flex: 1, width: '100%', maxWidth: 840, alignSelf: 'center', backgroundColor: colors.background }} edges={['top']}>
+      <PageIntro title={t('settings')} subtitle={t('settingsSubtitle')} />
 
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: 80 + bottom, paddingHorizontal: 24, gap: 40, paddingTop: 32 }}
+        contentContainerStyle={{ paddingBottom: 112 + bottom, paddingHorizontal: 24, gap: 28, paddingTop: 0 }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled">
         {/* Tchopé Pro */}
@@ -108,19 +104,19 @@ export default function SettingsScreen() {
         <View style={{ gap: 16 }}>
           <Text
             style={{
-              fontSize: 14,
+              fontSize: 11,
               fontWeight: '700',
               color: colors.textSecondary,
               textTransform: 'uppercase',
               letterSpacing: 1.4,
-              paddingHorizontal: 8,
+              paddingHorizontal: 0,
             }}>
             {t('appearance')}
           </Text>
           <View
             style={{
               backgroundColor: colors.surface,
-              borderRadius: 32,
+              borderRadius: 18,
               padding: 8,
               flexDirection: 'row',
               gap: 8,
@@ -130,14 +126,15 @@ export default function SettingsScreen() {
               return (
                 <TouchableOpacity
                   key={option.key}
+                  accessibilityRole="button" accessibilityState={{ selected: isActive }}
                   onPress={() => updateTheme(option.key)}
                   style={{
                     flex: 1,
                     alignItems: 'center',
                     gap: 12,
-                    padding: 16,
-                    borderRadius: 32,
-                    backgroundColor: isActive ? (isDark ? colors.card : '#FFFFFF') : 'transparent',
+                    padding: 12,
+                    borderRadius: 18,
+                    backgroundColor: isActive ? (colors.card) : 'transparent',
                     ...(isActive
                       ? { shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2 }
                       : {}),
@@ -164,7 +161,7 @@ export default function SettingsScreen() {
                         option.key === 'dark'
                           ? '#FFFFFF'
                           : option.key === 'light'
-                            ? colors.accent
+                            ? colors.photoInk
                             : colors.textSecondary
                       }
                     />
@@ -188,30 +185,30 @@ export default function SettingsScreen() {
         <View style={{ gap: 16 }}>
           <Text
             style={{
-              fontSize: 14,
+              fontSize: 11,
               fontWeight: '700',
               color: colors.textSecondary,
               textTransform: 'uppercase',
               letterSpacing: 1.4,
-              paddingHorizontal: 8,
+              paddingHorizontal: 0,
             }}>
             {t('language')}
           </Text>
           <View
             style={{
               backgroundColor: colors.surface,
-              borderRadius: 32,
+              borderRadius: 18,
               overflow: 'hidden',
             }}>
             <TouchableOpacity
-              onPress={() => updateLanguage('fr')}
+              accessibilityRole="button" accessibilityState={{ selected: settings.language === 'fr' }} onPress={() => updateLanguage('fr')}
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 paddingHorizontal: 20,
                 paddingVertical: 20,
-                backgroundColor: settings.language === 'fr' ? (isDark ? colors.card : '#FFFFFF') : 'transparent',
+                backgroundColor: settings.language === 'fr' ? (colors.card) : 'transparent',
                 borderBottomWidth: 1,
                 borderBottomColor: colors.border,
               }}>
@@ -226,14 +223,14 @@ export default function SettingsScreen() {
               )}
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => updateLanguage('en')}
+              accessibilityRole="button" accessibilityState={{ selected: settings.language === 'en' }} onPress={() => updateLanguage('en')}
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 paddingHorizontal: 20,
                 paddingVertical: 20,
-                backgroundColor: settings.language === 'en' ? (isDark ? colors.card : '#FFFFFF') : 'transparent',
+                backgroundColor: settings.language === 'en' ? (colors.card) : 'transparent',
               }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
                 <Ionicons name="language-outline" size={20} color={colors.textSecondary} />
@@ -254,7 +251,7 @@ export default function SettingsScreen() {
           activeOpacity={0.8}
           style={{
             backgroundColor: colors.surface,
-            borderRadius: 32,
+            borderRadius: 18,
             padding: 20,
             flexDirection: 'row',
             alignItems: 'center',
@@ -265,11 +262,11 @@ export default function SettingsScreen() {
               width: 40,
               height: 40,
               borderRadius: 20,
-              backgroundColor: isDark ? 'rgba(168,85,247,0.15)' : 'rgba(168,85,247,0.08)',
+              backgroundColor: colors.accentSoft,
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-            <Ionicons name="notifications-outline" size={20} color="#A855F7" />
+            <Ionicons name="notifications-outline" size={20} color={colors.accent} />
           </View>
           <View style={{ flex: 1 }}>
             <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }}>
@@ -288,7 +285,7 @@ export default function SettingsScreen() {
           activeOpacity={0.8}
           style={{
             backgroundColor: colors.surface,
-            borderRadius: 32,
+            borderRadius: 18,
             padding: 20,
             flexDirection: 'row',
             alignItems: 'center',
@@ -317,12 +314,12 @@ export default function SettingsScreen() {
         <View style={{ gap: 16 }}>
           <Text
             style={{
-              fontSize: 14,
+              fontSize: 11,
               fontWeight: '700',
               color: colors.textSecondary,
               textTransform: 'uppercase',
               letterSpacing: 1.4,
-              paddingHorizontal: 8,
+              paddingHorizontal: 0,
             }}>
             {t('data')}
           </Text>
@@ -331,7 +328,7 @@ export default function SettingsScreen() {
               onPress={handleResetAllData}
               style={{
                 backgroundColor: colors.surface,
-                borderRadius: 32,
+                borderRadius: 18,
                 padding: 20,
                 flexDirection: 'row',
                 alignItems: 'center',
@@ -342,14 +339,14 @@ export default function SettingsScreen() {
                   width: 40,
                   height: 40,
                   borderRadius: 20,
-                  backgroundColor: 'rgba(231,76,60,0.1)',
+                  backgroundColor: colors.dangerSoft,
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}>
-                <Ionicons name="nuclear" size={20} color="#E74C3C" />
+                <Ionicons name="nuclear" size={20} color={colors.danger} />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 16, fontWeight: '600', color: '#E74C3C' }}>
+                <Text style={{ fontSize: 16, fontWeight: '600', color: colors.danger }}>
                   {t('resetAllData')}
                 </Text>
                 <Text style={{ fontSize: 12, color: colors.textSecondary }}>
@@ -367,7 +364,7 @@ export default function SettingsScreen() {
             activeOpacity={0.8}
             style={{
               backgroundColor: colors.surface,
-              borderRadius: 32,
+              borderRadius: 18,
               padding: 20,
               flexDirection: 'row',
               alignItems: 'center',
@@ -391,7 +388,7 @@ export default function SettingsScreen() {
             activeOpacity={0.8}
             style={{
               backgroundColor: colors.surface,
-              borderRadius: 32,
+              borderRadius: 18,
               padding: 20,
               flexDirection: 'row',
               alignItems: 'center',
@@ -418,7 +415,7 @@ export default function SettingsScreen() {
           activeOpacity={0.8}
           style={{
             backgroundColor: colors.surface,
-            borderRadius: 32,
+            borderRadius: 18,
             padding: 20,
             flexDirection: 'row',
             alignItems: 'center',
@@ -429,7 +426,7 @@ export default function SettingsScreen() {
               width: 40,
               height: 40,
               borderRadius: 20,
-              backgroundColor: isDark ? 'rgba(245,158,66,0.15)' : 'rgba(145,71,0,0.08)',
+              backgroundColor: colors.accentSoft,
               alignItems: 'center',
               justifyContent: 'center',
             }}>
@@ -450,19 +447,19 @@ export default function SettingsScreen() {
         <View style={{ gap: 16, paddingBottom: 48 }}>
           <Text
             style={{
-              fontSize: 14,
+              fontSize: 11,
               fontWeight: '700',
               color: colors.textSecondary,
               textTransform: 'uppercase',
               letterSpacing: 1.4,
-              paddingHorizontal: 8,
+              paddingHorizontal: 0,
             }}>
             {t('about')}
           </Text>
           <View
             style={{
-              backgroundColor: isDark ? colors.card : '#FFFFFF',
-              borderRadius: 32,
+              backgroundColor: colors.card,
+              borderRadius: 18,
               padding: 25,
               gap: 24,
               borderWidth: 1,

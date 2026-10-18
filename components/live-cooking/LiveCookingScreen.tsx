@@ -257,7 +257,7 @@ export default function LiveCookingScreen({
                 onPress={() => Linking.openSettings()}
                 style={[styles.gateButton, { backgroundColor: colors.accent }]}
               >
-                <Ionicons name="settings-outline" size={18} color="#FFFFFF" />
+                <Ionicons name="settings-outline" size={18} color={colors.onAccent} />
                 <Text style={styles.gateButtonText}>
                   {isFr ? 'Ouvrir les réglages' : 'Open Settings'}
                 </Text>
@@ -269,7 +269,7 @@ export default function LiveCookingScreen({
               disabled={permissionState === 'checking'}
               style={[styles.gateButton, { backgroundColor: colors.accent }]}
             >
-              <Ionicons name="mic" size={18} color="#FFFFFF" />
+              <Ionicons name="mic" size={18} color={colors.onAccent} />
               <Text style={styles.gateButtonText}>
                 {isFr ? 'Autoriser' : 'Authorize'}
               </Text>
@@ -323,7 +323,7 @@ export default function LiveCookingScreen({
               style={[
                 styles.quotaBadge,
                 {
-                  backgroundColor: isDark ? colors.surface : '#F3F0EF',
+                  backgroundColor: colors.surface,
                   borderColor: imageQuota.remaining <= 3 ? '#E74C3C' : colors.border,
                 },
               ]}
@@ -484,7 +484,7 @@ export default function LiveCookingScreen({
                       style={{
                         alignSelf: isUser ? 'flex-end' : 'flex-start',
                         maxWidth: '82%',
-                        backgroundColor: isUser ? colors.accent : (isDark ? '#2A2A2A' : '#F3F0EF'),
+                        backgroundColor: isUser ? colors.accent : (colors.surface),
                         borderRadius: 18,
                         borderBottomRightRadius: isUser ? 6 : 18,
                         borderBottomLeftRadius: isUser ? 18 : 6,
@@ -492,7 +492,7 @@ export default function LiveCookingScreen({
                         paddingVertical: 10,
                       }}
                     >
-                      <Text style={{ fontSize: 14, lineHeight: 20, color: isUser ? '#FFFFFF' : colors.text }}>
+                      <Text style={{ fontSize: 14, lineHeight: 20, color: isUser ? colors.onAccent : colors.text }}>
                         {text}
                       </Text>
                     </View>
@@ -508,7 +508,7 @@ export default function LiveCookingScreen({
       <Modal visible={showSourceModal} transparent animationType="fade" onRequestClose={() => setShowSourceModal(false)}>
         <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end', paddingHorizontal: 16, paddingBottom: bottom + 16 }}>
           <View style={{
-            backgroundColor: isDark ? colors.card : '#FFFFFF',
+            backgroundColor: colors.card,
             borderRadius: 20,
             overflow: 'hidden',
             marginBottom: 8,
@@ -547,7 +547,7 @@ export default function LiveCookingScreen({
           <TouchableOpacity
             onPress={() => setShowSourceModal(false)}
             style={{
-              backgroundColor: isDark ? colors.card : '#FFFFFF',
+              backgroundColor: colors.card,
               borderRadius: 20,
               paddingVertical: 16,
               alignItems: 'center',
@@ -563,7 +563,7 @@ export default function LiveCookingScreen({
       <Modal visible={showQuotaInfo} transparent animationType="fade" onRequestClose={() => setShowQuotaInfo(false)}>
         <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', paddingHorizontal: 32 }}>
           <View style={{
-            backgroundColor: isDark ? colors.card : '#FFFFFF',
+            backgroundColor: colors.card,
             borderRadius: 24,
             padding: 24,
             gap: 16,
@@ -595,7 +595,7 @@ export default function LiveCookingScreen({
                 alignItems: 'center',
               }}
             >
-              <Text style={{ fontSize: 15, fontWeight: '700', color: '#FFFFFF' }}>
+              <Text style={{ fontSize: 15, fontWeight: '700', color: colors.onAccent }}>
                 {isFr ? 'Compris' : 'Got it'}
               </Text>
             </TouchableOpacity>

@@ -17,10 +17,10 @@ export function useToast() {
 }
 
 const presetConfig: Record<ToastPreset, { icon: string; bg: string; iconColor: string }> = {
-  done: { icon: 'checkmark-circle', bg: '#0A6A1D', iconColor: '#FFFFFF' },
+  done: { icon: 'checkmark-circle', bg: '#41634B', iconColor: '#FFFFFF' },
   error: { icon: 'close-circle', bg: '#B02500', iconColor: '#FFFFFF' },
-  heart: { icon: 'heart', bg: '#E74C3C', iconColor: '#FFFFFF' },
-  custom: { icon: 'information-circle', bg: '#914700', iconColor: '#FFFFFF' },
+  heart: { icon: 'heart', bg: '#AE302E', iconColor: '#FFFFFF' },
+  custom: { icon: 'information-circle', bg: '#A84027', iconColor: '#FFFFFF' },
 };
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     gap: 10,
     paddingHorizontal: 20,
     paddingVertical: 14,
-    borderRadius: 50,
+    borderRadius: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.2,

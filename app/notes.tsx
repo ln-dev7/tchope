@@ -28,7 +28,7 @@ export default function NotesScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, width: '100%', maxWidth: 840, alignSelf: 'center', backgroundColor: colors.background }} edges={['top']}>
       {/* Header */}
       <View
         style={{
@@ -41,8 +41,8 @@ export default function NotesScreen() {
         <TouchableOpacity
           onPress={() => router.back()}
           style={{
-            width: 40,
-            height: 40,
+            width: 44,
+            height: 44,
             borderRadius: 20,
             backgroundColor: colors.surface,
             alignItems: 'center',
@@ -62,14 +62,14 @@ export default function NotesScreen() {
           <TouchableOpacity
             onPress={handleNew}
             style={{
-              width: 40,
-              height: 40,
+              width: 44,
+              height: 44,
               borderRadius: 20,
               backgroundColor: colors.accent,
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-            <Ionicons name="add" size={22} color="#FFFFFF" />
+            <Ionicons name="add" size={22} color={colors.onAccent} />
           </TouchableOpacity>
         )}
       </View>
@@ -93,8 +93,8 @@ export default function NotesScreen() {
                 alignItems: 'center',
                 gap: 8,
               }}>
-              <Ionicons name="add-circle-outline" size={18} color="#FFFFFF" />
-              <Text style={{ fontSize: 15, fontWeight: '700', color: '#FFFFFF' }}>
+              <Ionicons name="add-circle-outline" size={18} color={colors.onAccent} />
+              <Text style={{ fontSize: 15, fontWeight: '700', color: colors.onAccent }}>
                 {t('addNote')}
               </Text>
             </TouchableOpacity>

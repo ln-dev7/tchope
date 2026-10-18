@@ -12,6 +12,8 @@ type Props = {
   onPhoto: () => void;
   onEnd: () => void;
   colors: {
+    onAccent: string;
+    card: string;
     accent: string;
     accentLight: string;
     text: string;
@@ -54,7 +56,7 @@ export default function LiveCookingControls({
           style={[
             styles.sideButton,
             {
-              backgroundColor: isDark ? colors.surface : '#FFFFFF',
+              backgroundColor: colors.card,
               borderWidth: isDark ? 0 : 1,
               borderColor: colors.border,
               opacity: photoDisabled ? 0.4 : 1,
@@ -85,7 +87,7 @@ export default function LiveCookingControls({
           <Ionicons
             name={isListening ? 'mic' : 'mic-outline'}
             size={32}
-            color="#FFFFFF"
+            color={colors.onAccent}
           />
         </TouchableOpacity>
         <Text style={[styles.micHint, { color: colors.textMuted }]}>
@@ -99,7 +101,7 @@ export default function LiveCookingControls({
         style={[
           styles.sideButton,
           {
-            backgroundColor: isDark ? colors.surface : '#FFFFFF',
+            backgroundColor: colors.card,
             borderWidth: isDark ? 0 : 1,
             borderColor: colors.border,
           },

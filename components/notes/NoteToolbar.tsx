@@ -20,7 +20,7 @@ const ITEMS: { type: NoteBlockType; icon: keyof typeof Ionicons.glyphMap }[] = [
 ];
 
 export default function NoteToolbar({ activeType, onSelect }: Props) {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
 
   return (
     <View
@@ -29,7 +29,7 @@ export default function NoteToolbar({ activeType, onSelect }: Props) {
       style={{
         borderTopWidth: 1,
         borderTopColor: colors.border,
-        backgroundColor: isDark ? colors.card : '#FFFFFF',
+        backgroundColor: colors.card,
       }}>
       <ScrollView
         horizontal
