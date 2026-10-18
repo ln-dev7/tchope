@@ -10,7 +10,8 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTabLayout } from '@/hooks/useTabLayout';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
@@ -204,7 +205,7 @@ export default function PlannerScreen() {
   const catalogue = useLocalizedRecipes();
   const { userRecipes } = useUserRecipes();
   const recipes = useMemo(() => [...catalogue, ...userRecipes], [catalogue, userRecipes]);
-  const { bottom } = useSafeAreaInsets();
+  const { contentBottom } = useTabLayout();
   const { toast } = useToast();
   const {
     currentPlan, savedPlans, setCurrentPlan,
@@ -347,7 +348,7 @@ export default function PlannerScreen() {
         <ScrollView
           contentInsetAdjustmentBehavior="never"
           style={{ flex: 1 }}
-          contentContainerStyle={{ paddingBottom: 112 + bottom }}
+          contentContainerStyle={{ paddingBottom: contentBottom }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled">
 

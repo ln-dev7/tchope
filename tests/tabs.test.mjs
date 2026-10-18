@@ -32,13 +32,15 @@ for (const [OS, Version, isPad, native] of [
     assert.equal(glass.LIQUID_GLASS, native);
     const { default: Layout } = load(sources[1], {
       'react-native': rn,
-      'expo-router': { Tabs },
+      'expo-router': { Tabs, useSegments: () => ['(tabs)'] },
       'expo-router/native-tabs': { NativeTabs },
       '@expo/vector-icons': { Ionicons: 'Ionicons' },
       'react-native-safe-area-context': { useSafeAreaInsets: () => ({ bottom: 34 }) },
       '@/hooks/useTheme': { useTheme: () => ({ colors: { accent: '#99472F' } }) },
       '@/hooks/useTranslation': { useTranslation: () => ({ t: key => key }) },
       '@/lib/liquid-glass': glass,
+      '@/components/TchopAI': 'TchopAIButton',
+      '@/hooks/useTabLayout': { useTabLayout: () => ({ tabBarHeight: 104, fabBottom: 120, fabRight: 16 }) },
     });
     let renderer;
     await act(async () => { renderer = create(React.createElement(Layout)); });

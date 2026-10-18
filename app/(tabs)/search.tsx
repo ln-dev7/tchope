@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, ScrollView, TextInput, TouchableOpacity, Keyboard, LayoutAnimation, Platform, UIManager } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTabLayout } from '@/hooks/useTabLayout';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
@@ -25,7 +26,7 @@ export default function SearchScreen() {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const recipes = useLocalizedRecipes();
-  const { bottom } = useSafeAreaInsets();
+  const { contentBottom } = useTabLayout();
   const { results, query, setQuery, filters, setFilters } = useSearch(recipes);
   const [selectedIngredient, setSelectedIngredient] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
@@ -79,7 +80,7 @@ export default function SearchScreen() {
       <ScrollView
         contentInsetAdjustmentBehavior="never"
         style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: 112 + bottom, gap: 24 }}
+        contentContainerStyle={{ paddingBottom: contentBottom, gap: 24 }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled">
 

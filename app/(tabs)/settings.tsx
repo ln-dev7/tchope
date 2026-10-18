@@ -18,6 +18,7 @@ import { useShopping } from '@/context/ShoppingContext';
 import { useMealPlanner } from '@/context/MealPlannerContext';
 import type { Settings } from '@/types';
 import ProSettingsCard from '@/components/ProSettingsCard';
+import ProBadge from '@/components/ProBadge';
 
 export default function SettingsScreen() {
   const { colors, isDark } = useTheme();
@@ -90,7 +91,7 @@ export default function SettingsScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, width: '100%', maxWidth: 840, alignSelf: 'center', backgroundColor: colors.background }} edges={['top']}>
-      <PageIntro title={t('settings')} subtitle={t('settingsSubtitle')} />
+      <PageIntro title={t('settings')} subtitle={t('settingsSubtitle')} action={<ProBadge />} />
 
       <ScrollView
         contentInsetAdjustmentBehavior="never"

@@ -1,46 +1,52 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTheme } from '@/hooks/useTheme';
-import { TouchableOpacity } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Keyboard, Platform, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { usePathname, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
+import { useTranslation } from '@/hooks/useTranslation';
+import { AI_FAB_SIZE } from '@/hooks/useTabLayout';
 
-export default function TchopAIButton() {
+export default function TchopAIButton({ bottom, right }: { bottom: number; right: number }) {
   const { colors } = useTheme();
-  const { bottom } = useSafeAreaInsets();
-  const pathname = usePathname();
+  const { t } = useTranslation();
   const router = useRouter();
+  const [keyboardVisible, setKeyboardVisible] = useState(() => Keyboard.isVisible());
 
-  const routesToExclude = ['/onboarding', '/tchop-ai', '/live-cooking', '/cooking-mode'];
+  useEffect(() => {
+    const show = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', () => setKeyboardVisible(true));
+    const hide = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide', () => setKeyboardVisible(false));
+    return () => { show.remove(); hide.remove(); };
+  }, []);
 
-  if (routesToExclude.includes(pathname)) return null;
+  if (keyboardVisible) return null;
 
   return (
-    <TouchableOpacity
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={t('askAI')}
       onPress={() => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-        router.push('/tchop-ai' as any);
+        void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+        router.navigate('/tchop-ai');
       }}
-      activeOpacity={0.85}
-      style={{
+      style={({ pressed }) => ({
         position: 'absolute',
-        bottom: 90 + bottom,
-        right: 16,
-        width: 56,
-        height: 56,
-        borderRadius: 28,
+        bottom,
+        right,
+        width: AI_FAB_SIZE,
+        height: AI_FAB_SIZE,
+        borderRadius: AI_FAB_SIZE / 2,
         backgroundColor: colors.accent,
         alignItems: 'center',
         justifyContent: 'center',
-        zIndex: 9999,
-        shadowColor: colors.accent,
+        shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.15,
         shadowRadius: 8,
-        elevation: 8,
-      }}>
-      <Ionicons name="chatbubble-ellipses" size={26} color={colors.onAccent} />
-    </TouchableOpacity>
+        elevation: 6,
+        transform: [{ scale: pressed ? 0.95 : 1 }],
+      })}>
+      <Ionicons name="sparkles" size={24} color={colors.onAccent} />
+    </Pressable>
   );
 }

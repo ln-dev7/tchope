@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTabLayout } from '@/hooks/useTabLayout';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
@@ -22,7 +23,7 @@ export default function CookbookScreen() {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
-  const { bottom } = useSafeAreaInsets();
+  const { contentBottom } = useTabLayout();
   const recipes = useLocalizedRecipes();
   const { favorites } = useFavorites();
   const { userRecipes, deleteRecipe } = useUserRecipes();
@@ -61,7 +62,7 @@ export default function CookbookScreen() {
       <ScrollView
         contentInsetAdjustmentBehavior="never"
         style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: 112 + bottom, paddingHorizontal: 24, gap: 24 }}
+        contentContainerStyle={{ paddingBottom: contentBottom, paddingHorizontal: 24, gap: 24 }}
         showsVerticalScrollIndicator={false}>
         {/* Tabs */}
         <View

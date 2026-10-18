@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
@@ -11,6 +11,8 @@ import { useUserRecipes } from '@/context/UserRecipesContext';
 import FeaturedCard from '@/components/FeaturedCard';
 import RecipeCard from '@/components/RecipeCard';
 import RegionItem from '@/components/RegionItem';
+import ProBadge from '@/components/ProBadge';
+import { useTabLayout } from '@/hooks/useTabLayout';
 import { type } from '@/constants/design';
 import type { Region } from '@/types';
 
@@ -36,7 +38,7 @@ export default function HomeScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const recipes = useLocalizedRecipes();
-  const { bottom } = useSafeAreaInsets();
+  const { contentBottom } = useTabLayout();
   const { userRecipes } = useUserRecipes();
 
   const hasTchopAIRecipes = userRecipes.some((r) => r.region === 'TchopAI');
@@ -57,13 +59,14 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, width: '100%', maxWidth: 840, alignSelf: 'center', backgroundColor: colors.background }} edges={['top']}>
-      <ScrollView contentInsetAdjustmentBehavior="never" style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 112 + bottom }} showsVerticalScrollIndicator={false}>
+      <ScrollView contentInsetAdjustmentBehavior="never" style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: contentBottom }} showsVerticalScrollIndicator={false}>
         <View style={{ paddingHorizontal: 24, paddingTop: 16, paddingBottom: 28 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 28 }}>
             <View style={{ width: 34, height: 34, borderRadius: 11, backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center' }}>
               <Ionicons name="restaurant-outline" size={19} color={colors.onAccent} />
             </View>
-            <Text style={{ fontSize: 24, fontWeight: '800', color: colors.text, letterSpacing: -1 }}>Tchopé</Text>
+            <Text style={{ fontSize: 24, fontWeight: '800', color: colors.text, letterSpacing: -1, flexShrink: 1 }}>Tchopé</Text>
+            <ProBadge />
           </View>
           <Text style={[type.label, { color: colors.accent, marginBottom: 12 }]}>{t('homeEyebrow')}</Text>
           <Text accessibilityRole="header" style={[type.display, { color: colors.text, maxWidth: 520 }]}>{t('homeHeadline')}</Text>
