@@ -4,6 +4,7 @@
   "version": "1.7.0",
   "license": "GPL-3.0",
   "scripts": {
+    "photos": "node scripts/fetch-recipe-photos.mjs",
     "test:pro": "node --experimental-strip-types --no-warnings tests/pro-bridge.test.mts",
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
@@ -71,6 +72,7 @@
     "eslint": "^9.25.0",
     "eslint-config-expo": "~10.0.0",
     "postcss": "^8.5.8",
+    "sharp": "^0.35.5",
     "tailwindcss": "^4.2.2",
     "typescript": "~5.9.2"
   },
