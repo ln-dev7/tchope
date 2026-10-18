@@ -43,6 +43,16 @@
     },
     "plugins": [
       "./plugins/with-no-aps-environment.js",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "enableMinifyInReleaseBuilds": true,
+            "enableShrinkResourcesInReleaseBuilds": true,
+            "extraProguardRules": "-keep class com.revenuecat.** { *; }\n-keep class com.reactnativeandroidwidget.** { *; }\n-keep class expo.modules.** { *; }\n-dontwarn com.revenuecat.**"
+          }
+        }
+      ],
       "expo-router",
       [
         "expo-image-picker",

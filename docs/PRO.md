@@ -58,3 +58,10 @@ le chat TchopAI qui garde **3 messages texte gratuits au total** (comme Travora 
 - Clés publiques RevenueCat dans `constants/revenuecat.ts`. Rebuild natif (module `react-native-purchases`).
 - Vercel `tchope-api` : `REVENUECAT_SECRET_KEY` (la clé v2 du projet LN Dev, la même que Travora), `REVENUECAT_PROJECT_ID` ; puis `/api/pro-status` → `active: true`.
   Une fois la 2.0.0 en ligne : `MIN_APP_VERSION=2.0.0` (invitation à mettre à jour) et `PRO_REQUIRE_DEVICE=on`.
+
+## Build Android (R8, 18 oct. 2026)
+- `expo-build-properties` : `enableMinifyInReleaseBuilds` + `enableShrinkResourcesInReleaseBuilds` (Google Play signalait
+  « Optimisation du code DEX faible », obscurcissement 1 %, sur la 1.10.0). Règles keep pour RevenueCat, android-widget et
+  expo-modules dans `extraProguardRules`, comme Travora. **Tester le build release Android** (widget, achat, TchopAI Live,
+  notifications) avant de publier : si une lib casse, ajouter une règle `-keep`.
+
