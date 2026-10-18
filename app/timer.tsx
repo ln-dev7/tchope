@@ -14,7 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { deactivateKeepAwake, activateKeepAwake } from 'expo-keep-awake';
-import { Audio } from 'expo-av';
+import { setAudioModeAsync, useAudioPlayer } from 'expo-audio';
 import Svg, { Circle } from 'react-native-svg';
 
 import { useTheme } from '@/hooks/useTheme';
@@ -58,7 +58,7 @@ export default function TimerScreen() {
   // Local timers (multiple)
   const [timers, setTimers] = useState<LocalTimer[]>([]);
   const [activeTimerId, setActiveTimerId] = useState<string | null>(null);
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<React.ElementRef<typeof ScrollView>>(null);
 
   // Duration picker state
   const [pickerHours, setPickerHours] = useState(0);
@@ -71,8 +71,8 @@ export default function TimerScreen() {
 
   // Sound options
   const [tickSound, setTickSound] = useState(true);
-  const tickSoundRef = useRef<Audio.Sound | null>(null);
-  const alarmSoundRef = useRef<Audio.Sound | null>(null);
+  const tickPlayer = useAudioPlayer(require('@/assets/sounds/tick.mp3'));
+  const alarmPlayer = useAudioPlayer(require('@/assets/sounds/alarm.mp3'));
   const finishedTimersRef = useRef<Set<string>>(new Set());
 
   // Animations
@@ -86,29 +86,12 @@ export default function TimerScreen() {
   // Previous remaining ref for tick detection
   const prevRemainingRef = useRef<number | null>(null);
 
-  // Load sounds
+  // useAudioPlayer libère les lecteurs automatiquement quand l'écran est fermé.
   useEffect(() => {
-    const loadSounds = async () => {
-      try {
-        await Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
-        const { sound: tick } = await Audio.Sound.createAsync(
-          require('@/assets/sounds/tick.mp3'),
-          { volume: 0.3 },
-        );
-        tickSoundRef.current = tick;
-        const { sound: alarm } = await Audio.Sound.createAsync(
-          require('@/assets/sounds/alarm.mp3'),
-          { volume: 1.0 },
-        );
-        alarmSoundRef.current = alarm;
-      } catch {}
-    };
-    loadSounds();
-    return () => {
-      tickSoundRef.current?.unloadAsync();
-      alarmSoundRef.current?.unloadAsync();
-    };
-  }, []);
+    tickPlayer.volume = 0.3;
+    alarmPlayer.volume = 1;
+    setAudioModeAsync({ playsInSilentMode: true }).catch(() => {});
+  }, [tickPlayer, alarmPlayer]);
 
   // Play alarm when a timer finishes
   useEffect(() => {
@@ -116,10 +99,10 @@ export default function TimerScreen() {
       const isDone = timer.totalSeconds > 0 && timer.remainingSeconds === 0 && !timer.isRunning && !timer.isPaused;
       if (isDone && !finishedTimersRef.current.has(timer.id)) {
         finishedTimersRef.current.add(timer.id);
-        alarmSoundRef.current?.setPositionAsync(0).then(() => alarmSoundRef.current?.playAsync()).catch(() => {});
+        alarmPlayer.seekTo(0).then(() => alarmPlayer.play()).catch(() => {});
       }
     });
-  }, [timers]);
+  }, [timers, alarmPlayer]);
 
   // Clean finished refs when timer removed
   useEffect(() => {
@@ -161,10 +144,10 @@ export default function TimerScreen() {
       activeTimer.remainingSeconds !== prevRemainingRef.current &&
       activeTimer.remainingSeconds > 0
     ) {
-      tickSoundRef.current?.setPositionAsync(0).then(() => tickSoundRef.current?.playAsync()).catch(() => {});
+      tickPlayer.seekTo(0).then(() => tickPlayer.play()).catch(() => {});
     }
     prevRemainingRef.current = activeTimer.remainingSeconds;
-  }, [activeTimer?.remainingSeconds, activeTimer?.isRunning, tickSound]);
+  }, [activeTimer?.remainingSeconds, activeTimer?.isRunning, tickSound, tickPlayer]);
 
   // Progress animation (SVG strokeDashoffset)
   useEffect(() => {

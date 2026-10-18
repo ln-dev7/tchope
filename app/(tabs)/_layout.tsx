@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Icon, Label, NativeTabs } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/native-tabs';
 import React from 'react';
 import { View, useWindowDimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -23,24 +23,24 @@ export default function TabLayout() {
     return (
       <NativeTabs tintColor={colors.accent} minimizeBehavior="never">
         <NativeTabs.Trigger name="index">
-          <Icon sf={{ default: 'house', selected: 'house.fill' }} />
-          <Label>{t('tabHome')}</Label>
+          <NativeTabs.Trigger.Icon sf={{ default: 'house', selected: 'house.fill' }} />
+          <NativeTabs.Trigger.Label>{t('tabHome')}</NativeTabs.Trigger.Label>
         </NativeTabs.Trigger>
         <NativeTabs.Trigger name="search">
-          <Icon sf="magnifyingglass" />
-          <Label>{t('tabSearch')}</Label>
+          <NativeTabs.Trigger.Icon sf="magnifyingglass" />
+          <NativeTabs.Trigger.Label>{t('tabSearch')}</NativeTabs.Trigger.Label>
         </NativeTabs.Trigger>
         <NativeTabs.Trigger name="planner">
-          <Icon sf="calendar" />
-          <Label>{t('tabPlanner')}</Label>
+          <NativeTabs.Trigger.Icon sf="calendar" />
+          <NativeTabs.Trigger.Label>{t('tabPlanner')}</NativeTabs.Trigger.Label>
         </NativeTabs.Trigger>
         <NativeTabs.Trigger name="cookbook">
-          <Icon sf={{ default: 'book', selected: 'book.fill' }} />
-          <Label>{t('tabCookbook')}</Label>
+          <NativeTabs.Trigger.Icon sf={{ default: 'book', selected: 'book.fill' }} />
+          <NativeTabs.Trigger.Label>{t('tabCookbook')}</NativeTabs.Trigger.Label>
         </NativeTabs.Trigger>
         <NativeTabs.Trigger name="settings">
-          <Icon sf={{ default: 'gearshape', selected: 'gearshape.fill' }} />
-          <Label>{t('tabSettings')}</Label>
+          <NativeTabs.Trigger.Icon sf={{ default: 'gearshape', selected: 'gearshape.fill' }} />
+          <NativeTabs.Trigger.Label>{t('tabSettings')}</NativeTabs.Trigger.Label>
         </NativeTabs.Trigger>
       </NativeTabs>
     );
@@ -80,8 +80,8 @@ export default function TabLayout() {
         name="index"
         options={{
           title: t('tabHome'),
-          tabBarIcon: ({ color, focused }) => (
-            <View style={{ width: 48, height: 30, borderRadius: 11, backgroundColor: focused ? colors.accentSoft : 'transparent', alignItems: 'center', justifyContent: 'center' }}><Ionicons name={focused ? 'home' : 'home-outline'} size={21} color={color} /></View>
+          tabBarIcon: ({ focused }) => (
+            <View style={{ width: 48, height: 30, borderRadius: 11, backgroundColor: focused ? colors.accentSoft : 'transparent', alignItems: 'center', justifyContent: 'center' }}><Ionicons name={focused ? 'home' : 'home-outline'} size={21} color={focused ? colors.accent : colors.textMuted} /></View>
           ),
         }}
       />
@@ -89,8 +89,8 @@ export default function TabLayout() {
         name="search"
         options={{
           title: t('tabSearch'),
-          tabBarIcon: ({ color, focused }) => (
-            <View style={{ width: 48, height: 30, borderRadius: 11, backgroundColor: focused ? colors.accentSoft : 'transparent', alignItems: 'center', justifyContent: 'center' }}><Ionicons name={focused ? 'search' : 'search-outline'} size={21} color={color} /></View>
+          tabBarIcon: ({ focused }) => (
+            <View style={{ width: 48, height: 30, borderRadius: 11, backgroundColor: focused ? colors.accentSoft : 'transparent', alignItems: 'center', justifyContent: 'center' }}><Ionicons name={focused ? 'search' : 'search-outline'} size={21} color={focused ? colors.accent : colors.textMuted} /></View>
           ),
         }}
       />
@@ -98,8 +98,8 @@ export default function TabLayout() {
         name="planner"
         options={{
           title: t('tabPlanner'),
-          tabBarIcon: ({ color, focused }) => (
-            <View style={{ width: 48, height: 30, borderRadius: 11, backgroundColor: focused ? colors.accentSoft : 'transparent', alignItems: 'center', justifyContent: 'center' }}><Ionicons name={focused ? 'calendar' : 'calendar-outline'} size={21} color={color} /></View>
+          tabBarIcon: ({ focused }) => (
+            <View style={{ width: 48, height: 30, borderRadius: 11, backgroundColor: focused ? colors.accentSoft : 'transparent', alignItems: 'center', justifyContent: 'center' }}><Ionicons name={focused ? 'calendar' : 'calendar-outline'} size={21} color={focused ? colors.accent : colors.textMuted} /></View>
           ),
         }}
       />
@@ -107,8 +107,8 @@ export default function TabLayout() {
         name="cookbook"
         options={{
           title: t('tabCookbook'),
-          tabBarIcon: ({ color, focused }) => (
-            <View style={{ width: 48, height: 30, borderRadius: 11, backgroundColor: focused ? colors.accentSoft : 'transparent', alignItems: 'center', justifyContent: 'center' }}><Ionicons name={focused ? 'book' : 'book-outline'} size={21} color={color} /></View>
+          tabBarIcon: ({ focused }) => (
+            <View style={{ width: 48, height: 30, borderRadius: 11, backgroundColor: focused ? colors.accentSoft : 'transparent', alignItems: 'center', justifyContent: 'center' }}><Ionicons name={focused ? 'book' : 'book-outline'} size={21} color={focused ? colors.accent : colors.textMuted} /></View>
           ),
         }}
       />
@@ -116,8 +116,8 @@ export default function TabLayout() {
         name="settings"
         options={{
           title: t('tabSettings'),
-          tabBarIcon: ({ color, focused }) => (
-            <View style={{ width: 48, height: 30, borderRadius: 11, backgroundColor: focused ? colors.accentSoft : 'transparent', alignItems: 'center', justifyContent: 'center' }}><Ionicons name={focused ? 'settings' : 'settings-outline'} size={21} color={color} /></View>
+          tabBarIcon: ({ focused }) => (
+            <View style={{ width: 48, height: 30, borderRadius: 11, backgroundColor: focused ? colors.accentSoft : 'transparent', alignItems: 'center', justifyContent: 'center' }}><Ionicons name={focused ? 'settings' : 'settings-outline'} size={21} color={focused ? colors.accent : colors.textMuted} /></View>
           ),
         }}
       />

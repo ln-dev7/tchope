@@ -29,7 +29,7 @@ export default function SearchScreen() {
   const { results, query, setQuery, filters, setFilters } = useSearch(recipes);
   const [selectedIngredient, setSelectedIngredient] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<React.ElementRef<typeof TextInput>>(null);
   const { duration } = useLocalSearchParams<{ duration?: string }>();
   const router = useRouter();
 

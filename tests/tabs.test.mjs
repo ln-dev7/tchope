@@ -14,7 +14,7 @@ const sources = await Promise.all(['../lib/liquid-glass.ts', '../app/(tabs)/_lay
   }).outputText,
 ));
 const Tabs = Object.assign(({ children }) => React.createElement('ClassicTabs', null, children), { Screen: 'ClassicScreen' });
-const NativeTabs = Object.assign(({ children, ...props }) => React.createElement('NativeTabs', props, children), { Trigger: 'NativeTrigger' });
+const NativeTabs = Object.assign(({ children, ...props }) => React.createElement('NativeTabs', props, children), { Trigger: Object.assign(({ children, ...props }) => React.createElement('NativeTrigger', props, children), { Icon: 'Icon', Label: 'Label' }) });
 function load(compiled, mocks) {
   const mod = { exports: {} };
   new Function('require', 'module', 'exports', compiled)(name => mocks[name] ?? require(name), mod, mod.exports);
@@ -33,7 +33,7 @@ for (const [OS, Version, isPad, native] of [
     const { default: Layout } = load(sources[1], {
       'react-native': rn,
       'expo-router': { Tabs },
-      'expo-router/unstable-native-tabs': { NativeTabs, Icon: 'Icon', Label: 'Label' },
+      'expo-router/native-tabs': { NativeTabs },
       '@expo/vector-icons': { Ionicons: 'Ionicons' },
       'react-native-safe-area-context': { useSafeAreaInsets: () => ({ bottom: 34 }) },
       '@/hooks/useTheme': { useTheme: () => ({ colors: { accent: '#99472F' } }) },

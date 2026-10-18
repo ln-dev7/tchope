@@ -16,7 +16,7 @@ type Props = {
   placeholder?: string;
 };
 
-const NoteBlock = forwardRef<TextInput, Props>(function NoteBlock(
+const NoteBlock = forwardRef<React.ElementRef<typeof TextInput>, Props>(function NoteBlock(
   { block, numberedIndex, autoFocus, onChange, onToggleCheck, onSplitAt, onBackspaceAtStart, onFocus, placeholder },
   ref,
 ) {

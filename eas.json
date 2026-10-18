@@ -7,16 +7,19 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "node": "24.19.0"
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "node": "24.19.0"
     },
     "production": {
       "autoIncrement": true,
       "env": {
         "EXPO_PUBLIC_API_URL": "https://tchope.lndev.me"
-      }
+      },
+      "node": "24.19.0"
     }
   },
   "submit": {

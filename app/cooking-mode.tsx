@@ -9,7 +9,7 @@ import {
   Dimensions,
   FlatList,
   ScrollView,
-  ViewToken,
+  type FlatListProps,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -119,7 +119,7 @@ export default function CookingModeScreen() {
     return () => { unsubscribe(); Speech.stop(); };
   }, [navigation]);
 
-  const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
+  const onViewableItemsChanged = useRef<NonNullable<FlatListProps<string>['onViewableItemsChanged']>>(({ viewableItems }) => {
     if (viewableItems.length > 0 && viewableItems[0].index != null) {
       setCurrentStep(viewableItems[0].index);
     }

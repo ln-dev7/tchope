@@ -6,7 +6,7 @@ import {
   useWindowDimensions,
   ScrollView,
   FlatList,
-  ViewToken,
+  type FlatListProps,
   Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -72,7 +72,7 @@ export default function OnboardingScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   }, [isFr, updateLanguage]);
 
-  const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
+  const onViewableItemsChanged = useRef<NonNullable<FlatListProps<Slide>['onViewableItemsChanged']>>(({ viewableItems }) => {
     if (viewableItems.length > 0 && viewableItems[0].index != null) {
       setCurrentIndex(viewableItems[0].index);
     }

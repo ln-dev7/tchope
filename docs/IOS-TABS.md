@@ -1,7 +1,7 @@
 # Onglets iPhone
 
-Les iPhone sous iOS 26 ou plus utilisent `NativeTabs` d'Expo Router 6 (SDK 54), comme Travora.
-L'apparence Liquid Glass et les adaptations d'accessibilité sont fournies par UIKit ; compiler avec Xcode 26 ou plus.
+Les iPhone sous iOS 26 ou plus utilisent `NativeTabs` d'Expo Router SDK 58 (`expo-router/native-tabs`), comme Travora.
+L'apparence Liquid Glass et les adaptations d'accessibilité sont fournies par UIKit ; compiler avec Xcode 27.
 La teinte active suit la palette de Tchopé. Les cinq routes, leurs libellés FR/EN et leur ordre sont conservés.
 La barre reste visible pendant le défilement.
 

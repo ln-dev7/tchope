@@ -1,7 +1,6 @@
 import "../global.css";
 import React, { useEffect } from 'react';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack, useRouter } from 'expo-router';
+import { DarkTheme, DefaultTheme, ThemeProvider, Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';

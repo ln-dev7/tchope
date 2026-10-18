@@ -623,7 +623,7 @@ export default function TchopAIScreen() {
                     </TouchableOpacity>
                   ))}
                 </View>
-              ) : null
+              ) : undefined
             }
             renderItem={({ item }) => (
               <ChatMessage

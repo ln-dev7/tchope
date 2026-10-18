@@ -19,9 +19,9 @@ Application mobile de recettes camerounaises. Découvrez, cuisinez et partagez l
 
 ## Stack technique
 
-- **Expo SDK 54** (managed workflow)
+- **Expo SDK 58** (managed workflow)
 - **TypeScript**
-- **expo-router** v6 (file-based routing)
+- **expo-router** SDK 58 (file-based routing)
 - **NativeWind v5** (TailwindCSS pour React Native)
 - **expo-image** pour le chargement d'images
 - **expo-image-picker** pour l'ajout de photos
@@ -61,13 +61,16 @@ types/                     → Types TypeScript
 ## Lancer en développement
 
 ```bash
-# Installer les dépendances
-npm install
+# Node 24 et dépendances
+nvm install
+nvm use
+npm ci
 
-# Lancer le serveur de développement
-npx expo start
+# Construire et lancer le client natif (choix du simulateur)
+npm run ios -- --device
 
-# Scanner le QR code avec Expo Go (iOS/Android)
+# Pour les sessions suivantes, sans changement de module natif
+npm start -- --dev-client
 ```
 
 ## Build pour les stores
@@ -158,3 +161,7 @@ eas build --platform android --profile development
 ## Licence
 
 Projet privé — © 2025 Leonel Ngoya
+
+## Environnement natif
+
+Node 24 est fixé dans `.nvmrc` et les profils EAS. La migration SDK 58 nécessite un nouveau build natif ; un ancien client Expo 54 ne peut pas charger ce JavaScript. iOS 16.4 minimum. Voir [la procédure SDK 58](docs/EXPO-58.md).

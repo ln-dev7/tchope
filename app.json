@@ -7,7 +7,6 @@
     "icon": "./assets/images/logo.png",
     "scheme": "tchope",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.lndev.tchope",
@@ -20,17 +19,11 @@
         "ITSAppUsesNonExemptEncryption": false
       }
     },
-    "splash": {
-      "image": "./assets/images/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/logo.png",
         "backgroundColor": "#E6F4FE"
       },
-      "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "com.lndev.tchope",
       "permissions": [
@@ -137,7 +130,16 @@
           "microphonePermission": "TchopAI Live utilise le micro pour écouter vos questions pendant la cuisine.",
           "speechRecognitionPermission": "TchopAI Live utilise la reconnaissance vocale pour vous guider pendant la cuisine."
         }
-      ]
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "TchopAI Live utilise le micro pour écouter vos questions pendant la cuisine.",
+          "recordAudioAndroid": true,
+          "enableBackgroundPlayback": false
+        }
+      ],
+      "./plugins/with-pods-deployment-target"
     ],
     "experiments": {
       "typedRoutes": true,

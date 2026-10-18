@@ -40,7 +40,7 @@ export default function NoteEditorScreen() {
   const [activeBlockId, setActiveBlockId] = useState<string | null>(null);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const keyboardPadding = useRef(new Animated.Value(0)).current;
-  const blockRefs = useRef<Record<string, TextInput | null>>({});
+  const blockRefs = useRef<Record<string, React.ElementRef<typeof TextInput> | null>>({});
   const focusBlockIdRef = useRef<string | null>(null);
   const persistedRef = useRef<boolean>(false);
 
