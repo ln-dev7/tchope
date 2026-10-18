@@ -13,6 +13,8 @@ interface Bridge {
   freeChatLeft: () => number;
   consumeChat: () => void;
   openPaywall: (reason: PaywallReason) => void;
+  /** Le serveur a refusé (402) : écran Pro, ou, si l'app croit l'abonnement actif, message « Restaurer mes achats ». */
+  serverRefused: (reason: PaywallReason) => void;
 }
 
 let bridge: Bridge | null = null;
@@ -61,5 +63,5 @@ export function consumeFreeChat(feature: AiFeature) {
 
 /** Le serveur a refusé (402) : écran Pro. */
 export function openPaywallFromServer(feature: AiFeature) {
-  bridge?.openPaywall(feature === 'chat' ? 'chat' : 'feature');
+  bridge?.serverRefused(feature === 'chat' ? 'chat' : 'feature');
 }

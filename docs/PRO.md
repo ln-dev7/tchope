@@ -43,7 +43,7 @@ le chat TchopAI qui garde **3 messages texte gratuits au total** (comme Travora 
 - `api/fetch-recipe-url.ts` : même contrôle, hôtes internes refusés, redirections revérifiées.
 - `api/pro-status.ts` : diagnostic (`"active": true` attendu). `api/version.ts` : `MIN_APP_VERSION` (Vercel) → l'app
   (UpdateModal) invite à mettre à jour ; `FORCE_UPDATE=on` l'impose.
-- Tests : `cd server && npm test`.
+- Tests : `cd server && npm test` (serveur), `npm run test:pro` (règles côté app).
 
 ## Mise en place (stores, RevenueCat, Vercel)
 - RevenueCat, projet « LN Dev » (17 oct. 2026) : app « Tchopé (App Store) » (`com.lndev.tchope`, clé d'achats intégrés

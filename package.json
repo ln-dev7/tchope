@@ -4,6 +4,7 @@
   "version": "1.7.0",
   "license": "GPL-3.0",
   "scripts": {
+    "test:pro": "node --experimental-strip-types --no-warnings tests/pro-bridge.test.mts",
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo run:android",

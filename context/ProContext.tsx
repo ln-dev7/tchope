@@ -4,7 +4,10 @@
 // - `paywall` : écran d'achat ouvert depuis n'importe où (`openPaywall()`), rendu dans app/_layout.tsx. Il est aussi
 //   ouvert par utils/api.ts (pont `utils/proBridge.ts`) quand une fonction IA est demandée sans abonnement.
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSettings } from '@/context/SettingsContext';
+import { proDict } from '@/constants/pro-translations';
 import { FREE_CHAT_MESSAGES, configurePurchases, fetchOffer, fetchPro, purchase, restore, type ProOffer, type ProState, type PurchaseResult } from '@/lib/pro';
 import { registerProBridge, type PaywallReason } from '@/utils/proBridge';
 
@@ -120,6 +123,20 @@ export function ProProvider({ children }: { children: React.ReactNode }) {
   );
   const closePaywall = useCallback(() => setPaywall(null), []);
 
+  // 402 du serveur alors que l'app voit l'abonnement actif (achat tout juste fait et pas encore vu par le serveur,
+  // ou abonnement d'un autre compte) : l'écran Pro se refermerait aussitôt et l'action échouerait sans un mot.
+  const { settings } = useSettings();
+  const langRef = useRef<'fr' | 'en'>('fr');
+  langRef.current = settings.language === 'en' ? 'en' : 'fr';
+  const serverRefused = useCallback(
+    (reason: PaywallReason) => {
+      if (!proRef.current) return openPaywall(reason);
+      const d = proDict[langRef.current];
+      Alert.alert(d.block, d.errPro);
+    },
+    [openPaywall]
+  );
+
   // Pont pour utils/api.ts : savoir si une fonction est permise, décompter un message gratuit, ouvrir l'écran.
   useEffect(
     () =>
@@ -128,8 +145,9 @@ export function ProProvider({ children }: { children: React.ReactNode }) {
         freeChatLeft: () => Math.max(0, FREE_CHAT_MESSAGES - usedRef.current),
         consumeChat,
         openPaywall,
+        serverRefused,
       }),
-    [consumeChat, openPaywall]
+    [consumeChat, openPaywall, serverRefused]
   );
 
   const buy = useCallback(async (): Promise<PurchaseResult> => {
