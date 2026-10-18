@@ -65,21 +65,12 @@ export const recipeImages: Record<string, string> = {
     "https://upload.wikimedia.org/wikipedia/commons/0/04/Un_plat_d%27alloco_Fried_Plantains.JPG",
   beignets:
     "https://upload.wikimedia.org/wikipedia/commons/a/a3/Nigerian-puff-puff-recipe_cropped.jpg",
-  "beignets-haricots":
-    "https://static.wixstatic.com/media/a213e3_c1a009ddac7a4dce97b2edf938363916~mv2.jpg/v1/fill/w_980,h_681,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/a213e3_c1a009ddac7a4dce97b2edf938363916~mv2.jpg",
   "beignets-farine":
     "https://upload.wikimedia.org/wikipedia/commons/a/a3/Nigerian-puff-puff-recipe_cropped.jpg",
   "beignets-farine-de-ble":
     "https://upload.wikimedia.org/wikipedia/commons/a/a3/Nigerian-puff-puff-recipe_cropped.jpg",
   "beignets-de-mais":
     "https://upload.wikimedia.org/wikipedia/commons/a/a3/Nigerian-puff-puff-recipe_cropped.jpg",
-  fufu: "https://anideva.com/wp-content/uploads/2022/03/DSC02324-1024x768.jpg",
-  "water-fufu":
-    "https://anideva.com/wp-content/uploads/2022/03/DSC02324-1024x768.jpg",
-  "foufou-de-manioc":
-    "https://anideva.com/wp-content/uploads/2022/03/DSC02324-1024x768.jpg",
-  "foufou-de-mais":
-    "https://anideva.com/wp-content/uploads/2022/03/DSC02324-1024x768.jpg",
   miondo: "https://upload.wikimedia.org/wikipedia/commons/4/45/Kwanga.jpg",
   bobolo: "https://upload.wikimedia.org/wikipedia/commons/4/45/Kwanga.jpg",
   "baton-de-manioc":
@@ -105,7 +96,6 @@ export const recipeImages: Record<string, string> = {
     "https://upload.wikimedia.org/wikipedia/commons/5/53/Plat_de_Njapche.jpg",
   "mpele-macabo":
     "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Macabo_taro_pil%C3%A9_dans_une_feuille.jpg/960px-Macabo_taro_pil%C3%A9_dans_une_feuille.jpg",
-  "ndomba-porc": "https://i.ytimg.com/vi/Fc8kMDDlm3E/sddefault.jpg",
   "ndomba-vipere":
     "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Snake_soup.jpg/960px-Snake_soup.jpg",
   nsugi: "https://upload.wikimedia.org/wikipedia/commons/5/5f/Eru_Soup.jpg",
@@ -165,7 +155,6 @@ export const recipeImages: Record<string, string> = {
     "https://upload.wikimedia.org/wikipedia/commons/4/4c/Beignets_-_Bouillie_-_haricots.jpg",
   "porc-fume-moutarde":
     "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Smoked_Pork_02.jpg/960px-Smoked_Pork_02.jpg",
-  "beignets-koki": "https://i.ytimg.com/vi/9OTB5iXbNJw/maxresdefault.jpg",
   "beignets-mais":
     "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Barranquilla_bu%C3%B1uelos_de_ma%C3%ADz.jpg/960px-Barranquilla_bu%C3%B1uelos_de_ma%C3%ADz.jpg",
   "bonbon-coconut":
@@ -245,8 +234,6 @@ export const recipeImages: Record<string, string> = {
     "https://upload.wikimedia.org/wikipedia/commons/5/5f/Eru_Soup.jpg",
   "kwaa-ndzap":
     "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/D%C3%A9gustation_de_koki.jpg/960px-D%C3%A9gustation_de_koki.jpg",
-  "kwanmkwala-esubag":
-    "https://www.emaketa.com/wp-content/uploads/2025/05/hq720-4.jpg",
   mbol: "https://upload.wikimedia.org/wikipedia/commons/5/5f/Eru_Soup.jpg",
   "met-de-pistache":
     "https://upload.wikimedia.org/wikipedia/commons/a/ad/Mets_de_pistache_pr%C3%AAt_%C3%A0_la_consommation.jpg",

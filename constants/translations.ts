@@ -203,6 +203,8 @@ export const translations = {
     contactMe: "Me contacter",
     contactSubtitle: "Par email ou Telegram",
     privacyPolicy: "Politique de confidentialité",
+    photoCredits: "Crédits photos",
+    photoCreditsIntro: "Les photos des plats sont sous licence libre. Merci à leurs auteurs. Touchez une ligne pour ouvrir la page d'origine.",
 
     // AI Recipes
     aiTitle: "Cuisine avec ce que j'ai",
@@ -690,6 +692,8 @@ export const translations = {
     contactMe: "Contact Me",
     contactSubtitle: "By email or Telegram",
     privacyPolicy: "Privacy Policy",
+    photoCredits: "Photo credits",
+    photoCreditsIntro: "The dish photos are under free licences. Thanks to their authors. Tap a line to open the original page.",
 
     // AI Recipes
     aiTitle: "Cook with what I have",

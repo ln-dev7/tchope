@@ -509,6 +509,13 @@ export default function SettingsScreen() {
               <Text style={{ fontSize: 16, color: colors.textSecondary }}>{t('privacyPolicy')}</Text>
               <Ionicons name="open-outline" size={12} color={colors.textMuted} />
             </TouchableOpacity>
+            <View style={{ height: 1, backgroundColor: colors.border }} />
+            <TouchableOpacity
+              onPress={() => router.push('/photo-credits' as any)}
+              style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Text style={{ fontSize: 16, color: colors.textSecondary }}>{t('photoCredits')}</Text>
+              <Ionicons name="chevron-forward" size={14} color={colors.textMuted} />
+            </TouchableOpacity>
             <View style={{ paddingTop: 16, alignItems: 'center', gap: 8 }}>
               <Text style={{ fontSize: 14, color: colors.textSecondary, textAlign: 'center' }}>
                 {t('madeWith')}

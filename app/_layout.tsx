@@ -69,6 +69,7 @@ function InnerLayout() {
         <Stack.Screen name="shopping-list" />
         <Stack.Screen name="plan-meal" options={{ presentation: 'modal' }} />
         <Stack.Screen name="notification-settings" />
+        <Stack.Screen name="photo-credits" />
         <Stack.Screen name="cooking-mode" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
         <Stack.Screen name="live-cooking" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
         <Stack.Screen name="tchop-ai" options={{ animation: 'slide_from_bottom' }} />
