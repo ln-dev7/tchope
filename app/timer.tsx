@@ -1,3 +1,4 @@
+import { useResponsive } from '@/hooks/useResponsive';
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import {
   View,
@@ -5,7 +6,6 @@ import {
   TouchableOpacity,
   ScrollView,
   Animated,
-  Dimensions,
   Alert,
   TextInput,
 } from 'react-native';
@@ -21,11 +21,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useTimer } from '@/context/TimerContext';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const CIRCLE_SIZE = SCREEN_WIDTH * 0.72;
 const STROKE_WIDTH = 12;
-const RADIUS = (CIRCLE_SIZE - STROKE_WIDTH) / 2;
-const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -49,6 +45,10 @@ function formatTime(seconds: number): string {
 }
 
 export default function TimerScreen() {
+  const { contentWidth, safeHeight } = useResponsive();
+  const CIRCLE_SIZE = Math.min(contentWidth * 0.72, 400, safeHeight * 0.55);
+  const RADIUS = (CIRCLE_SIZE - STROKE_WIDTH) / 2;
+  const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
@@ -392,7 +392,7 @@ export default function TimerScreen() {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, width: '100%', maxWidth: 840, alignSelf: 'center', backgroundColor: colors.background }} edges={['top', 'left', 'right']}>
       {/* Header */}
       <View
         style={{

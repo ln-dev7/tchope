@@ -1,10 +1,11 @@
+import { AdaptiveModal } from '@/components/AdaptiveModal';
 // Écran d'abonnement Tchopé Pro (lib/pro.ts, context/ProContext.tsx), porté de Travora Pro. Monté une fois dans
 // app/_layout.tsx, et sur place (`local`) dans les écrans en plein écran modal (cuisson, Live), car iOS ne présente pas
 // une modale de la racine par-dessus. S'ouvre par `openPaywall()` ou automatiquement quand une fonction IA est demandée
 // sans abonnement (utils/proBridge.ts).
 // Le prix affiché est TOUJOURS celui du store (App Store Review 3.1.2) : tant qu'il n'est pas chargé, aucun prix.
 import React from 'react';
-import { ActivityIndicator, Linking, Modal, Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Linking, Platform, Pressable, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { useSettings } from '@/context/SettingsContext';
@@ -83,10 +84,7 @@ function PaywallSheet({ reason }: { reason: PaywallReason }) {
   };
 
   return (
-    <Modal visible transparent animationType="slide" onRequestClose={close}>
-      <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}>
-        <View style={{ backgroundColor: colors.background, borderTopLeftRadius: 28, borderTopRightRadius: 28, maxHeight: '92%' }}>
-          <ScrollView contentContainerStyle={{ padding: 24, paddingBottom: 34 }} bounces={false}>
+    <AdaptiveModal visible onClose={close} dismissOnBackdrop={false} animationType="slide" padding={24}>
             <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' }}>
               <View style={{ width: 52, height: 52, borderRadius: 16, backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center' }}>
                 <Ionicons name="star" size={26} color={colors.onAccent} />
@@ -150,9 +148,6 @@ function PaywallSheet({ reason }: { reason: PaywallReason }) {
                 <Text style={{ fontSize: 12, color: colors.textMuted, textDecorationLine: 'underline' }}>{d.privacy}</Text>
               </Pressable>
             </View>
-          </ScrollView>
-        </View>
-      </View>
-    </Modal>
+    </AdaptiveModal>
   );
 }

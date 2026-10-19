@@ -1,3 +1,4 @@
+import TabScreen from '@/components/TabScreen';
 import React, { useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -58,7 +59,7 @@ export default function HomeScreen() {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1, width: '100%', maxWidth: 840, alignSelf: 'center', backgroundColor: colors.background }} edges={['top']}>
+    <TabScreen><SafeAreaView style={{ flex: 1, width: '100%', maxWidth: 840, alignSelf: 'center', backgroundColor: colors.background }} edges={['top', 'left', 'right']}>
       <ScrollView contentInsetAdjustmentBehavior="never" style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: contentBottom }} showsVerticalScrollIndicator={false}>
         <View style={{ paddingHorizontal: 24, paddingTop: 16, paddingBottom: 28 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 28 }}>
@@ -128,6 +129,6 @@ export default function HomeScreen() {
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </SafeAreaView></TabScreen>
   );
 }

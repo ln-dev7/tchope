@@ -1,4 +1,4 @@
-import { Tabs, useSegments } from 'expo-router';
+import { Tabs } from 'expo-router';
 import { NativeTabs } from 'expo-router/native-tabs';
 import React from 'react';
 import { View } from 'react-native';
@@ -8,7 +8,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { LIQUID_GLASS } from '@/lib/liquid-glass';
-import TchopAIButton from '@/components/TchopAI';
 import { useTabLayout } from '@/hooks/useTabLayout';
 
 export default function TabLayout() {
@@ -16,41 +15,35 @@ export default function TabLayout() {
   const { t } = useTranslation();
   const { bottom } = useSafeAreaInsets();
 
-  const { tabBarHeight, fabBottom, fabRight } = useTabLayout();
-  const segments = useSegments();
-  // Comme Travora : accès rapide depuis les onglets, sans recouvrir les réglages
-  // ni les écrans empilés (chat, recette, cuisson, Live, onboarding).
-  const showFab = segments[0] === '(tabs)' && segments[1] !== 'settings';
-  const fab = showFab ? <TchopAIButton bottom={fabBottom} right={fabRight} /> : null;
+  const { tabBarHeight } = useTabLayout();
 
   // UIKit fournit le Liquid Glass et ses adaptations d'accessibilité sur iPhone iOS 26+.
   // Les routes et leur ordre restent identiques à ceux de la barre classique.
   if (LIQUID_GLASS) {
     return (
       <View style={{ flex: 1 }}>
-        <NativeTabs tintColor={colors.accent} minimizeBehavior="never">
-          <NativeTabs.Trigger name="index">
+        <NativeTabs tintColor={colors.accent} minimizeBehavior="never" sidebarAdaptable={false}>
+          <NativeTabs.Trigger name="index" disableAutomaticContentInsets>
             <NativeTabs.Trigger.Icon sf={{ default: 'house', selected: 'house.fill' }} />
             <NativeTabs.Trigger.Label>{t('tabHome')}</NativeTabs.Trigger.Label>
           </NativeTabs.Trigger>
-          <NativeTabs.Trigger name="search">
+          <NativeTabs.Trigger name="search" disableAutomaticContentInsets>
             <NativeTabs.Trigger.Icon sf="magnifyingglass" />
             <NativeTabs.Trigger.Label>{t('tabSearch')}</NativeTabs.Trigger.Label>
           </NativeTabs.Trigger>
-          <NativeTabs.Trigger name="planner">
+          <NativeTabs.Trigger name="planner" disableAutomaticContentInsets>
             <NativeTabs.Trigger.Icon sf="calendar" />
             <NativeTabs.Trigger.Label>{t('tabPlanner')}</NativeTabs.Trigger.Label>
           </NativeTabs.Trigger>
-          <NativeTabs.Trigger name="cookbook">
+          <NativeTabs.Trigger name="cookbook" disableAutomaticContentInsets>
             <NativeTabs.Trigger.Icon sf={{ default: 'book', selected: 'book.fill' }} />
             <NativeTabs.Trigger.Label>{t('tabCookbook')}</NativeTabs.Trigger.Label>
           </NativeTabs.Trigger>
-          <NativeTabs.Trigger name="settings">
+          <NativeTabs.Trigger name="settings" disableAutomaticContentInsets>
             <NativeTabs.Trigger.Icon sf={{ default: 'gearshape', selected: 'gearshape.fill' }} />
             <NativeTabs.Trigger.Label>{t('tabSettings')}</NativeTabs.Trigger.Label>
           </NativeTabs.Trigger>
         </NativeTabs>
-        {fab}
       </View>
     );
   }
@@ -132,7 +125,6 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
-      {fab}
     </View>
   );
 }

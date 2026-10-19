@@ -1,3 +1,4 @@
+import { AdaptiveModal } from '@/components/AdaptiveModal';
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import {
   View,
@@ -7,7 +8,6 @@ import {
   Animated,
   Platform,
   Keyboard,
-  Modal,
   Alert,
   ScrollView,
 } from "react-native";
@@ -503,7 +503,7 @@ export default function TchopAIScreen() {
         alignSelf: "center",
         backgroundColor: colors.background,
       }}
-      edges={["top", "bottom"]}
+      edges={["top", "bottom", "left", "right"]}
     >
       {!settings.aiConsent ? (
         <AiConsent
@@ -730,21 +730,8 @@ export default function TchopAIScreen() {
       )}
 
       {/* Photo source picker */}
-      <Modal
-        visible={showSourceModal}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setShowSourceModal(false)}
-      >
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: "rgba(0,0,0,0.5)",
-            justifyContent: "flex-end",
-            paddingHorizontal: 16,
-            paddingBottom: bottom + 16,
-          }}
-        >
+      <AdaptiveModal visible={showSourceModal} onClose={() => setShowSourceModal(false)} padding={16}>
+
           <View
             style={{
               backgroundColor: colors.card,
@@ -817,18 +804,13 @@ export default function TchopAIScreen() {
               {isFr ? "Annuler" : "Cancel"}
             </Text>
           </TouchableOpacity>
-        </View>
-      </Modal>
+
+</AdaptiveModal>
 
       {/* Chat history modal */}
-      <Modal
-        visible={showHistoryModal}
-        animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={() => setShowHistoryModal(false)}
-      >
+      <AdaptiveModal visible={showHistoryModal} onClose={() => setShowHistoryModal(false)} fill scroll={false} padding={0}>
         <View style={{ flex: 1, backgroundColor: colors.background }}>
-          <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
+          <View style={{ flex: 1 }}>
             <View
               style={{
                 flexDirection: "row",
@@ -1011,9 +993,10 @@ export default function TchopAIScreen() {
                 }}
               />
             )}
-          </SafeAreaView>
+          </View>
         </View>
-      </Modal>
+
+</AdaptiveModal>
     </SafeAreaView>
   );
 }

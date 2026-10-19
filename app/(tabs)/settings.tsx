@@ -1,3 +1,4 @@
+import TabScreen from '@/components/TabScreen';
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert, Linking } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -90,7 +91,7 @@ export default function SettingsScreen() {
   ];
 
   return (
-    <SafeAreaView style={{ flex: 1, width: '100%', maxWidth: 840, alignSelf: 'center', backgroundColor: colors.background }} edges={['top']}>
+    <TabScreen floatingAction={false}><SafeAreaView style={{ flex: 1, width: '100%', maxWidth: 840, alignSelf: 'center', backgroundColor: colors.background }} edges={['top', 'left', 'right']}>
       <PageIntro title={t('settings')} subtitle={t('settingsSubtitle')} action={<ProBadge />} />
 
       <ScrollView
@@ -533,6 +534,6 @@ export default function SettingsScreen() {
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </SafeAreaView></TabScreen>
   );
 }

@@ -1,3 +1,4 @@
+import { useResponsive } from '@/hooks/useResponsive';
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { requireAi } from '@/utils/proBridge';
 import { View, Text, ScrollView, TouchableOpacity, Share } from 'react-native';
@@ -26,6 +27,7 @@ export default function RecipeDetailScreen() {
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
   const { bottom } = useSafeAreaInsets();
+  const { readable } = useResponsive();
   const { isFavorite, toggleFavorite } = useFavorites();
   const { toast } = useToast();
   const { addRecipe: addShoppingRecipe, isLoaded: shoppingLoaded } = useShopping();
@@ -128,7 +130,7 @@ export default function RecipeDetailScreen() {
     recipe.difficulty === 'Easy' ? t('easy') : recipe.difficulty === 'Hard' ? t('hard') : t('medium');
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background }}>
+    <View style={{ flex: 1, backgroundColor: colors.background }}><View style={[{ flex: 1 }, readable]}>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 24 + bottom }} showsVerticalScrollIndicator={false}>
         {/* Hero Image */}
         <View style={{ height: 310, overflow: 'hidden' }}>
@@ -414,6 +416,7 @@ export default function RecipeDetailScreen() {
           <Ionicons name="play-circle-outline" size={22} color={colors.chipActiveText} /><Text style={{ color: colors.chipActiveText, fontWeight: '700', fontSize: 16, flexShrink: 1 }}>{t('startCooking')}</Text>
         </TouchableOpacity>
       </View>
+    </View>
     </View>
   );
 }

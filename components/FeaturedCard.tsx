@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, useWindowDimensions } from 'react-native';
+import { useResponsive } from '@/hooks/useResponsive';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
@@ -12,7 +13,7 @@ export default function FeaturedCard({ recipe }: { recipe: Recipe }) {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
-  const { width } = useWindowDimensions();
+  const { safeWidth: width } = useResponsive();
   const cardWidth = Math.min(360, width - 64);
   const isChefChoice = recipe.tags?.includes("CHEF'S CHOICE");
   const isPopular = recipe.tags?.includes('POPULAIRE');

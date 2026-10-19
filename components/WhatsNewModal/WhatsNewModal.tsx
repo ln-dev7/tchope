@@ -1,5 +1,6 @@
+import { AdaptiveModal } from '@/components/AdaptiveModal';
 import React, { useEffect, useState } from 'react';
-import { View, Modal } from 'react-native';
+import { View } from 'react-native';
 import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -58,22 +59,7 @@ export default function WhatsNewModal() {
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="slide"
-      statusBarTranslucent
-      onRequestClose={dismiss}>
-      <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'flex-end' }}>
-        <View
-          style={{
-            backgroundColor: colors.background,
-            borderTopLeftRadius: 28,
-            borderTopRightRadius: 28,
-            paddingTop: 12,
-            paddingBottom: 24,
-            maxHeight: '85%',
-          }}>
+    <AdaptiveModal visible={visible} onClose={dismiss} fill scroll={false} padding={12} animationType="slide">
           {/* Drag handle */}
           <View style={{ alignItems: 'center', paddingBottom: 8 }}>
             <View
@@ -87,8 +73,6 @@ export default function WhatsNewModal() {
           </View>
 
           <ReleaseContent colors={colors} isDark={isDark} t={t} onClose={dismiss} />
-        </View>
-      </View>
-    </Modal>
+    </AdaptiveModal>
   );
 }

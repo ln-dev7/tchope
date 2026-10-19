@@ -1,9 +1,9 @@
+import { useResponsive } from '@/hooks/useResponsive';
 import React, { useState, useRef, useCallback } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
-  useWindowDimensions,
   ScrollView,
   FlatList,
   type FlatListProps,
@@ -59,7 +59,7 @@ const SLIDES: Slide[] = [
 
 export default function OnboardingScreen() {
   const { colors } = useTheme();
-  const { width: SCREEN_WIDTH, height } = useWindowDimensions();
+  const { safeWidth: SCREEN_WIDTH, safeHeight: height } = useResponsive();
   const { t } = useTranslation();
   const { settings, updateLanguage } = useSettings();
   const router = useRouter();
@@ -142,6 +142,8 @@ export default function OnboardingScreen() {
 
         {/* Slides */}
         <FlatList
+          key={`slides-${SCREEN_WIDTH}`}
+          initialScrollIndex={currentIndex}
           ref={flatListRef}
           data={SLIDES}
           renderItem={renderSlide}

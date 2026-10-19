@@ -25,7 +25,7 @@ export default function PhotoCreditsScreen() {
   }, [recipes]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top', 'left', 'right']}>
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 24, paddingVertical: 16, gap: 16 }}>
         <TouchableOpacity
           onPress={() => router.back()}

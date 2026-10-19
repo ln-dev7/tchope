@@ -1,3 +1,4 @@
+import TabScreen from '@/components/TabScreen';
 import React, { useState, useCallback, useMemo } from 'react';
 import {
   View,
@@ -343,7 +344,7 @@ export default function PlannerScreen() {
   }, [currentPlan]);
 
   return (
-    <SafeAreaView style={{ flex: 1, width: '100%', maxWidth: 840, alignSelf: 'center', backgroundColor: colors.background }} edges={['top']}>
+    <TabScreen><SafeAreaView style={{ flex: 1, width: '100%', maxWidth: 840, alignSelf: 'center', backgroundColor: colors.background }} edges={['top', 'left', 'right']}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView
           contentInsetAdjustmentBehavior="never"
@@ -596,6 +597,6 @@ export default function PlannerScreen() {
           )}
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </SafeAreaView></TabScreen>
   );
 }

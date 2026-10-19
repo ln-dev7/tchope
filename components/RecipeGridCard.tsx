@@ -1,4 +1,5 @@
 import React from 'react';
+import { useResponsive } from '@/hooks/useResponsive';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
@@ -9,8 +10,9 @@ import type { Recipe, UserRecipe } from '@/types';
 export default function RecipeGridCard({ recipe }: { recipe: Recipe }) {
   const { colors, isDark } = useTheme();
   const router = useRouter();
+  const { gridCols } = useResponsive();
   return (
-    <View style={{ width: '47.5%', marginBottom: 24 }}>
+    <View style={{ width: `${(100 - (gridCols - 1) * 5) / gridCols}%`, marginBottom: 24 }}>
       <TouchableOpacity accessibilityRole="button" accessibilityLabel={recipe.name} onPress={() => router.push(`/recipe/${recipe.id}`)} activeOpacity={0.85}>
       <View style={{ width: '100%', aspectRatio: 0.92, borderRadius: 18, overflow: 'hidden', backgroundColor: colors.surface }}>
         <RecipeImage recipeId={recipe.id} category={recipe.category} imageUri={(recipe as UserRecipe).imageUri} isDark={isDark} style={{ width: '100%', height: '100%' }} borderRadius={0} />

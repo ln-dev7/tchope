@@ -49,6 +49,8 @@ for (const [OS, Version, isPad, native] of [
     assert.equal(renderer.root.findAllByType(native ? 'ClassicTabs' : 'NativeTabs').length, 0);
     if (native) {
       assert.equal(renderer.root.findByType('NativeTabs').props.tintColor, '#99472F');
+      assert.equal(renderer.root.findByType('NativeTabs').props.sidebarAdaptable, false);
+      assert.ok(screens.every(screen => screen.props.disableAutomaticContentInsets));
       assert.deepEqual(renderer.root.findAllByType('Label').map(label => label.props.children), ['tabHome', 'tabSearch', 'tabPlanner', 'tabCookbook', 'tabSettings']);
     }
     await act(async () => renderer.unmount());

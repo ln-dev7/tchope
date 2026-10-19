@@ -235,7 +235,7 @@ export default function NoteEditorScreen() {
   }, [note.blocks]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, width: '100%', maxWidth: 840, alignSelf: 'center', backgroundColor: colors.background }} edges={['top', 'left', 'right']}>
       <Animated.View style={{ flex: 1, marginBottom: keyboardPadding }}>
         {/* Header */}
         <View

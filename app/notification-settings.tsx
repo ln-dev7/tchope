@@ -1,5 +1,6 @@
+import { AdaptiveModal } from '@/components/AdaptiveModal';
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Switch, Linking, Platform, Modal } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Switch, Linking, Platform } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -132,7 +133,7 @@ export default function NotificationSettingsScreen() {
   ];
 
   return (
-    <SafeAreaView style={{ flex: 1, width: '100%', maxWidth: 840, alignSelf: 'center', backgroundColor: colors.background }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, width: '100%', maxWidth: 840, alignSelf: 'center', backgroundColor: colors.background }} edges={['top', 'left', 'right']}>
       {/* Header */}
       <View
         style={{
@@ -299,29 +300,7 @@ export default function NotificationSettingsScreen() {
       )}
 
       {Platform.OS === 'ios' && (
-        <Modal
-          visible={showPicker !== null}
-          transparent
-          animationType="fade"
-          onRequestClose={() => setShowPicker(null)}>
-          <View
-            style={{
-              flex: 1,
-              backgroundColor: 'rgba(0,0,0,0.5)',
-              justifyContent: 'flex-end',
-            }}>
-            <TouchableOpacity
-              style={{ flex: 1 }}
-              activeOpacity={1}
-              onPress={() => setShowPicker(null)}
-            />
-            <View
-              style={{
-                backgroundColor: colors.card,
-                borderTopLeftRadius: 24,
-                borderTopRightRadius: 24,
-                paddingBottom: bottom + 16,
-              }}>
+        <AdaptiveModal visible={showPicker !== null} onClose={() => setShowPicker(null)} padding={16}>
               {/* Handle bar */}
               <View style={{ alignItems: 'center', paddingVertical: 12 }}>
                 <View style={{ width: 40, height: 4, borderRadius: 2, backgroundColor: colors.border }} />
@@ -361,9 +340,7 @@ export default function NotificationSettingsScreen() {
                   <Text style={{ fontSize: 16, fontWeight: '700', color: colors.onAccent }}>OK</Text>
                 </TouchableOpacity>
               </View>
-            </View>
-          </View>
-        </Modal>
+        </AdaptiveModal>
       )}
     </SafeAreaView>
   );

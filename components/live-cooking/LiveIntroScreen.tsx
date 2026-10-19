@@ -1,3 +1,4 @@
+import { useResponsive } from '@/hooks/useResponsive';
 import React from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -29,6 +30,7 @@ export default function LiveIntroScreen({
   const { settings } = useSettings();
   const fr = settings.language === "fr";
   const { top, bottom } = useSafeAreaInsets();
+  const { readable } = useResponsive();
 
   const handleStart = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -36,7 +38,7 @@ export default function LiveIntroScreen({
   };
 
   return (
-    <ScrollView
+    <ScrollView style={readable}
       contentContainerStyle={{
         flexGrow: 1,
         paddingHorizontal: 24,

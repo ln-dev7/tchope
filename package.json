@@ -17,7 +17,8 @@
     "lint": "expo lint",
     "prebuild": "expo prebuild",
     "prebuild:clean": "expo prebuild --clean",
-    "test:live": "node --experimental-strip-types --no-warnings --test tests/live.test.mts tests/speech-hook.test.mjs tests/ai-transport.test.mjs"
+    "test:live": "node --experimental-strip-types --no-warnings --test tests/live.test.mts tests/speech-hook.test.mjs tests/ai-transport.test.mjs",
+    "test:responsive": "node tests/responsive.test.mjs"
   },
   "dependencies": {
     "@bacons/apple-targets": "^5.0.0",

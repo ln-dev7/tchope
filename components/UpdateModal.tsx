@@ -1,5 +1,6 @@
+import { AdaptiveModal } from '@/components/AdaptiveModal';
 import React, { useEffect, useState } from 'react';
-import { View, Text, Modal, TouchableOpacity, Linking, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, Linking, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -74,8 +75,7 @@ export default function UpdateModal() {
   const subtextColor = colors.textSecondary;
 
   return (
-    <Modal visible={visible} transparent animationType="fade" statusBarTranslucent>
-      <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: 24 }}>
+    <AdaptiveModal visible={visible} onClose={forceUpdate ? () => {} : handleLater} dismissOnBackdrop={!forceUpdate} center maxWidth={380} padding={12}>
         <View style={{ backgroundColor: bgColor, borderRadius: 20, padding: 28, width: '100%', maxWidth: 340, alignItems: 'center' }}>
           <View style={{ width: 64, height: 64, borderRadius: 20, backgroundColor: colors.accentSoft, justifyContent: 'center', alignItems: 'center', marginBottom: 16 }}>
             <Ionicons name="arrow-up-circle-outline" size={36} color={colors.accent} />
@@ -114,7 +114,6 @@ export default function UpdateModal() {
             </TouchableOpacity>
           )}
         </View>
-      </View>
-    </Modal>
+    </AdaptiveModal>
   );
 }

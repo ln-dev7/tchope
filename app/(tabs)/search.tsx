@@ -1,3 +1,4 @@
+import TabScreen from '@/components/TabScreen';
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, ScrollView, TextInput, TouchableOpacity, Keyboard, LayoutAnimation, Platform, UIManager } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -74,7 +75,7 @@ export default function SearchScreen() {
   const hasActiveFilters = query || filters.duration || filters.spiciness || filters.ingredient;
 
   return (
-    <SafeAreaView style={{ flex: 1, width: '100%', maxWidth: 840, alignSelf: 'center', backgroundColor: colors.background }} edges={['top']}>
+    <TabScreen><SafeAreaView style={{ flex: 1, width: '100%', maxWidth: 840, alignSelf: 'center', backgroundColor: colors.background }} edges={['top', 'left', 'right']}>
       <PageIntro title={t('searchTitle')} subtitle={t('searchSubtitle')} />
 
       <ScrollView
@@ -402,6 +403,6 @@ export default function SearchScreen() {
         )}
       </ScrollView>
 
-    </SafeAreaView>
+    </SafeAreaView></TabScreen>
   );
 }

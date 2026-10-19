@@ -1,3 +1,4 @@
+import { useResponsive } from '@/hooks/useResponsive';
 import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { requireAi } from '@/utils/proBridge';
 import Paywall from '@/components/Paywall';
@@ -6,7 +7,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  Dimensions,
   FlatList,
   ScrollView,
   type FlatListProps,
@@ -25,7 +25,7 @@ import { useUserRecipes } from '@/hooks/useUserRecipes';
 import { useTimer, TimerEntry } from '@/context/TimerContext';
 import { useToast } from '@/hooks/useToast';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
 
 function formatTime(seconds: number): string {
   const h = Math.floor(seconds / 3600);
@@ -71,6 +71,7 @@ export default function CookingModeScreen() {
   const { toast } = useToast();
   const { settings } = useSettings();
   const { top, bottom } = useSafeAreaInsets();
+  const { contentWidth: SCREEN_WIDTH, readable } = useResponsive();
 
   const recipe = recipes.find((r) => r.id === id) ?? userRecipes.find((r) => r.id === id);
   const steps = recipe?.steps ?? [];
@@ -361,7 +362,7 @@ export default function CookingModeScreen() {
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       {/* Plein écran modal : l'écran Tchopé Pro s'affiche ici (guidage vocal Live). */}
       <Paywall local />
-      <View style={{ flex: 1, paddingTop: top }}>
+      <View style={[{ flex: 1, paddingTop: top }, readable]}>
         {/* Header */}
         <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 12, gap: 8 }}>
           <TouchableOpacity
@@ -394,7 +395,7 @@ export default function CookingModeScreen() {
         </View>
 
         {/* Step dots */}
-        <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 6, paddingVertical: 16 }}>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 6, paddingVertical: 16 }}>
           {steps.map((_, i) => (
             <TouchableOpacity key={i} onPress={() => goToStep(i)}>
               <View
@@ -423,9 +424,10 @@ export default function CookingModeScreen() {
         ) : null}
 
         {/* Swipeable steps */}
-        <View style={{ flex: 1 }} onLayout={(e) => { if (!listHeight) setListHeight(e.nativeEvent.layout.height); }}>
+        <View style={{ flex: 1 }} onLayout={(e) => { setListHeight(e.nativeEvent.layout.height); }}>
           {listHeight > 0 && (
             <FlatList
+              key={`steps-${SCREEN_WIDTH}`}
               ref={flatListRef}
               data={steps}
               renderItem={renderStep}
@@ -437,7 +439,7 @@ export default function CookingModeScreen() {
               viewabilityConfig={viewabilityConfig}
               getItemLayout={(_, index) => ({ length: SCREEN_WIDTH, offset: SCREEN_WIDTH * index, index })}
               extraData={`${recipeTimers.length}-${showCustomTimer}-${customMinutes}`}
-              initialScrollIndex={initialStep}
+              initialScrollIndex={currentStep}
             />
           )}
 

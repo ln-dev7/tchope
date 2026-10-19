@@ -1,3 +1,4 @@
+import TabScreen from '@/components/TabScreen';
 import React, { useState, useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -51,7 +52,7 @@ export default function CookbookScreen() {
   ];
 
   return (
-    <SafeAreaView style={{ flex: 1, width: '100%', maxWidth: 840, alignSelf: 'center', backgroundColor: colors.background }} edges={['top']}>
+    <TabScreen><SafeAreaView style={{ flex: 1, width: '100%', maxWidth: 840, alignSelf: 'center', backgroundColor: colors.background }} edges={['top', 'left', 'right']}>
       <PageIntro title={t('myCookbook')} subtitle={t('cookbookSubtitle')} action={
         <TouchableOpacity onPress={() => router.push('/add-recipe')} accessibilityRole="button" accessibilityLabel={t('addRecipe')}
           style={{ width: 48, height: 48, borderRadius: 16, backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center' }}>
@@ -210,6 +211,6 @@ export default function CookbookScreen() {
           <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
         </TouchableOpacity>
       </ScrollView>
-    </SafeAreaView>
+    </SafeAreaView></TabScreen>
   );
 }

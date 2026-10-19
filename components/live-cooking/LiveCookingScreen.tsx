@@ -1,16 +1,16 @@
+import { AdaptiveModal } from '@/components/AdaptiveModal';
+import { useResponsive } from '@/hooks/useResponsive';
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import {
   View,
   Text,
   Linking,
   TouchableOpacity,
-  Modal,
   ScrollView,
   AppState,
   ActivityIndicator,
 } from "react-native";
 import {
-  SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
@@ -47,6 +47,7 @@ export default function LiveCookingScreen({
   const { settings } = useSettings();
   const fr = settings.language === "fr";
   const { top, bottom } = useSafeAreaInsets();
+  const { readable } = useResponsive();
   const live = useLiveCooking(recipe, initialStep, settings.language);
   const imageQuota = useImageQuota();
   const [permission, setPermission] = useState<
@@ -296,7 +297,7 @@ export default function LiveCookingScreen({
     : "";
   return (
     <View
-      style={{ flex: 1, paddingTop: top, backgroundColor: colors.background }}
+      style={[{ flex: 1, paddingTop: top, backgroundColor: colors.background }, readable]}
     >
       <LiveCookingHeader
         recipeName={recipe.name}
@@ -598,13 +599,8 @@ export default function LiveCookingScreen({
           photoDisabled={!photosAllowed}
         />
       </View>
-      <Modal
-        visible={showHistory}
-        animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={() => setShowHistory(false)}
-      >
-        <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+      <AdaptiveModal visible={showHistory} onClose={() => setShowHistory(false)} fill scroll={false} padding={0}>
+        <View style={{ flex: 1, backgroundColor: colors.background }}>
           <TouchableOpacity
             accessibilityRole="button"
             onPress={() => setShowHistory(false)}
@@ -640,23 +636,11 @@ export default function LiveCookingScreen({
               </View>
             ))}
           </ScrollView>
-        </SafeAreaView>
-      </Modal>
-      <Modal
-        visible={showSource}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setShowSource(false)}
-      >
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: "#0008",
-            justifyContent: "flex-end",
-            padding: 20,
-            paddingBottom: bottom + 20,
-          }}
-        >
+        </View>
+
+</AdaptiveModal>
+      <AdaptiveModal visible={showSource} onClose={() => setShowSource(false)} padding={16}>
+
           <View
             style={{
               padding: 20,
@@ -695,8 +679,8 @@ export default function LiveCookingScreen({
               <Text style={{ color: colors.text }}>{t("cancel")}</Text>
             </TouchableOpacity>
           </View>
-        </View>
-      </Modal>
+
+</AdaptiveModal>
     </View>
   );
 }
