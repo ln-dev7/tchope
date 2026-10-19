@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import { Keyboard, Platform, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { useTranslation } from '@/hooks/useTranslation';
 import { AI_FAB_SIZE } from '@/hooks/useTabLayout';
@@ -12,6 +12,10 @@ export default function TchopAIButton({ bottom, right }: { bottom: number; right
   const { t } = useTranslation();
   const router = useRouter();
   const [keyboardVisible, setKeyboardVisible] = useState(() => Keyboard.isVisible());
+
+  // A native modal can hide its keyboard while the tab scene is frozen.
+  // Clear the stale visibility when returning to this scene.
+  useFocusEffect(useCallback(() => { setKeyboardVisible(false); }, []));
 
   useEffect(() => {
     const show = Keyboard.addListener(Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow', () => setKeyboardVisible(true));
