@@ -1,4 +1,5 @@
 import React from "react";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { requireAi } from "@/utils/proBridge";
 import Paywall from "@/components/Paywall";
 import { View, Text, TouchableOpacity } from "react-native";
@@ -14,6 +15,10 @@ import LiveCookingScreen from "@/components/live-cooking/LiveCookingScreen";
 import LiveIntroScreen from "@/components/live-cooking/LiveIntroScreen";
 
 export default function LiveCookingRoute() {
+  return <SafeAreaProvider><LiveCookingContent /></SafeAreaProvider>;
+}
+
+function LiveCookingContent() {
   const { id, step } = useLocalSearchParams<{ id: string; step?: string }>();
   const router = useRouter();
   const { colors } = useTheme();
@@ -56,8 +61,7 @@ export default function LiveCookingRoute() {
   }
 
   if (!started) {
-    // Pas de SafeAreaView ici : figé à inset 0 dans un fullScreenModal iOS.
-    // LiveIntroScreen gère lui-même le top inset via useSafeAreaInsets.
+    // Le provider local suit la taille du modal à chaque changement de posture.
     return (
       <View style={{ flex: 1, backgroundColor: colors.background }}>
         <LiveIntroScreen

@@ -11,7 +11,7 @@ import {
   ScrollView,
   type FlatListProps,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter, useNavigation } from 'expo-router';
 import * as Haptics from 'expo-haptics';
@@ -61,6 +61,10 @@ function formatDuration(totalSeconds: number): string {
 }
 
 export default function CookingModeScreen() {
+  return <SafeAreaProvider><CookingModeContent /></SafeAreaProvider>;
+}
+
+function CookingModeContent() {
   const { id, step: stepParam } = useLocalSearchParams<{ id: string; step?: string }>();
   const { colors } = useTheme();
   const { t } = useTranslation();
