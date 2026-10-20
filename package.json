@@ -18,7 +18,10 @@
     "prebuild": "expo prebuild",
     "prebuild:clean": "expo prebuild --clean",
     "test:live": "node --experimental-strip-types --no-warnings --test tests/live.test.mts tests/speech-hook.test.mjs tests/ai-transport.test.mjs",
-    "test:responsive": "node tests/responsive.test.mjs"
+    "test:responsive": "node tests/responsive.test.mjs",
+    "postinstall": "patch-package",
+    "test:personalisation": "node --test tests/personalisation.test.cjs",
+    "icons:render": "node scripts/render-app-icons.cjs"
   },
   "dependencies": {
     "@bacons/apple-targets": "^5.0.0",
@@ -27,6 +30,9 @@
     "@react-native-community/datetimepicker": "9.2.1",
     "@react-native-community/netinfo": "12.0.1",
     "expo": "~58.0.14",
+    "expo-alternate-app-icons": "8.0.0",
+    "expo-asset": "~58.0.16",
+    "expo-audio": "~58.0.9",
     "expo-build-properties": "~58.0.11",
     "expo-camera": "~58.0.10",
     "expo-clipboard": "~58.0.3",
@@ -64,15 +70,14 @@
     "react-native-screens": "~4.30.0",
     "react-native-svg": "15.16.0",
     "react-native-web": "~0.21.4",
-    "react-native-worklets": "0.13.0",
-    "expo-audio": "~58.0.9",
-    "expo-asset": "~58.0.16"
+    "react-native-worklets": "0.13.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.2.2",
     "@types/react": "~19.3.0",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~58.0.4",
+    "patch-package": "^8.0.1",
     "postcss": "^8.5.8",
     "react-test-renderer": "19.3.0",
     "sharp": "^0.35.5",

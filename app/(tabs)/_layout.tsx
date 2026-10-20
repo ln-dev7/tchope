@@ -1,3 +1,4 @@
+import { fixedColors } from "@/constants/themes";
 import { Tabs } from 'expo-router';
 import { NativeTabs } from 'expo-router/native-tabs';
 import React from 'react';
@@ -66,7 +67,7 @@ export default function TabLayout() {
             height: tabBarHeight,
             paddingTop: 8,
             paddingBottom: 8 + bottom,
-            shadowColor: '#2F2F2E',
+            shadowColor: fixedColors.softShadow,
             shadowOffset: { width: 0, height: -12 },
             shadowOpacity: 0,
             shadowRadius: 32,

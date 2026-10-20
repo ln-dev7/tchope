@@ -1,3 +1,4 @@
+import { fixedColors } from "@/constants/themes";
 import { AdaptiveModal } from '@/components/AdaptiveModal';
 // Écran d'abonnement Tchopé Pro (lib/pro.ts, context/ProContext.tsx), porté de Travora Pro. Monté une fois dans
 // app/_layout.tsx, et sur place (`local`) dans les écrans en plein écran modal (cuisson, Live), car iOS ne présente pas
@@ -14,7 +15,7 @@ import { proDict, fill } from '@/constants/pro-translations';
 import { FREE_CHAT_MESSAGES } from '@/lib/pro';
 import type { PaywallReason } from '@/utils/proBridge';
 
-const ICONS: (keyof typeof Ionicons.glyphMap)[] = ['sparkles-outline', 'camera-outline', 'search-outline', 'calendar-outline'];
+const ICONS: (keyof typeof Ionicons.glyphMap)[] = ['color-palette-outline', 'sparkles-outline', 'camera-outline', 'search-outline', 'calendar-outline', 'mic-outline'];
 const APPLE_EULA = 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/';
 
 export default function Paywall({ local = false }: { local?: boolean }) {
@@ -124,7 +125,7 @@ function PaywallSheet({ reason }: { reason: PaywallReason }) {
               <Text style={{ marginTop: 4, fontSize: 12, lineHeight: 18, color: colors.textSecondary }}>{d.renewal}</Text>
             </View>
 
-            {msg ? <Text style={{ marginTop: 12, fontSize: 13, lineHeight: 19, color: msg.ok ? colors.green : '#D32F2F' }}>{msg.text}</Text> : null}
+            {msg ? <Text style={{ marginTop: 12, fontSize: 13, lineHeight: 19, color: msg.ok ? colors.green : fixedColors.purchaseFailure }}>{msg.text}</Text> : null}
 
             <Pressable
               onPress={onBuy}

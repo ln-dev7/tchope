@@ -1,3 +1,4 @@
+import { fixedColors } from "@/constants/themes";
 import TabScreen from '@/components/TabScreen';
 import React, { useState, useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
@@ -82,7 +83,7 @@ export default function CookbookScreen() {
               backgroundColor: activeTab === 'myRecipes' ? (colors.card) : 'transparent',
               alignItems: 'center',
               ...(activeTab === 'myRecipes'
-                ? { shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2 }
+                ? { shadowColor: fixedColors.shadow, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2 }
                 : {}),
             }}>
             <Text

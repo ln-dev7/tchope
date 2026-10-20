@@ -1,3 +1,4 @@
+import { fixedColors } from "@/constants/themes";
 import React, { useState } from 'react';
 import {
   View,
@@ -142,7 +143,7 @@ export default function AddRecipeScreen() {
     paddingVertical: 16,
     fontSize: 16,
     color: colors.text,
-    shadowColor: '#000',
+    shadowColor: fixedColors.shadow,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0,
     shadowRadius: 3,
@@ -191,7 +192,7 @@ export default function AddRecipeScreen() {
             backgroundColor: colors.surface,
             borderRadius: 20,
             borderWidth: 2,
-            borderColor: 'rgba(175,173,172,0.3)',
+            borderColor: fixedColors.neutralBorder,
             borderStyle: 'dashed',
             paddingVertical: 32,
             alignItems: 'center',
@@ -212,7 +213,7 @@ export default function AddRecipeScreen() {
                 backgroundColor: colors.card,
                 alignItems: 'center',
                 justifyContent: 'center',
-                shadowColor: '#000',
+                shadowColor: fixedColors.shadow,
                 shadowOffset: { width: 0, height: 1 },
                 shadowOpacity: 0,
                 shadowRadius: 2,
@@ -277,7 +278,7 @@ export default function AddRecipeScreen() {
                 backgroundColor: colors.card,
                 borderRadius: 24,
                 overflow: 'hidden',
-                shadowColor: '#000',
+                shadowColor: fixedColors.shadow,
                 shadowOffset: { width: 0, height: 4 },
                 shadowOpacity: 0.08,
                 shadowRadius: 12,
@@ -391,7 +392,7 @@ export default function AddRecipeScreen() {
                   <Ionicons
                     name={ing.name.trim() ? 'trash-outline' : 'close-outline'}
                     size={16}
-                    color={ing.name.trim() ? '#E74C3C' : colors.textMuted}
+                    color={ing.name.trim() ? fixedColors.legacyDanger : colors.textMuted}
                   />
                 </TouchableOpacity>
               </View>
@@ -402,7 +403,7 @@ export default function AddRecipeScreen() {
             activeOpacity={0.7}
             style={{
               borderWidth: 2,
-              borderColor: 'rgba(175,173,172,0.3)',
+              borderColor: fixedColors.neutralBorder,
               borderStyle: 'dashed',
               borderRadius: 24,
               paddingVertical: 16,
@@ -485,7 +486,7 @@ export default function AddRecipeScreen() {
             activeOpacity={0.7}
             style={{
               borderWidth: 2,
-              borderColor: 'rgba(175,173,172,0.3)',
+              borderColor: fixedColors.neutralBorder,
               borderStyle: 'dashed',
               borderRadius: 24,
               paddingVertical: 16,

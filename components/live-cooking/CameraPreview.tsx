@@ -1,3 +1,4 @@
+import { fixedColors } from "@/constants/themes";
 import React from "react";
 import { View, TouchableOpacity } from "react-native";
 import { CameraView } from "expo-camera";
@@ -60,13 +61,13 @@ export default function CameraPreview({
           width: 48,
           height: 48,
           borderRadius: 24,
-          backgroundColor: "#0009",
+          backgroundColor: fixedColors.cameraControl,
           alignItems: "center",
           justifyContent: "center",
           opacity: disabled ? 0.4 : 1,
         }}
       >
-        <Ionicons name="camera-reverse-outline" size={22} color="#fff" />
+        <Ionicons name="camera-reverse-outline" size={22} color={fixedColors.white} />
       </TouchableOpacity>
     </View>
   );

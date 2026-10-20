@@ -1,3 +1,4 @@
+import { fixedColors } from "@/constants/themes";
 import { useResponsive } from '@/hooks/useResponsive';
 import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { requireAi } from '@/utils/proBridge';
@@ -266,7 +267,7 @@ function CookingModeContent() {
     return (
       <View
         style={{
-          backgroundColor: isDone ? '#41634B' : entry.isPaused ? '#6B5B00' : '#A84027',
+          backgroundColor: isDone ? fixedColors.timerDone : entry.isPaused ? fixedColors.timerPaused : fixedColors.timerRunning,
           borderRadius: 20,
           padding: 16,
           gap: 10,
@@ -275,8 +276,8 @@ function CookingModeContent() {
           <TouchableOpacity
             onPress={() => goToStep(entry.stepIndex!)}
             style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-            <Ionicons name="return-up-back" size={14} color="rgba(255,255,255,0.7)" />
-            <Text style={{ fontSize: 12, fontWeight: '600', color: 'rgba(255,255,255,0.7)' }}>
+            <Ionicons name="return-up-back" size={14} color={fixedColors.whiteAlpha70} />
+            <Text style={{ fontSize: 12, fontWeight: '600', color: fixedColors.whiteAlpha70 }}>
               {t('stepTimer')} {entry.stepIndex + 1}
             </Text>
           </TouchableOpacity>
@@ -285,8 +286,8 @@ function CookingModeContent() {
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <Ionicons
               name={isDone ? 'checkmark-circle' : entry.isPaused ? 'pause-circle' : 'timer-outline'}
-              size={20} color="#FFFFFF" />
-            <Text style={{ fontSize: 28, fontWeight: '800', color: '#FFFFFF', fontVariant: ['tabular-nums'] }}>
+              size={20} color={fixedColors.white} />
+            <Text style={{ fontSize: 28, fontWeight: '800', color: fixedColors.white, fontVariant: ['tabular-nums'] }}>
               {isDone ? t('timerReady') : formatTime(entry.remainingSeconds)}
             </Text>
           </View>
@@ -294,21 +295,21 @@ function CookingModeContent() {
             {!isDone && (
               <TouchableOpacity
                 onPress={() => { if (entry.isPaused) resumeTimer(entry.id); else pauseTimer(entry.id); }}
-                style={{ width: 44, height: 44, borderRadius: 14, backgroundColor: 'rgba(255,255,255,0.25)', alignItems: 'center', justifyContent: 'center' }}>
-                <Ionicons name={entry.isPaused ? 'play' : 'pause'} size={20} color="#FFFFFF" />
+                style={{ width: 44, height: 44, borderRadius: 14, backgroundColor: fixedColors.whiteAlpha25, alignItems: 'center', justifyContent: 'center' }}>
+                <Ionicons name={entry.isPaused ? 'play' : 'pause'} size={20} color={fixedColors.white} />
               </TouchableOpacity>
             )}
             <TouchableOpacity
               onPress={() => stopTimer(entry.id)}
-              style={{ height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6, paddingHorizontal: 16 }}>
-              <Ionicons name={isDone ? 'checkmark' : 'stop'} size={18} color="#FFFFFF" />
-              <Text style={{ fontSize: 13, fontWeight: '600', color: '#FFFFFF' }}>{isDone ? t('timerClose') : t('timerStop')}</Text>
+              style={{ height: 40, borderRadius: 20, backgroundColor: fixedColors.whiteAlpha15, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6, paddingHorizontal: 16 }}>
+              <Ionicons name={isDone ? 'checkmark' : 'stop'} size={18} color={fixedColors.white} />
+              <Text style={{ fontSize: 13, fontWeight: '600', color: fixedColors.white }}>{isDone ? t('timerClose') : t('timerStop')}</Text>
             </TouchableOpacity>
           </View>
         </View>
         {!isDone && (
-          <View style={{ height: 4, backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: 2 }}>
-            <View style={{ width: `${timerProgress * 100}%`, height: 4, backgroundColor: '#FFFFFF', borderRadius: 2 }} />
+          <View style={{ height: 4, backgroundColor: fixedColors.whiteAlpha20, borderRadius: 2 }}>
+            <View style={{ width: `${timerProgress * 100}%`, height: 4, backgroundColor: fixedColors.white, borderRadius: 2 }} />
           </View>
         )}
       </View>
@@ -325,7 +326,7 @@ function CookingModeContent() {
         activeOpacity={0.8}
         onPress={() => entry.stepIndex != null && goToStep(entry.stepIndex)}
         style={{
-          backgroundColor: isDone ? '#41634B' : entry.isPaused ? '#6B5B00' : '#A84027',
+          backgroundColor: isDone ? fixedColors.timerDone : entry.isPaused ? fixedColors.timerPaused : fixedColors.timerRunning,
           borderRadius: 22,
           flexDirection: 'row',
           alignItems: 'center',
@@ -337,26 +338,26 @@ function CookingModeContent() {
         }}>
         {/* Step number */}
         {entry.stepIndex != null && (
-          <Text style={{ fontSize: 11, fontWeight: '700', color: 'rgba(255,255,255,0.7)' }}>
+          <Text style={{ fontSize: 11, fontWeight: '700', color: fixedColors.whiteAlpha70 }}>
             {entry.stepIndex + 1}
           </Text>
         )}
         {/* Countdown */}
-        <Text style={{ fontSize: 15, fontWeight: '800', color: '#FFFFFF', fontVariant: ['tabular-nums'] }}>
+        <Text style={{ fontSize: 15, fontWeight: '800', color: fixedColors.white, fontVariant: ['tabular-nums'] }}>
           {isDone ? '!' : formatTime(entry.remainingSeconds)}
         </Text>
         {/* Controls — stopPropagation to not trigger navigation */}
         {!isDone && (
           <TouchableOpacity
             onPress={(e) => { e.stopPropagation(); if (entry.isPaused) resumeTimer(entry.id); else pauseTimer(entry.id); }}
-            style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: 'rgba(255,255,255,0.25)', alignItems: 'center', justifyContent: 'center' }}>
-            <Ionicons name={entry.isPaused ? 'play' : 'pause'} size={12} color="#FFFFFF" />
+            style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: fixedColors.whiteAlpha25, alignItems: 'center', justifyContent: 'center' }}>
+            <Ionicons name={entry.isPaused ? 'play' : 'pause'} size={12} color={fixedColors.white} />
           </TouchableOpacity>
         )}
         <TouchableOpacity
           onPress={(e) => { e.stopPropagation(); stopTimer(entry.id); }}
-          style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center' }}>
-          <Ionicons name={isDone ? 'checkmark' : 'stop'} size={12} color="#FFFFFF" />
+          style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: fixedColors.whiteAlpha15, alignItems: 'center', justifyContent: 'center' }}>
+          <Ionicons name={isDone ? 'checkmark' : 'stop'} size={12} color={fixedColors.white} />
         </TouchableOpacity>
       </TouchableOpacity>
     );

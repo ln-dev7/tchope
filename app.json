@@ -2,7 +2,7 @@
   "expo": {
     "name": "Tchope",
     "slug": "tchope",
-    "version": "2.1.0",
+    "version": "2.2.0",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
     "scheme": "tchope",
@@ -140,7 +140,63 @@
           "enableBackgroundPlayback": false
         }
       ],
-      "./plugins/with-pods-deployment-target"
+      "./plugins/with-pods-deployment-target",
+      "./plugins/with-personalisation",
+      [
+        "expo-alternate-app-icons",
+        [
+          {
+            "name": "Plantain",
+            "ios": "./assets/app-icons/plantain/icon.png",
+            "android": {
+              "foregroundImage": "./assets/app-icons/plantain/foreground.png",
+              "backgroundImage": "./assets/app-icons/plantain/background.png",
+              "backgroundColor": "#F5D681",
+              "monochromeImage": "./assets/app-icons/plantain/monochrome.png"
+            }
+          },
+          {
+            "name": "Ndole",
+            "ios": "./assets/app-icons/ndole/icon.png",
+            "android": {
+              "foregroundImage": "./assets/app-icons/ndole/foreground.png",
+              "backgroundImage": "./assets/app-icons/ndole/background.png",
+              "backgroundColor": "#E8EEDC",
+              "monochromeImage": "./assets/app-icons/ndole/monochrome.png"
+            }
+          },
+          {
+            "name": "Nuit",
+            "ios": "./assets/app-icons/nuit/icon.png",
+            "android": {
+              "foregroundImage": "./assets/app-icons/nuit/foreground.png",
+              "backgroundImage": "./assets/app-icons/nuit/background.png",
+              "backgroundColor": "#272A23",
+              "monochromeImage": "./assets/app-icons/nuit/monochrome.png"
+            }
+          },
+          {
+            "name": "Doree",
+            "ios": "./assets/app-icons/doree/icon.png",
+            "android": {
+              "foregroundImage": "./assets/app-icons/doree/foreground.png",
+              "backgroundImage": "./assets/app-icons/doree/background.png",
+              "backgroundColor": "#30261C",
+              "monochromeImage": "./assets/app-icons/doree/monochrome.png"
+            }
+          },
+          {
+            "name": "Minimaliste",
+            "ios": "./assets/app-icons/minimaliste/icon.png",
+            "android": {
+              "foregroundImage": "./assets/app-icons/minimaliste/foreground.png",
+              "backgroundImage": "./assets/app-icons/minimaliste/background.png",
+              "backgroundColor": "#FAF6EF",
+              "monochromeImage": "./assets/app-icons/minimaliste/monochrome.png"
+            }
+          }
+        ]
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

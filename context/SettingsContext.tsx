@@ -1,3 +1,5 @@
+import { DEFAULT_PALETTE, isPaletteId, type PaletteId } from '@/constants/themes';
+import { isAppIconId, type AppIconId } from '@/constants/app-icons';
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Appearance, Platform } from 'react-native';
@@ -18,6 +20,8 @@ const defaultNotifications: NotificationPreferences = {
 
 const defaultSettings: Settings = {
   theme: 'light',
+  palette: DEFAULT_PALETTE,
+  appIcon: 'default',
   language: 'fr',
   notifications: defaultNotifications,
   aiConsent: false,
@@ -25,6 +29,9 @@ const defaultSettings: Settings = {
 
 type SettingsContextType = {
   settings: Settings;
+  setPalette: (palette: PaletteId) => Promise<void>;
+  setAppIcon: (appIcon: AppIconId) => Promise<void>;
+  ready: boolean;
   updateTheme: (theme: Settings['theme']) => void;
   updateLanguage: (language: Settings['language']) => void;
   updateNotifications: (notifications: Partial<NotificationPreferences>) => void;
@@ -35,6 +42,9 @@ type SettingsContextType = {
 
 const SettingsContext = createContext<SettingsContextType>({
   settings: defaultSettings,
+  setPalette: async () => {},
+  setAppIcon: async () => {},
+  ready: false,
   updateTheme: () => {},
   updateLanguage: () => {},
   updateNotifications: () => {},
@@ -45,6 +55,9 @@ const SettingsContext = createContext<SettingsContextType>({
 
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const [settings, setSettings] = useState<Settings>(defaultSettings);
+  const [ready, setReady] = useState(false);
+  const settingsRef = React.useRef(settings);
+  settingsRef.current = settings;
 
   useEffect(() => {
     if (Platform.OS !== 'web') {
@@ -59,43 +72,56 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
       if (raw) {
         try {
           const parsed = JSON.parse(raw);
-          setSettings({ ...defaultSettings, ...parsed, notifications: { ...defaultNotifications, ...parsed.notifications } });
+          setSettings({ ...defaultSettings, ...parsed, palette: isPaletteId(parsed.palette) ? parsed.palette : DEFAULT_PALETTE, appIcon: isAppIconId(parsed.appIcon) ? parsed.appIcon : "default", notifications: { ...defaultNotifications, ...parsed.notifications } });
         } catch {}
       }
-    });
+    }).catch(() => {}).finally(() => setReady(true));
   }, []);
 
+  // Serialize all settings writes, including a language/mode change during icon confirmation.
+  const writes = React.useRef(Promise.resolve());
   const persist = useCallback((next: Settings) => {
+    settingsRef.current = next;
     setSettings(next);
-    AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(next));
+    const write = writes.current.catch(() => {}).then(() =>
+      AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(next))
+    );
+    writes.current = write;
+    // Legacy void setters remain safe; personalisation awaits the original rejection to inform the user.
+    void write.catch(() => {});
+    return write;
   }, []);
+  const savePersonalisation = useCallback((patch: Partial<Pick<Settings, 'palette' | 'appIcon'>>) =>
+    persist({ ...settingsRef.current, ...patch }), [persist]);
+  const setPalette = useCallback((palette: PaletteId) => savePersonalisation({ palette }), [savePersonalisation]);
+  const setAppIcon = useCallback((appIcon: AppIconId) => savePersonalisation({ appIcon }), [savePersonalisation]);
 
   const updateTheme = useCallback(
     (theme: Settings['theme']) => {
-      persist({ ...settings, theme });
+      persist({ ...settingsRef.current, theme });
     },
-    [settings, persist],
+    [persist],
   );
 
   const updateLanguage = useCallback(
     (language: Settings['language']) => {
-      persist({ ...settings, language });
+      persist({ ...settingsRef.current, language });
     },
-    [settings, persist],
+    [persist],
   );
 
   const updateNotifications = useCallback(
     (partial: Partial<NotificationPreferences>) => {
-      persist({ ...settings, notifications: { ...settings.notifications, ...partial } });
+      persist({ ...settingsRef.current, notifications: { ...settingsRef.current.notifications, ...partial } });
     },
-    [settings, persist],
+    [persist],
   );
 
   const updateAiConsent = useCallback(
     (value: boolean) => {
-      persist({ ...settings, aiConsent: value });
+      persist({ ...settingsRef.current, aiConsent: value });
     },
-    [settings, persist],
+    [persist],
   );
 
   const resetFavorites = useCallback(async () => {
@@ -108,7 +134,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <SettingsContext.Provider
-      value={{ settings, updateTheme, updateLanguage, updateNotifications, updateAiConsent, resetFavorites, resetUserRecipes }}
+      value={{ settings, setPalette, setAppIcon, ready, updateTheme, updateLanguage, updateNotifications, updateAiConsent, resetFavorites, resetUserRecipes }}
     >
       {children}
     </SettingsContext.Provider>

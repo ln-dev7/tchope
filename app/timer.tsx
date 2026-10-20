@@ -1,3 +1,4 @@
+import { fixedColors } from "@/constants/themes";
 import { useResponsive } from '@/hooks/useResponsive';
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import {
@@ -324,7 +325,7 @@ export default function TimerScreen() {
   const progressColor = isDone
     ? colors.green
     : activeTimer?.isPaused
-      ? '#FFC107'
+      ? fixedColors.timerWarning
       : colors.accent;
 
   // Number picker component
@@ -541,11 +542,11 @@ export default function TimerScreen() {
                   height: 38,
                   paddingHorizontal: 16,
                   borderRadius: 12,
-                  backgroundColor: '#FF4444' + '15',
+                  backgroundColor: fixedColors.timerStop + '15',
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}>
-                <Ionicons name="stop" size={16} color="#FF4444" />
+                <Ionicons name="stop" size={16} color={fixedColors.timerStop} />
               </TouchableOpacity>
             </View>
           </View>
@@ -786,7 +787,7 @@ export default function TimerScreen() {
                           style={{
                             fontSize: 14,
                             fontWeight: '600',
-                            color: '#FFC107',
+                            color: fixedColors.timerWarning,
                             marginTop: 4,
                           }}>
                           {t('timerPaused')}
@@ -851,10 +852,10 @@ export default function TimerScreen() {
                     onPress={() => stopLocalTimer(activeTimer.id)}
                     style={{
                       width: 64, height: 64, borderRadius: 32,
-                      backgroundColor: '#FF4444',
+                      backgroundColor: fixedColors.timerStop,
                       alignItems: 'center', justifyContent: 'center',
                     }}>
-                    <Ionicons name="close" size={28} color="#FFFFFF" />
+                    <Ionicons name="close" size={28} color={fixedColors.white} />
                   </TouchableOpacity>
                 </>
               ) : (
@@ -876,13 +877,13 @@ export default function TimerScreen() {
                     }
                     style={{
                       width: 72, height: 72, borderRadius: 36,
-                      backgroundColor: activeTimer.isPaused ? colors.accent : '#FFC107',
+                      backgroundColor: activeTimer.isPaused ? colors.accent : fixedColors.timerWarning,
                       alignItems: 'center', justifyContent: 'center',
-                      shadowColor: activeTimer.isPaused ? colors.accent : '#FFC107',
+                      shadowColor: activeTimer.isPaused ? colors.accent : fixedColors.timerWarning,
                       shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.35,
                       shadowRadius: 12, elevation: 8,
                     }}>
-                    <Ionicons name={activeTimer.isPaused ? 'play' : 'pause'} size={32} color={activeTimer.isPaused ? colors.onAccent : '#29241F'} />
+                    <Ionicons name={activeTimer.isPaused ? 'play' : 'pause'} size={32} color={activeTimer.isPaused ? colors.onAccent : fixedColors.onTimerWarning} />
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() =>
@@ -893,10 +894,10 @@ export default function TimerScreen() {
                     }
                     style={{
                       width: 52, height: 52, borderRadius: 26,
-                      backgroundColor: '#FF4444' + '20',
+                      backgroundColor: fixedColors.timerStop + '20',
                       alignItems: 'center', justifyContent: 'center',
                     }}>
-                    <Ionicons name="stop" size={22} color="#FF4444" />
+                    <Ionicons name="stop" size={22} color={fixedColors.timerStop} />
                   </TouchableOpacity>
                 </>
               )}
@@ -964,7 +965,7 @@ export default function TimerScreen() {
                       style={{
                         position: 'absolute', bottom: 0, left: 0,
                         width: `${timerProgress}%` as any, height: 3,
-                        backgroundColor: timerDone ? colors.green : timer.isPaused ? '#FFC107' : colors.accent,
+                        backgroundColor: timerDone ? colors.green : timer.isPaused ? fixedColors.timerWarning : colors.accent,
                         borderRadius: 2,
                       }}
                     />
@@ -972,13 +973,13 @@ export default function TimerScreen() {
                       <View
                         style={{
                           width: 40, height: 40, borderRadius: 20,
-                          backgroundColor: timerDone ? colors.green + '20' : timer.isPaused ? '#FFC107' + '20' : colors.accent + '20',
+                          backgroundColor: timerDone ? colors.green + '20' : timer.isPaused ? fixedColors.timerWarning + '20' : colors.accent + '20',
                           alignItems: 'center', justifyContent: 'center',
                         }}>
                         <Ionicons
                           name={timerDone ? 'checkmark-circle' : timer.isPaused ? 'pause-circle' : 'timer'}
                           size={20}
-                          color={timerDone ? colors.green : timer.isPaused ? '#FFC107' : colors.accent}
+                          color={timerDone ? colors.green : timer.isPaused ? fixedColors.timerWarning : colors.accent}
                         />
                       </View>
                       <View style={{ flex: 1 }}>
@@ -992,7 +993,7 @@ export default function TimerScreen() {
                       <Text
                         style={{
                           fontSize: 22, fontWeight: '800',
-                          color: timerDone ? colors.green : timer.isPaused ? '#FFC107' : colors.text,
+                          color: timerDone ? colors.green : timer.isPaused ? fixedColors.timerWarning : colors.text,
                           fontVariant: ['tabular-nums'],
                         }}>
                         {timerDone ? '00:00' : formatTime(timer.remainingSeconds)}
@@ -1016,10 +1017,10 @@ export default function TimerScreen() {
                           onPress={(e) => { e.stopPropagation(); stopLocalTimer(timer.id); }}
                           style={{
                             width: 32, height: 32, borderRadius: 16,
-                            backgroundColor: '#FF4444' + '15',
+                            backgroundColor: fixedColors.timerStop + '15',
                             alignItems: 'center', justifyContent: 'center',
                           }}>
-                          <Ionicons name="close" size={14} color="#FF4444" />
+                          <Ionicons name="close" size={14} color={fixedColors.timerStop} />
                         </TouchableOpacity>
                       </View>
                     </View>
@@ -1043,12 +1044,12 @@ export default function TimerScreen() {
                 }
                 style={{
                   marginTop: 12, height: 44, borderRadius: 14,
-                  backgroundColor: '#FF4444' + '10',
+                  backgroundColor: fixedColors.timerStop + '10',
                   alignItems: 'center', justifyContent: 'center',
                   flexDirection: 'row', gap: 8,
                 }}>
-                <Ionicons name="trash-outline" size={18} color="#FF4444" />
-                <Text style={{ fontSize: 14, fontWeight: '600', color: '#FF4444' }}>
+                <Ionicons name="trash-outline" size={18} color={fixedColors.timerStop} />
+                <Text style={{ fontSize: 14, fontWeight: '600', color: fixedColors.timerStop }}>
                   {t('timerStopAll')}
                 </Text>
               </TouchableOpacity>

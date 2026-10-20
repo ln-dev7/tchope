@@ -931,14 +931,14 @@ export default function TchopAIScreen() {
                       onPress={() => handleLoadChat(item)}
                       activeOpacity={0.7}
                       style={{
-                        backgroundColor: isDark ? "#2A2A2A" : "#FFFFFF",
+                        backgroundColor: colors.assistantCard,
                         borderRadius: 16,
                         padding: 14,
                         flexDirection: "row",
                         alignItems: "center",
                         gap: 12,
                         borderWidth: 1,
-                        borderColor: isDark ? "#3A3A3A" : "#E8E5E4",
+                        borderColor: colors.assistantBorder,
                       }}
                     >
                       <View

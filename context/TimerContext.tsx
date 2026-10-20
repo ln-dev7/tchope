@@ -1,3 +1,4 @@
+import { fixedColors } from "@/constants/themes";
 import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 import { View, Text, TouchableOpacity, Animated, AppState, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -370,12 +371,12 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
             activeOpacity={0.9}
             onPress={() => setMinimized(!minimized)}
             style={{
-              backgroundColor: widgetDone ? '#41634B' : widgetTimer.isPaused ? '#6B5B00' : '#A84027',
+              backgroundColor: widgetDone ? fixedColors.timerDone : widgetTimer.isPaused ? fixedColors.timerPaused : fixedColors.timerRunning,
               borderRadius: minimized ? 32 : 24,
               padding: minimized ? 14 : 16,
               minWidth: minimized ? 64 : 200,
               alignItems: 'center',
-              shadowColor: '#000',
+              shadowColor: fixedColors.shadow,
               shadowOffset: { width: 0, height: 8 },
               shadowOpacity: 0.25,
               shadowRadius: 16,
@@ -383,55 +384,55 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
             }}>
             {minimized ? (
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                <Ionicons name={widgetDone ? 'checkmark-circle' : widgetTimer.isPaused ? 'pause-circle' : 'timer-outline'} size={18} color="#FFFFFF" />
-                <Text style={{ fontSize: 16, fontWeight: '700', color: '#FFFFFF', fontVariant: ['tabular-nums'] }}>
+                <Ionicons name={widgetDone ? 'checkmark-circle' : widgetTimer.isPaused ? 'pause-circle' : 'timer-outline'} size={18} color={fixedColors.white} />
+                <Text style={{ fontSize: 16, fontWeight: '700', color: fixedColors.white, fontVariant: ['tabular-nums'] }}>
                   {widgetDone ? '!' : formatTime(widgetTimer.remainingSeconds)}
                 </Text>
                 {activeCount > 1 && (
-                  <View style={{ backgroundColor: 'rgba(255,255,255,0.3)', borderRadius: 10, paddingHorizontal: 6, paddingVertical: 1 }}>
-                    <Text style={{ fontSize: 11, fontWeight: '700', color: '#FFFFFF' }}>+{activeCount - 1}</Text>
+                  <View style={{ backgroundColor: fixedColors.whiteAlpha30, borderRadius: 10, paddingHorizontal: 6, paddingVertical: 1 }}>
+                    <Text style={{ fontSize: 11, fontWeight: '700', color: fixedColors.white }}>+{activeCount - 1}</Text>
                   </View>
                 )}
-                <Ionicons name="chevron-up" size={16} color="rgba(255,255,255,0.7)" />
+                <Ionicons name="chevron-up" size={16} color={fixedColors.whiteAlpha70} />
               </View>
             ) : (
               <View style={{ gap: 8, alignItems: 'center', width: '100%' }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                  <Ionicons name={widgetDone ? 'checkmark-circle' : widgetTimer.isPaused ? 'pause-circle' : 'timer-outline'} size={16} color="#FFFFFF" />
-                  <Text style={{ fontSize: 13, fontWeight: '600', color: 'rgba(255,255,255,0.8)' }} numberOfLines={1}>
+                  <Ionicons name={widgetDone ? 'checkmark-circle' : widgetTimer.isPaused ? 'pause-circle' : 'timer-outline'} size={16} color={fixedColors.white} />
+                  <Text style={{ fontSize: 13, fontWeight: '600', color: fixedColors.whiteAlpha80 }} numberOfLines={1}>
                     {widgetTimer.isPaused ? `${truncateName(widgetTimer.recipeName)} (${t('timerPaused')})` : truncateName(widgetTimer.recipeName)}
                   </Text>
                   {activeCount > 1 && (
-                    <View style={{ backgroundColor: 'rgba(255,255,255,0.3)', borderRadius: 10, paddingHorizontal: 6, paddingVertical: 1 }}>
-                      <Text style={{ fontSize: 11, fontWeight: '700', color: '#FFFFFF' }}>+{activeCount - 1}</Text>
+                    <View style={{ backgroundColor: fixedColors.whiteAlpha30, borderRadius: 10, paddingHorizontal: 6, paddingVertical: 1 }}>
+                      <Text style={{ fontSize: 11, fontWeight: '700', color: fixedColors.white }}>+{activeCount - 1}</Text>
                     </View>
                   )}
                 </View>
-                <Text style={{ fontSize: 28, fontWeight: '800', color: '#FFFFFF', fontVariant: ['tabular-nums'] }}>
+                <Text style={{ fontSize: 28, fontWeight: '800', color: fixedColors.white, fontVariant: ['tabular-nums'] }}>
                   {widgetDone ? t('timerReady') : formatTime(widgetTimer.remainingSeconds)}
                 </Text>
                 {!widgetDone && (
-                  <View style={{ width: '100%', height: 4, backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: 2 }}>
-                    <View style={{ width: `${widgetProgress * 100}%`, height: 4, backgroundColor: '#FFFFFF', borderRadius: 2 }} />
+                  <View style={{ width: '100%', height: 4, backgroundColor: fixedColors.whiteAlpha20, borderRadius: 2 }}>
+                    <View style={{ width: `${widgetProgress * 100}%`, height: 4, backgroundColor: fixedColors.white, borderRadius: 2 }} />
                   </View>
                 )}
                 {!widgetDone && (
                   <View style={{ flexDirection: 'row', gap: 8, marginTop: 4 }}>
                     <TouchableOpacity
                       onPress={(e) => { e.stopPropagation(); if (widgetTimer.isPaused) resumeTimer(widgetTimer.id); else pauseTimer(widgetTimer.id); }}
-                      style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.25)' }}>
-                      <Ionicons name={widgetTimer.isPaused ? 'play' : 'pause'} size={18} color="#FFFFFF" />
+                      style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: fixedColors.whiteAlpha25 }}>
+                      <Ionicons name={widgetTimer.isPaused ? 'play' : 'pause'} size={18} color={fixedColors.white} />
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={(e) => { e.stopPropagation(); stopTimer(widgetTimer.id); }}
-                      style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.15)' }}>
-                      <Ionicons name="stop" size={18} color="#FFFFFF" />
+                      style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: fixedColors.whiteAlpha15 }}>
+                      <Ionicons name="stop" size={18} color={fixedColors.white} />
                     </TouchableOpacity>
                     {widgetTimer.recipeId && (
                       <TouchableOpacity
                         onPress={(e) => { e.stopPropagation(); handleGoToCookingMode(); }}
-                        style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.15)' }}>
-                        <Ionicons name="chevron-forward" size={18} color="#FFFFFF" />
+                        style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: fixedColors.whiteAlpha15 }}>
+                        <Ionicons name="chevron-forward" size={18} color={fixedColors.white} />
                       </TouchableOpacity>
                     )}
                   </View>
@@ -440,19 +441,19 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
                   <View style={{ flexDirection: 'row', gap: 8, marginTop: 4 }}>
                     <TouchableOpacity
                       onPress={(e) => { e.stopPropagation(); stopTimer(widgetTimer.id); }}
-                      style={{ paddingHorizontal: 16, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.2)' }}>
-                      <Text style={{ fontSize: 12, fontWeight: '600', color: '#FFFFFF' }}>{t('timerClose')}</Text>
+                      style={{ paddingHorizontal: 16, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: fixedColors.whiteAlpha20 }}>
+                      <Text style={{ fontSize: 12, fontWeight: '600', color: fixedColors.white }}>{t('timerClose')}</Text>
                     </TouchableOpacity>
                     {widgetTimer.recipeId && (
                       <TouchableOpacity
                         onPress={(e) => { e.stopPropagation(); handleGoToCookingMode(); }}
-                        style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.15)' }}>
-                        <Ionicons name="chevron-forward" size={18} color="#FFFFFF" />
+                        style={{ width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: fixedColors.whiteAlpha15 }}>
+                        <Ionicons name="chevron-forward" size={18} color={fixedColors.white} />
                       </TouchableOpacity>
                     )}
                   </View>
                 )}
-                <Ionicons name="chevron-down" size={18} color="rgba(255,255,255,0.7)" />
+                <Ionicons name="chevron-down" size={18} color={fixedColors.whiteAlpha70} />
               </View>
             )}
           </TouchableOpacity>

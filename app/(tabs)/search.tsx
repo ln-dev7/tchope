@@ -220,8 +220,8 @@ export default function SearchScreen() {
                     alignItems: 'center',
                     gap: 6,
                   }}>
-                  <Ionicons name="options-outline" size={14} color={showFilters ? '#FFFFFF' : colors.accent} />
-                  <Text style={{ fontSize: 13, fontWeight: '600', color: showFilters ? '#FFFFFF' : colors.accent }}>
+                  <Ionicons name="options-outline" size={14} color={showFilters ? colors.onAccent : colors.accent} />
+                  <Text style={{ fontSize: 13, fontWeight: '600', color: showFilters ? colors.onAccent : colors.accent }}>
                     {t('filter')}
                   </Text>
                 </TouchableOpacity>

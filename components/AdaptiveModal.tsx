@@ -1,3 +1,4 @@
+import { fixedColors } from "@/constants/themes";
 import React from "react";
 import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, View, type ModalProps, type StyleProp, type ViewStyle } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
@@ -23,7 +24,7 @@ export function AdaptiveModal({ visible, onClose, children, center = false, scro
   return (
     <Modal visible={visible} transparent animationType={animationType} onRequestClose={onClose}>
       <SafeAreaProvider>
-        <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.5)" }}>
+        <View style={{ flex: 1, backgroundColor: fixedColors.modalBackdrop }}>
           <Pressable style={StyleSheet.absoluteFill} onPress={dismissOnBackdrop ? onClose : undefined} accessible={false} />
           <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"} pointerEvents="box-none">
             <SafeAreaView style={{ flex: 1, padding: 12, justifyContent: center ? "center" : "flex-end", alignItems: "center" }} pointerEvents="box-none">

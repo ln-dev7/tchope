@@ -12,14 +12,14 @@ export default function MiniRecipeCard({ recipe, isDark, colors, onPress }: {
       onPress={onPress}
       activeOpacity={0.8}
       style={{
-        backgroundColor: isDark ? '#2A2A2A' : '#FFFFFF',
+        backgroundColor: colors.assistantCard,
         borderRadius: 16,
         padding: 8,
         flexDirection: 'row',
         alignItems: 'center',
         gap: 10,
         borderWidth: 1,
-        borderColor: isDark ? '#3A3A3A' : '#E8E5E4',
+        borderColor: colors.assistantBorder,
       }}>
       <RecipeImage
         recipeId={recipe.id}

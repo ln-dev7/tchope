@@ -1,3 +1,4 @@
+import { fixedColors } from "@/constants/themes";
 import React, { createContext, useContext, useCallback, useEffect, useRef, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -57,7 +58,7 @@ export function AiConsentProvider({ children }: { children: React.ReactNode }) {
     <AiConsentContext.Provider value={{ ensureConsent }}>
       {children}
       <Modal visible={visible} transparent animationType="slide" onRequestClose={() => finish(false)}>
-        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}>
+        <View style={{ flex: 1, backgroundColor: fixedColors.modalBackdrop, justifyContent: 'flex-end' }}>
           <View style={{ backgroundColor: colors.background, borderTopLeftRadius: 24, borderTopRightRadius: 24, maxHeight: '88%' }}>
             <ScrollView contentContainerStyle={{ padding: 24, paddingBottom: 32 }} keyboardShouldPersistTaps="handled">
               <View style={{ alignItems: 'center', marginBottom: 4 }}>

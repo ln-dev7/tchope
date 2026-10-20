@@ -83,3 +83,7 @@ le chat TchopAI qui garde **3 messages texte gratuits au total** (comme Travora 
   expo-modules dans `extraProguardRules`, comme Travora. **Tester le build release Android** (widget, achat, TchopAI Live,
   notifications) avant de publier : si une lib casse, ajouter une règle `-keep`.
 
+
+## Personnalisation Pro (2.2.0)
+
+Réglages → Personnalisation : icônes alternatives et quatre palettes clair/sombre. Icône et palette sont indépendantes ; les choix actifs restent après désabonnement, les nouveaux choix sont verrouillés. Retour aux valeurs par défaut gratuit. Architecture, formats et validation : [PERSONALISATION.md](PERSONALISATION.md).

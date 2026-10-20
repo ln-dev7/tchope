@@ -40,7 +40,7 @@ export default function IngredientItem({ name, active = false, onPress }: Props)
           width: 56,
           height: 56,
           borderRadius: 28,
-          backgroundColor: active ? 'rgba(255,255,255,0.2)' : colors.ingredientBg,
+          backgroundColor: active ? colors.activeIngredient : colors.ingredientBg,
           alignItems: 'center',
           justifyContent: 'center',
         }}>

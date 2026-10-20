@@ -1,3 +1,4 @@
+import { fixedColors } from "@/constants/themes";
 import React, { useState, useMemo, useCallback } from 'react';
 import {
   View,
@@ -379,7 +380,7 @@ export default function AIRecipesScreen() {
                 justifyContent: 'center',
                 gap: 6,
                 ...(mode === 'ingredients'
-                  ? { shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2 }
+                  ? { shadowColor: fixedColors.shadow, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2 }
                   : {}),
               }}>
               <Ionicons
@@ -408,7 +409,7 @@ export default function AIRecipesScreen() {
                 justifyContent: 'center',
                 gap: 6,
                 ...(mode === 'free'
-                  ? { shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2 }
+                  ? { shadowColor: fixedColors.shadow, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2 }
                   : {}),
               }}>
               <Ionicons
@@ -516,7 +517,7 @@ export default function AIRecipesScreen() {
                         style={{
                           flexDirection: 'row',
                           alignItems: 'center',
-                          backgroundColor: isDark ? 'rgba(145,71,0,0.15)' : 'rgba(145,71,0,0.08)',
+                          backgroundColor: isDark ? colors.legacyBrandTint15 : colors.legacyBrandTint08,
                           borderRadius: 20,
                           paddingLeft: 14,
                           paddingRight: 6,
@@ -531,7 +532,7 @@ export default function AIRecipesScreen() {
                             width: 22,
                             height: 22,
                             borderRadius: 11,
-                            backgroundColor: isDark ? 'rgba(145,71,0,0.3)' : 'rgba(145,71,0,0.15)',
+                            backgroundColor: isDark ? colors.legacyBrandTint30 : colors.legacyBrandTint15,
                             alignItems: 'center',
                             justifyContent: 'center',
                           }}>
@@ -554,13 +555,13 @@ export default function AIRecipesScreen() {
                     flexDirection: 'row',
                     alignItems: 'center',
                     gap: 10,
-                    backgroundColor: isDark ? 'rgba(239,68,68,0.1)' : 'rgba(239,68,68,0.06)',
+                    backgroundColor: isDark ? fixedColors.offlineAlpha10 : fixedColors.offlineAlpha6,
                     borderRadius: 20,
                     padding: 16,
                     borderWidth: 1,
-                    borderColor: isDark ? 'rgba(239,68,68,0.2)' : 'rgba(239,68,68,0.12)',
+                    borderColor: isDark ? fixedColors.offlineAlpha20 : fixedColors.offlineAlpha12,
                   }}>
-                  <Ionicons name="cloud-offline-outline" size={20} color="#EF4444" />
+                  <Ionicons name="cloud-offline-outline" size={20} color={fixedColors.offlineDanger} />
                   <Text style={{ fontSize: 13, color: colors.textSecondary, flex: 1, lineHeight: 18 }}>
                     {t('aiFreeUnavailable')}
                   </Text>
@@ -659,18 +660,18 @@ export default function AIRecipesScreen() {
                 flexDirection: 'row',
                 alignItems: 'center',
                 gap: 8,
-                backgroundColor: isDark ? 'rgba(245,158,66,0.1)' : 'rgba(245,158,66,0.08)',
+                backgroundColor: isDark ? fixedColors.matchWarningAlpha10 : fixedColors.matchWarningAlpha8,
                 borderRadius: 16,
                 paddingHorizontal: 14,
                 paddingVertical: 10,
               }}>
-              <Ionicons name="information-circle-outline" size={16} color="#F59E42" />
+              <Ionicons name="information-circle-outline" size={16} color={fixedColors.matchWarning} />
               <Text style={{ fontSize: 12, color: colors.textSecondary, flex: 1 }}>
                 {localForPro ? pd.localHint : t('aiFallback')}
               </Text>
               {localForPro ? (
                 <TouchableOpacity onPress={() => openPaywall('feature')} hitSlop={8}>
-                  <Text style={{ fontSize: 12, fontWeight: '800', color: '#F59E42' }}>{pd.chatOfferedCta}</Text>
+                  <Text style={{ fontSize: 12, fontWeight: '800', color: fixedColors.matchWarning }}>{pd.chatOfferedCta}</Text>
                 </TouchableOpacity>
               ) : null}
             </View>
@@ -694,7 +695,7 @@ export default function AIRecipesScreen() {
                       }}>
                       <View
                         style={{
-                          backgroundColor: match >= 70 ? 'rgba(34,197,94,0.15)' : match >= 50 ? 'rgba(245,158,66,0.15)' : 'rgba(239,68,68,0.15)',
+                          backgroundColor: match >= 70 ? fixedColors.matchSuccessAlpha15 : match >= 50 ? fixedColors.matchWarningAlpha15 : fixedColors.offlineAlpha15,
                           borderRadius: 12,
                           paddingHorizontal: 8,
                           paddingVertical: 3,
@@ -703,7 +704,7 @@ export default function AIRecipesScreen() {
                           style={{
                             fontSize: 12,
                             fontWeight: '700',
-                            color: match >= 70 ? '#22C55E' : match >= 50 ? '#F59E42' : '#EF4444',
+                            color: match >= 70 ? fixedColors.matchSuccess : match >= 50 ? fixedColors.matchWarning : fixedColors.offlineDanger,
                           }}>
                           {match}%
                         </Text>

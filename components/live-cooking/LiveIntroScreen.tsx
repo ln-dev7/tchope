@@ -118,7 +118,7 @@ export default function LiveIntroScreen({
               flexDirection: "row",
               alignItems: "center",
               gap: 14,
-              backgroundColor: isDark ? colors.surface : "#FFFFFF",
+              backgroundColor: isDark ? colors.surface : colors.card,
               borderRadius: 16,
               padding: 16,
               borderWidth: isDark ? 0 : 1,

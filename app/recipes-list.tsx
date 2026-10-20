@@ -1,3 +1,4 @@
+import { fixedColors } from "@/constants/themes";
 import React, { useState, useMemo } from 'react';
 import { View, Text, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -78,7 +79,7 @@ export default function RecipesListScreen() {
           value={query}
           onChangeText={setQuery}
           placeholder={t('searchPlaceholder')}
-          placeholderTextColor="rgba(92,91,91,0.6)"
+          placeholderTextColor={fixedColors.legacyPlaceholder}
           style={{
             backgroundColor: colors.inputBg,
             borderRadius: 24,

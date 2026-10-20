@@ -1,3 +1,4 @@
+import { fixedColors } from "@/constants/themes";
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import { Keyboard, Platform, Pressable } from 'react-native';
@@ -43,7 +44,7 @@ export default function TchopAIButton({ bottom, right }: { bottom: number; right
         backgroundColor: colors.accent,
         alignItems: 'center',
         justifyContent: 'center',
-        shadowColor: '#000',
+        shadowColor: fixedColors.shadow,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.15,
         shadowRadius: 8,

@@ -1,3 +1,4 @@
+import { fixedColors } from "@/constants/themes";
 import React, { useState, useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
@@ -15,29 +16,29 @@ type Props = {
 };
 
 const categoryColors: Record<Category, string> = {
-  Plat: '#EFE0D4',
-  Entrée: '#E5EBDD',
-  Sauce: '#EDE1CC',
-  Accompagnement: '#F1EBDC',
-  Boisson: '#DFE8EB',
-  Grillade: '#EFDFD7',
-  Dessert: '#EAE0E5',
+  Plat: fixedColors.dishLight,
+  Entrée: fixedColors.starterLight,
+  Sauce: fixedColors.sauceLight,
+  Accompagnement: fixedColors.sideLight,
+  Boisson: fixedColors.drinkLight,
+  Grillade: fixedColors.grillLight,
+  Dessert: fixedColors.dessertLight,
 };
 
 const categoryColorsDark: Record<Category, string> = {
-  Plat: '#382C24',
-  Entrée: '#2B3325',
-  Sauce: '#373022',
-  Accompagnement: '#353124',
-  Boisson: '#263237',
-  Grillade: '#382925',
-  Dessert: '#352B32',
+  Plat: fixedColors.dishDark,
+  Entrée: fixedColors.starterDark,
+  Sauce: fixedColors.sauceDark,
+  Accompagnement: fixedColors.sideDark,
+  Boisson: fixedColors.drinkDark,
+  Grillade: fixedColors.grillDark,
+  Dessert: fixedColors.dessertDark,
 };
 
 function LogoPlaceholder({ category, isDark }: { category: Category; isDark?: boolean }) {
   const bg = isDark
-    ? (categoryColorsDark[category] || '#382C24')
-    : (categoryColors[category] || '#EFE0D4');
+    ? (categoryColorsDark[category] || fixedColors.dishDark)
+    : (categoryColors[category] || fixedColors.dishLight);
 
   return (
     <View style={[StyleSheet.absoluteFill, { backgroundColor: bg, alignItems: 'center', justifyContent: 'center' }]}>

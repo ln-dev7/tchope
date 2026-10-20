@@ -1,3 +1,4 @@
+import { fixedColors } from "@/constants/themes";
 import { AdaptiveModal } from '@/components/AdaptiveModal';
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Switch, Linking, Platform } from 'react-native';
@@ -169,28 +170,28 @@ export default function NotificationSettingsScreen() {
         {!hasPermission && (
           <View
             style={{
-              backgroundColor: isDark ? 'rgba(239,68,68,0.1)' : 'rgba(239,68,68,0.06)',
+              backgroundColor: isDark ? fixedColors.offlineAlpha10 : fixedColors.offlineAlpha6,
               borderRadius: 20,
               padding: 16,
               gap: 12,
               borderWidth: 1,
-              borderColor: isDark ? 'rgba(239,68,68,0.2)' : 'rgba(239,68,68,0.12)',
+              borderColor: isDark ? fixedColors.offlineAlpha20 : fixedColors.offlineAlpha12,
             }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-              <Ionicons name="notifications-off-outline" size={20} color="#EF4444" />
-              <Text style={{ fontSize: 14, fontWeight: '600', color: '#EF4444', flex: 1 }}>
+              <Ionicons name="notifications-off-outline" size={20} color={fixedColors.offlineDanger} />
+              <Text style={{ fontSize: 14, fontWeight: '600', color: fixedColors.offlineDanger, flex: 1 }}>
                 {t('notifPermissionRequired')}
               </Text>
             </View>
             <TouchableOpacity
               onPress={handleRequestPermission}
               style={{
-                backgroundColor: '#EF4444',
+                backgroundColor: fixedColors.offlineDanger,
                 borderRadius: 14,
                 paddingVertical: 12,
                 alignItems: 'center',
               }}>
-              <Text style={{ fontSize: 14, fontWeight: '700', color: '#FFFFFF' }}>
+              <Text style={{ fontSize: 14, fontWeight: '700', color: fixedColors.white }}>
                 {t('notifOpenSettings')}
               </Text>
             </TouchableOpacity>
@@ -234,7 +235,7 @@ export default function NotificationSettingsScreen() {
                   onValueChange={(val) => handleToggle(item.key, val)}
                   disabled={!hasPermission}
                   trackColor={{ false: colors.border, true: item.iconColor }}
-                  thumbColor="#FFFFFF"
+                  thumbColor={fixedColors.white}
                 />
               </View>
 
@@ -246,8 +247,8 @@ export default function NotificationSettingsScreen() {
               {/* Hint (e.g. no meal plan) */}
               {item.hint && enabled && (
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingLeft: 56 }}>
-                  <Ionicons name="information-circle-outline" size={14} color="#F59E42" />
-                  <Text style={{ fontSize: 12, color: '#F59E42', flex: 1 }}>
+                  <Ionicons name="information-circle-outline" size={14} color={fixedColors.matchWarning} />
+                  <Text style={{ fontSize: 12, color: fixedColors.matchWarning, flex: 1 }}>
                     {item.hint}
                   </Text>
                 </View>

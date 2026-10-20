@@ -1,3 +1,4 @@
+import { fixedColors } from "@/constants/themes";
 import React from 'react';
 import { View, Text } from 'react-native';
 import type { Category } from '@/types';
@@ -13,13 +14,13 @@ const categoryEmoji: Record<Category, string> = {
 };
 
 const categoryColors: Record<Category, { bg: string; darkBg: string }> = {
-  Plat: { bg: '#EFE0D4', darkBg: '#382C24' },
-  Entrée: { bg: '#E5EBDD', darkBg: '#2B3325' },
-  Sauce: { bg: '#EDE1CC', darkBg: '#373022' },
-  Accompagnement: { bg: '#F1EBDC', darkBg: '#353124' },
-  Boisson: { bg: '#DFE8EB', darkBg: '#263237' },
-  Grillade: { bg: '#EFDFD7', darkBg: '#382925' },
-  Dessert: { bg: '#EAE0E5', darkBg: '#352B32' },
+  Plat: { bg: fixedColors.dishLight, darkBg: fixedColors.dishDark },
+  Entrée: { bg: fixedColors.starterLight, darkBg: fixedColors.starterDark },
+  Sauce: { bg: fixedColors.sauceLight, darkBg: fixedColors.sauceDark },
+  Accompagnement: { bg: fixedColors.sideLight, darkBg: fixedColors.sideDark },
+  Boisson: { bg: fixedColors.drinkLight, darkBg: fixedColors.drinkDark },
+  Grillade: { bg: fixedColors.grillLight, darkBg: fixedColors.grillDark },
+  Dessert: { bg: fixedColors.dessertLight, darkBg: fixedColors.dessertDark },
 };
 
 type Props = {

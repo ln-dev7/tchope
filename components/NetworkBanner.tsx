@@ -1,3 +1,4 @@
+import { fixedColors } from "@/constants/themes";
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, Animated } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -53,7 +54,7 @@ export default function NetworkBanner() {
   if (!visible) return null;
 
   const isOffline = !isConnected;
-  const bgColor = isOffline ? '#DC2626' : '#16A34A';
+  const bgColor = isOffline ? fixedColors.networkOffline : fixedColors.networkOnline;
   const icon = isOffline ? 'cloud-offline-outline' : 'checkmark-circle-outline';
   const message = isOffline ? t('networkOffline') : t('networkBackOnline');
 
@@ -78,8 +79,8 @@ export default function NetworkBanner() {
           justifyContent: 'center',
           gap: 8,
         }}>
-        <Ionicons name={icon} size={16} color="#FFFFFF" />
-        <Text style={{ fontSize: 13, fontWeight: '600', color: '#FFFFFF' }}>
+        <Ionicons name={icon} size={16} color={fixedColors.white} />
+        <Text style={{ fontSize: 13, fontWeight: '600', color: fixedColors.white }}>
           {message}
         </Text>
       </View>

@@ -1,3 +1,5 @@
+import { useTheme } from '@/hooks/useTheme';
+import { fixedColors } from "@/constants/themes";
 import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
 import { View, Text, Animated, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -17,10 +19,10 @@ export function useToast() {
 }
 
 const presetConfig: Record<ToastPreset, { icon: string; bg: string; iconColor: string }> = {
-  done: { icon: 'checkmark-circle', bg: '#41634B', iconColor: '#FFFFFF' },
-  error: { icon: 'close-circle', bg: '#B02500', iconColor: '#FFFFFF' },
-  heart: { icon: 'heart', bg: '#AE302E', iconColor: '#FFFFFF' },
-  custom: { icon: 'information-circle', bg: '#A84027', iconColor: '#FFFFFF' },
+  done: { icon: 'checkmark-circle', bg: fixedColors.timerDone, iconColor: fixedColors.white },
+  error: { icon: 'close-circle', bg: fixedColors.toastError, iconColor: fixedColors.white },
+  heart: { icon: 'heart', bg: fixedColors.toastHeart, iconColor: fixedColors.white },
+  custom: { icon: 'information-circle', bg: fixedColors.timerRunning, iconColor: fixedColors.white },
 };
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
@@ -61,7 +63,8 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     }, 2200);
   }, []);
 
-  const config = presetConfig[preset];
+  const { colors } = useTheme();
+  const config = preset === 'custom' ? { ...presetConfig.custom, bg: colors.toastBrand, iconColor: colors.toastInk } : presetConfig[preset];
 
   return (
     <ToastContext.Provider value={{ toast }}>
@@ -79,7 +82,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           ]}>
           <View style={[styles.toast, { backgroundColor: config.bg }]}>
             <Ionicons name={config.icon as any} size={20} color={config.iconColor} />
-            <Text style={styles.text} numberOfLines={1}>{message}</Text>
+            <Text style={[styles.text, { color: config.iconColor }]} numberOfLines={1}>{message}</Text>
           </View>
         </Animated.View>
       )}
@@ -102,7 +105,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 14,
     borderRadius: 16,
-    shadowColor: '#000',
+    shadowColor: fixedColors.shadow,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.2,
     shadowRadius: 16,
@@ -111,6 +114,6 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: fixedColors.white,
   },
 });

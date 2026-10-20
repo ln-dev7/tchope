@@ -19,7 +19,7 @@ export default function FavoriteButton({ recipeId }: { recipeId: string }) {
       onPress={(event) => { event.stopPropagation(); toggleFavorite(recipeId); toast(t(selected ? 'favoriteRemoved' : 'favoriteAdded'), selected ? 'custom' : 'heart'); }}
       activeOpacity={0.8}
       style={{ position: 'absolute', top: 12, right: 12, width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.photoControl }}>
-      <Ionicons name={selected ? 'heart' : 'heart-outline'} size={21} color={selected ? '#A84027' : colors.photoInk} />
+      <Ionicons name={selected ? 'heart' : 'heart-outline'} size={21} color={selected ? colors.favoriteSelected : colors.photoInk} />
     </TouchableOpacity>
   );
 }

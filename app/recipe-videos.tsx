@@ -1,3 +1,4 @@
+import { fixedColors } from "@/constants/themes";
 import React, { useState, useMemo } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -92,7 +93,7 @@ export default function RecipeVideosScreen() {
                 justifyContent: 'center',
                 gap: 6,
                 ...(lang === 'fr'
-                  ? { shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2 }
+                  ? { shadowColor: fixedColors.shadow, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2 }
                   : {}),
               }}>
               <Text style={{ fontSize: 16 }}>🇫🇷</Text>
@@ -133,7 +134,7 @@ export default function RecipeVideosScreen() {
         {/* Info banner */}
         <View
           style={{
-            backgroundColor: isDark ? 'rgba(249,127,6,0.1)' : 'rgba(249,127,6,0.08)',
+            backgroundColor: isDark ? colors.videoTint10 : colors.videoTint08,
             borderRadius: 24,
             padding: 20,
             flexDirection: 'row',
@@ -145,7 +146,7 @@ export default function RecipeVideosScreen() {
               width: 44,
               height: 44,
               borderRadius: 22,
-              backgroundColor: isDark ? 'rgba(249,127,6,0.2)' : 'rgba(249,127,6,0.15)',
+              backgroundColor: isDark ? colors.videoTint20 : colors.videoTint15,
               alignItems: 'center',
               justifyContent: 'center',
             }}>
@@ -171,7 +172,7 @@ export default function RecipeVideosScreen() {
               backgroundColor: colors.card,
               borderRadius: 28,
               overflow: 'hidden',
-              shadowColor: '#000',
+              shadowColor: fixedColors.shadow,
               shadowOffset: { width: 0, height: 4 },
               shadowOpacity: 0.08,
               shadowRadius: 12,
@@ -193,7 +194,7 @@ export default function RecipeVideosScreen() {
                   left: 0,
                   right: 0,
                   bottom: 0,
-                  backgroundColor: 'rgba(0,0,0,0.25)',
+                  backgroundColor: fixedColors.photoShade,
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}>
@@ -202,11 +203,11 @@ export default function RecipeVideosScreen() {
                     width: 64,
                     height: 64,
                     borderRadius: 32,
-                    backgroundColor: 'rgba(255,0,0,0.9)',
+                    backgroundColor: fixedColors.youtubePlay,
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}>
-                  <Ionicons name="play" size={32} color="#FFFFFF" style={{ marginLeft: 4 }} />
+                  <Ionicons name="play" size={32} color={fixedColors.white} style={{ marginLeft: 4 }} />
                 </View>
               </View>
               {/* Video number + lang badge */}
@@ -218,13 +219,13 @@ export default function RecipeVideosScreen() {
                   flexDirection: 'row',
                   gap: 6,
                 }}>
-                <View style={{ backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4 }}>
-                  <Text style={{ fontSize: 12, fontWeight: '700', color: '#FFFFFF' }}>
+                <View style={{ backgroundColor: fixedColors.photoCaptionBg, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4 }}>
+                  <Text style={{ fontSize: 12, fontWeight: '700', color: fixedColors.white }}>
                     {index + 1}/{videos.length}
                   </Text>
                 </View>
-                <View style={{ backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4 }}>
-                  <Text style={{ fontSize: 12, fontWeight: '700', color: '#FFFFFF' }}>
+                <View style={{ backgroundColor: fixedColors.photoCaptionBg, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4 }}>
+                  <Text style={{ fontSize: 12, fontWeight: '700', color: fixedColors.white }}>
                     {lang === 'fr' ? '🇫🇷 FR' : '🇬🇧 EN'}
                   </Text>
                 </View>
@@ -238,7 +239,7 @@ export default function RecipeVideosScreen() {
                 {video.title}
               </Text>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                <Ionicons name="logo-youtube" size={16} color="#FF0000" />
+                <Ionicons name="logo-youtube" size={16} color={fixedColors.youtube} />
                 <Text style={{ fontSize: 13, color: colors.textSecondary }}>YouTube</Text>
                 <View style={{ flex: 1 }} />
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>

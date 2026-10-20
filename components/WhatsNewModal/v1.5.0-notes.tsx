@@ -115,8 +115,8 @@ export default function NotesReleaseContent({ colors, t, onClose }: Props) {
           gap: 8,
           marginBottom: 8,
         }}>
-        <Ionicons name="arrow-forward-circle" size={20} color="#FFFFFF" />
-        <Text style={{ fontSize: 16, fontWeight: '700', color: '#FFFFFF' }}>
+        <Ionicons name="arrow-forward-circle" size={20} color={colors.onAccent} />
+        <Text style={{ fontSize: 16, fontWeight: '700', color: colors.onAccent }}>
           {t('whatsNewCta')}
         </Text>
       </TouchableOpacity>

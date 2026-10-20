@@ -1,3 +1,4 @@
+import { fixedColors } from "@/constants/themes";
 import { useResponsive } from '@/hooks/useResponsive';
 import React, { useState, useMemo, useCallback } from 'react';
 import { requireAi } from '@/utils/proBridge';
@@ -192,7 +193,7 @@ export default function RecipeDetailScreen() {
                     width: 48,
                     height: 48,
                     borderRadius: 24,
-                    backgroundColor: isDark ? 'rgba(175,173,172,0.15)' : 'rgba(175,173,172,0.1)',
+                    backgroundColor: isDark ? fixedColors.neutralOverlay15 : fixedColors.neutralOverlay10,
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}>
@@ -209,7 +210,7 @@ export default function RecipeDetailScreen() {
                   backgroundColor: colors.surface,
                   alignItems: 'center',
                   justifyContent: 'center',
-                  shadowColor: '#000',
+                  shadowColor: fixedColors.shadow,
                   shadowOffset: { width: 0, height: 1 },
                   shadowOpacity: 0.05,
                   shadowRadius: 2,
@@ -217,7 +218,7 @@ export default function RecipeDetailScreen() {
                 <Ionicons
                   name={isFavorite(recipe.id) ? 'heart' : 'heart-outline'}
                   size={25}
-                  color={isFavorite(recipe.id) ? '#E74C3C' : colors.textSecondary}
+                  color={isFavorite(recipe.id) ? colors.favoriteLegacy : colors.textSecondary}
                 />
               </TouchableOpacity>
             </View>
@@ -252,7 +253,7 @@ export default function RecipeDetailScreen() {
                 backgroundColor: activeTab === 'ingredients' ? (colors.card) : 'transparent',
                 alignItems: 'center',
                 ...(activeTab === 'ingredients'
-                  ? { shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2 }
+                  ? { shadowColor: fixedColors.shadow, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2 }
                   : {}),
               }}>
               <Text

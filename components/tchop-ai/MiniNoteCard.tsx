@@ -15,14 +15,14 @@ export default function MiniNoteCard({ note, isDark, colors, onPress, untitledLa
       onPress={onPress}
       activeOpacity={0.8}
       style={{
-        backgroundColor: isDark ? '#2A2A2A' : '#FFFFFF',
+        backgroundColor: colors.assistantCard,
         borderRadius: 16,
         padding: 10,
         flexDirection: 'row',
         alignItems: 'center',
         gap: 10,
         borderWidth: 1,
-        borderColor: isDark ? '#3A3A3A' : '#E8E5E4',
+        borderColor: colors.assistantBorder,
       }}>
       <View
         style={{

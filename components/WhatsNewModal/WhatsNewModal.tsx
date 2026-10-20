@@ -67,7 +67,7 @@ export default function WhatsNewModal() {
                 width: 44,
                 height: 4,
                 borderRadius: 2,
-                backgroundColor: isDark ? '#3A3A3A' : '#E0DDDC',
+                backgroundColor: colors.modalHandle,
               }}
             />
           </View>

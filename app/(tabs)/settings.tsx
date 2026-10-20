@@ -1,3 +1,5 @@
+import { PersonalisationLink } from '@/components/Personalisation';
+import { fixedColors } from "@/constants/themes";
 import TabScreen from '@/components/TabScreen';
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert, Linking } from 'react-native';
@@ -102,6 +104,7 @@ export default function SettingsScreen() {
         keyboardShouldPersistTaps="handled">
         {/* Tchopé Pro */}
         <ProSettingsCard />
+        <PersonalisationLink />
 
         {/* Appearance */}
         <View style={{ gap: 16 }}>
@@ -139,7 +142,7 @@ export default function SettingsScreen() {
                     borderRadius: 18,
                     backgroundColor: isActive ? (colors.card) : 'transparent',
                     ...(isActive
-                      ? { shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2 }
+                      ? { shadowColor: fixedColors.shadow, shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2 }
                       : {}),
                   }}>
                   <View
@@ -150,9 +153,9 @@ export default function SettingsScreen() {
                       alignItems: 'center',
                       backgroundColor:
                         option.key === 'light'
-                          ? '#FFFFFF'
+                          ? fixedColors.white
                           : option.key === 'dark'
-                            ? '#1C1917'
+                            ? fixedColors.modeDarkSwatch
                             : undefined,
                       borderWidth: isActive ? 2 : 0,
                       borderColor: isActive ? colors.accentLight : 'transparent',
@@ -162,7 +165,7 @@ export default function SettingsScreen() {
                       size={22}
                       color={
                         option.key === 'dark'
-                          ? '#FFFFFF'
+                          ? fixedColors.white
                           : option.key === 'light'
                             ? colors.photoInk
                             : colors.textSecondary
@@ -299,11 +302,11 @@ export default function SettingsScreen() {
               width: 40,
               height: 40,
               borderRadius: 20,
-              backgroundColor: isDark ? 'rgba(234,88,12,0.15)' : 'rgba(234,88,12,0.08)',
+              backgroundColor: isDark ? fixedColors.timerShortcutAlpha15 : fixedColors.timerShortcutAlpha8,
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-            <Ionicons name="timer-outline" size={20} color="#EA580C" />
+            <Ionicons name="timer-outline" size={20} color={fixedColors.timerShortcut} />
           </View>
           <View style={{ flex: 1 }}>
             <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }}>
@@ -373,7 +376,7 @@ export default function SettingsScreen() {
               alignItems: 'center',
               gap: 16,
             }}>
-            <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: isDark ? 'rgba(145,71,0,0.15)' : 'rgba(145,71,0,0.08)', alignItems: 'center', justifyContent: 'center' }}>
+            <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: isDark ? colors.legacyBrandTint15 : colors.legacyBrandTint08, alignItems: 'center', justifyContent: 'center' }}>
               <Ionicons name="mail-outline" size={20} color={colors.accent} />
             </View>
             <View style={{ flex: 1 }}>
@@ -397,8 +400,8 @@ export default function SettingsScreen() {
               alignItems: 'center',
               gap: 16,
             }}>
-            <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: isDark ? 'rgba(0,136,204,0.15)' : 'rgba(0,136,204,0.08)', alignItems: 'center', justifyContent: 'center' }}>
-              <Ionicons name="send-outline" size={20} color="#0088CC" />
+            <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: isDark ? fixedColors.telegramAlpha15 : fixedColors.telegramAlpha8, alignItems: 'center', justifyContent: 'center' }}>
+              <Ionicons name="send-outline" size={20} color={fixedColors.telegram} />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={{ fontSize: 16, fontWeight: '600', color: colors.text }}>
@@ -466,8 +469,8 @@ export default function SettingsScreen() {
               padding: 25,
               gap: 24,
               borderWidth: 1,
-              borderColor: 'rgba(175,173,172,0.15)',
-              shadowColor: '#000',
+              borderColor: fixedColors.neutralOverlay15,
+              shadowColor: fixedColors.shadow,
               shadowOffset: { width: 0, height: 1 },
               shadowOpacity: 0.05,
               shadowRadius: 2,
