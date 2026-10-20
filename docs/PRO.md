@@ -86,4 +86,8 @@ le chat TchopAI qui garde **3 messages texte gratuits au total** (comme Travora 
 
 ## Personnalisation Pro (2.2.0)
 
-Réglages → Personnalisation : icônes alternatives et quatre palettes clair/sombre. Icône et palette sont indépendantes ; les choix actifs restent après désabonnement, les nouveaux choix sont verrouillés. Retour aux valeurs par défaut gratuit. Architecture, formats et validation : [PERSONALISATION.md](PERSONALISATION.md).
+Réglages → Personnalisation : icônes alternatives et six palettes clair/sombre. Icône et palette sont indépendantes ; les choix actifs restent après désabonnement, les nouveaux choix sont verrouillés. Retour aux valeurs par défaut gratuit. Architecture, formats et validation : [PERSONALISATION.md](PERSONALISATION.md).
+
+## Personnalisation — accès gratuit complémentaire (20 octobre 2026)
+
+Une icône et une palette supplémentaires sont gratuites : Plantain / Plantain. Les choix d’origine restent gratuits, les autres sont Pro. Les widgets sont gratuits et conservent les vérifications habituelles d’accès à l’IA dans l’app.

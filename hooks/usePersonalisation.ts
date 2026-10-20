@@ -6,7 +6,7 @@ import { proDict } from '@/constants/pro-translations';
 import { DEFAULT_PALETTE, type PaletteId } from '@/constants/themes';
 import type { AppIconId } from '@/constants/app-icons';
 import { currentAppIcon, changeAppIcon, supportsAppIcons } from '@/lib/app-icons';
-import { mayChoosePersonalisation } from '@/lib/personalisation-policy';
+import { mayChoosePersonalisation, FREE_ICON, FREE_PALETTE } from '@/lib/personalisation-policy';
 
 export function usePersonalisation() {
   const { settings, ready: settingsReady, setAppIcon, setPalette } = useSettings();
@@ -32,14 +32,14 @@ export function usePersonalisation() {
 
   const choosePalette = useCallback(async (id: PaletteId) => {
     if (!ready || locked.current) return;
-    if (!mayChoosePersonalisation(pro, id, settings.palette, DEFAULT_PALETTE)) { openPaywall("settings"); return; }
+    if (!mayChoosePersonalisation(pro, id, settings.palette, DEFAULT_PALETTE, FREE_PALETTE)) { openPaywall("settings"); return; }
     if (id === settings.palette) return;
     try { await setPalette(id); } catch { Alert.alert(d.title, d.saveFailed); }
   }, [ready, pro, settings.palette, openPaywall, setPalette, d]);
 
   const chooseIcon = useCallback(async (id: AppIconId) => {
     if (!ready || locked.current) return;
-    if (!mayChoosePersonalisation(pro, id, settings.appIcon, 'default')) { openPaywall("settings"); return; }
+    if (!mayChoosePersonalisation(pro, id, settings.appIcon, 'default', FREE_ICON)) { openPaywall("settings"); return; }
     if (id === settings.appIcon) return;
     if (!supportsAppIcons) { Alert.alert(d.error, d.unavailable); return; }
     locked.current = true; setBusy(true);

@@ -21,7 +21,9 @@
     "test:responsive": "node tests/responsive.test.mjs",
     "postinstall": "patch-package",
     "test:personalisation": "node --test tests/personalisation.test.cjs",
-    "icons:render": "node scripts/render-app-icons.cjs"
+    "icons:render": "node scripts/render-app-icons.cjs",
+    "test:widgets": "node --test tests/widgets.test.cjs",
+    "widgets:assets": "node scripts/render-widget-assets.cjs"
   },
   "dependencies": {
     "@bacons/apple-targets": "^5.0.0",

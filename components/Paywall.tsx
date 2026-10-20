@@ -15,7 +15,7 @@ import { proDict, fill } from '@/constants/pro-translations';
 import { FREE_CHAT_MESSAGES } from '@/lib/pro';
 import type { PaywallReason } from '@/utils/proBridge';
 
-const ICONS: (keyof typeof Ionicons.glyphMap)[] = ['color-palette-outline', 'sparkles-outline', 'camera-outline', 'search-outline', 'calendar-outline', 'mic-outline'];
+const ICONS: (keyof typeof Ionicons.glyphMap)[] = ['sparkles-outline', 'camera-outline', 'search-outline', 'calendar-outline', 'mic-outline', "color-palette-outline"];
 const APPLE_EULA = 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/';
 
 export default function Paywall({ local = false }: { local?: boolean }) {

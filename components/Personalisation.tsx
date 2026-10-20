@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { mayChoosePersonalisation, FREE_ICON, FREE_PALETTE } from '@/lib/personalisation-policy';
 import { ActivityIndicator, Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -25,6 +26,7 @@ export function PersonalisationLink() {
 }
 
 export default function PersonalisationScreen() {
+  const [expanded, setExpanded] = useState(false);
   const router = useRouter();
   const { colors, isDark } = useTheme(); const c = ui(colors);
   const { settings, pro, ready, busy, chooseIcon, choosePalette, d } = usePersonalisation();
@@ -36,37 +38,37 @@ export default function PersonalisationScreen() {
       {!ready || busy ? <View accessibilityLiveRegion="polite" style={{ flexDirection: 'row', gap: 10, marginTop: 18 }}><ActivityIndicator color={c.accent} /><Text style={{ color: c.muted }}>{busy ? d.changing : d.loading}</Text></View> : null}
       <Text accessibilityRole="header" style={{ color: c.ink, fontSize: 21, fontWeight: '700', marginTop: 30, marginBottom: 16 }}>{d.icons}</Text>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
-        {APP_ICONS.map(icon => {
+        {(expanded ? APP_ICONS : APP_ICONS.slice(0, 6)).map(icon => {
           const selected = settings.appIcon === icon.id;
-          const lock = !pro && icon.id !== 'default' && !selected;
+          const lock = !mayChoosePersonalisation(pro, icon.id, settings.appIcon, 'default', FREE_ICON);
           return <Pressable key={icon.id} accessibilityRole="button" accessibilityLabel={d.iconsNames[icon.id] + (lock ? ', ' + d.locked : '')} accessibilityState={{ selected, disabled: !ready || busy }}
             disabled={!ready || busy} onPress={() => void chooseIcon(icon.id)}
             style={{ width: '30%', flexGrow: 1, maxWidth: 174, minHeight: 132, padding: 12, alignItems: 'center', justifyContent: 'center', borderRadius: 18, backgroundColor: selected ? c.soft : c.card, borderWidth: 2, borderColor: selected ? c.accent : c.border, gap: 9 }}>
             <Image source={icon.image} style={{ width: 64, height: 64, borderRadius: 15 }} />
             <Text style={{ color: c.ink, fontSize: 12, textAlign: 'center', fontWeight: '600' }}>{d.iconsNames[icon.id]}</Text>
+            {icon.id === FREE_ICON ? <Text style={{ color: c.accent, fontSize: 11 }}>{d.free}</Text> : null}
             <Ionicons name={selected ? 'checkmark-circle' : lock ? 'lock-closed-outline' : 'ellipse-outline'} size={16} color={selected ? c.accent : c.muted} />
           </Pressable>;
         })}
       </View>
+      {APP_ICONS.length > 6 ? <Pressable accessibilityRole="button" accessibilityState={{ expanded }} onPress={() => setExpanded(value => !value)} style={{ minHeight: 48, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 8 }}>
+        <Text style={{ color: c.accent, fontWeight: '700' }}>{expanded ? d.showLess : d.showMore}</Text>
+        <Ionicons name={expanded ? 'chevron-up' : 'chevron-down'} size={18} color={c.accent} />
+      </Pressable> : null}
       <Text style={{ color: c.muted, fontSize: 12, lineHeight: 18, marginTop: 14 }}>{d.iconNote}</Text>
       <Text accessibilityRole="header" style={{ color: c.ink, fontSize: 21, fontWeight: '700', marginTop: 30, marginBottom: 16 }}>{d.themes}</Text>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
         {PALETTE_IDS.map(id => {
           const selected = settings.palette === id; const p = ui(resolveColors(id, isDark));
-          const lock = !pro && id !== DEFAULT_PALETTE && !selected;
+          const lock = !mayChoosePersonalisation(pro, id, settings.palette, DEFAULT_PALETTE, FREE_PALETTE);
           return <Pressable key={id} accessibilityRole="button" accessibilityLabel={d.themeNames[id] + (lock ? ', ' + d.locked : '')} accessibilityState={{ selected, disabled: !ready || busy }} disabled={!ready || busy} onPress={() => void choosePalette(id)}
             style={{ width: '46%', flexGrow: 1, borderRadius: 18, borderWidth: 2, borderColor: selected ? c.accent : c.border, backgroundColor: c.card, padding: 14 }}>
             <View style={{ flexDirection: 'row', gap: 7, marginBottom: 12 }}>{[p.accent, p.soft, p.bg].map((color, i) => <View key={i} style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: color, borderWidth: 1, borderColor: p.border }} />)}</View>
             <Text style={{ color: c.ink, fontWeight: '700', fontSize: 14 }}>{d.themeNames[id]}</Text>
+            {id === FREE_PALETTE ? <Text style={{ color: c.accent, fontSize: 11, marginTop: 5 }}>{d.free}</Text> : null}
             <View style={{ marginTop: 10, alignSelf: 'flex-end' }}><Ionicons name={selected ? 'checkmark-circle' : lock ? 'lock-closed-outline' : 'ellipse-outline'} size={18} color={selected ? c.accent : c.muted} /></View>
           </Pressable>;
         })}
-      </View>
-      <View accessibilityLabel={d.preview} style={{ borderRadius: 22, backgroundColor: c.card, borderColor: c.border, borderWidth: 1, padding: 22, marginTop: 20 }}>
-        <Text style={{ color: c.accent, fontSize: 12, fontWeight: '700', marginBottom: 12 }}>{d.preview}</Text>
-        <Text style={{ color: c.ink, fontSize: 23, fontWeight: '700' }}>{d.previewTitle}</Text>
-        <Text style={{ color: c.muted, marginVertical: 10 }}>{d.previewText}</Text>
-        <View style={{ alignSelf: 'flex-start', backgroundColor: c.accent, paddingHorizontal: 18, paddingVertical: 12, borderRadius: 14 }}><Text style={{ color: c.on, fontWeight: '700' }}>{d.previewAction}</Text></View>
       </View>
       <Text style={{ color: c.muted, fontSize: 12, lineHeight: 19, marginTop: 16 }}>{d.systemNote}</Text>
       <Text style={{ color: c.muted, fontSize: 12, lineHeight: 19, marginTop: 10 }}>{d.kept}</Text>

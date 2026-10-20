@@ -1,3 +1,4 @@
+import WidgetSync from '@/widgets/WidgetSync';
 import "../global.css";
 import React, { useEffect } from 'react';
 import { Platform, View } from 'react-native';
@@ -66,6 +67,7 @@ function InnerLayout() {
   return (
     <ThemeProvider value={navTheme}>
       <View style={{ flex: 1, backgroundColor: colors.background }}>
+        <WidgetSync />
         <Stack screenOptions={{ headerShown: false, statusBarStyle: isDark ? 'light' : 'dark', animation: 'slide_from_right', contentStyle: { backgroundColor: navTheme.colors.background } }}>
           <Stack.Screen name="(tabs)" options={{ animation: 'none' }} />
           <Stack.Screen name="recipe/[id]" />

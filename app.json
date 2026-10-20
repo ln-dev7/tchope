@@ -18,6 +18,11 @@
         "NSCameraUsageDescription": "TchopAI utilise la caméra pour analyser vos plats et ingrédients.",
         "NSPhotoLibraryUsageDescription": "TchopAI accède à votre galerie pour analyser vos photos de plats et ingrédients.",
         "ITSAppUsesNonExemptEncryption": false
+      },
+      "entitlements": {
+        "com.apple.security.application-groups": [
+          "group.com.lndev.tchope.widgets"
+        ]
       }
     },
     "android": {
@@ -43,7 +48,7 @@
           "android": {
             "enableMinifyInReleaseBuilds": true,
             "enableShrinkResourcesInReleaseBuilds": true,
-            "extraProguardRules": "-keep class com.revenuecat.** { *; }\n-keep class com.reactnativeandroidwidget.** { *; }\n-keep class expo.modules.** { *; }\n-dontwarn com.revenuecat.**\n# WorkManager (Room) : R8 retirait WorkDatabase_Impl -> plantage au lancement (androidx.startup, oct. 2026)\n-keep class * extends androidx.room.RoomDatabase { <init>(); }\n-keep class androidx.work.impl.WorkDatabase { *; }\n-keep class androidx.work.impl.WorkDatabase_Impl { *; }\n-keep class androidx.work.impl.** { *; }"
+            "extraProguardRules": "-keep class com.revenuecat.** { *; }\n-keep class com.reactnativeandroidwidget.** { *; }\n-keep class expo.modules.** { *; }\n-dontwarn com.revenuecat.**\n# WorkManager: classes instanciées par réflexion (Room et InputMerger)\n-keep class * extends androidx.room.RoomDatabase { <init>(); }\n-keep class androidx.work.impl.WorkDatabase { *; }\n-keep class androidx.work.impl.WorkDatabase_Impl { *; }\n-keep class androidx.work.impl.** { *; }\n-keep class * extends androidx.work.InputMerger { public <init>(); }"
           }
         }
       ],
@@ -68,57 +73,94 @@
         }
       ],
       "expo-web-browser",
+      "./plugins/with-widget-resources",
       [
         "react-native-android-widget",
         {
           "widgets": [
             {
               "name": "RecipeOfTheDay",
-              "label": "Tchopé - Recette du Jour",
-              "description": "Découvrez une nouvelle recette camerounaise chaque jour",
-              "minWidth": "250dp",
-              "minHeight": "180dp",
-              "targetCellWidth": 3,
+              "label": "Tchopé · Découverte du jour",
+              "description": "Découverte du jour — adapté à votre écran",
+              "minWidth": "140dp",
+              "minHeight": "140dp",
+              "targetCellWidth": 4,
               "targetCellHeight": 2,
-              "previewImage": "./assets/images/logo.png",
+              "previewImage": "./assets/widgets/discover.png",
               "resizeMode": "horizontal|vertical",
-              "updatePeriodMillis": 86400000
+              "updatePeriodMillis": 1800000
             },
             {
               "name": "RecipeOfTheDaySmall",
-              "label": "Tchopé - Recette (petit)",
-              "description": "Recette du jour en format compact",
-              "minWidth": "250dp",
+              "label": "Tchopé · Découverte du jour compact",
+              "description": "Découverte du jour — adapté à votre écran",
+              "minWidth": "140dp",
               "minHeight": "80dp",
-              "targetCellWidth": 3,
+              "targetCellWidth": 2,
               "targetCellHeight": 1,
-              "previewImage": "./assets/images/logo.png",
+              "previewImage": "./assets/widgets/discover.png",
               "resizeMode": "horizontal|vertical",
-              "updatePeriodMillis": 86400000
+              "updatePeriodMillis": 1800000
             },
             {
               "name": "PlannerWidget",
-              "label": "Tchopé - Mon Plan",
-              "description": "Votre plan de repas de la semaine",
-              "minWidth": "250dp",
-              "minHeight": "180dp",
-              "targetCellWidth": 3,
+              "label": "Tchopé · Planning des repas",
+              "description": "Planning des repas — adapté à votre écran",
+              "minWidth": "140dp",
+              "minHeight": "140dp",
+              "targetCellWidth": 4,
               "targetCellHeight": 2,
-              "previewImage": "./assets/images/logo.png",
+              "previewImage": "./assets/widgets/agenda.png",
               "resizeMode": "horizontal|vertical",
-              "updatePeriodMillis": 3600000
+              "updatePeriodMillis": 1800000
             },
             {
               "name": "PlannerWidgetSmall",
-              "label": "Tchopé - Mon Plan (petit)",
-              "description": "Votre plan de repas en format compact",
-              "minWidth": "250dp",
+              "label": "Tchopé · Planning des repas compact",
+              "description": "Planning des repas — adapté à votre écran",
+              "minWidth": "140dp",
               "minHeight": "80dp",
-              "targetCellWidth": 3,
+              "targetCellWidth": 2,
               "targetCellHeight": 1,
-              "previewImage": "./assets/images/logo.png",
+              "previewImage": "./assets/widgets/agenda.png",
               "resizeMode": "horizontal|vertical",
-              "updatePeriodMillis": 3600000
+              "updatePeriodMillis": 1800000
+            },
+            {
+              "name": "RecipeFavorites",
+              "label": "Tchopé · Favoris",
+              "description": "Favoris — adapté à votre écran",
+              "minWidth": "140dp",
+              "minHeight": "140dp",
+              "targetCellWidth": 4,
+              "targetCellHeight": 2,
+              "previewImage": "./assets/widgets/favorites.png",
+              "resizeMode": "horizontal|vertical",
+              "updatePeriodMillis": 1800000
+            },
+            {
+              "name": "ShoppingWidget",
+              "label": "Tchopé · Liste de courses",
+              "description": "Liste de courses — adapté à votre écran",
+              "minWidth": "140dp",
+              "minHeight": "140dp",
+              "targetCellWidth": 4,
+              "targetCellHeight": 2,
+              "previewImage": "./assets/widgets/shopping.png",
+              "resizeMode": "horizontal|vertical",
+              "updatePeriodMillis": 1800000
+            },
+            {
+              "name": "KitchenShortcuts",
+              "label": "Tchopé · Raccourcis",
+              "description": "Raccourcis — adapté à votre écran",
+              "minWidth": "140dp",
+              "minHeight": "140dp",
+              "targetCellWidth": 4,
+              "targetCellHeight": 2,
+              "previewImage": "./assets/widgets/shortcuts.png",
+              "resizeMode": "horizontal|vertical",
+              "updatePeriodMillis": 1800000
             }
           ]
         }
@@ -212,7 +254,12 @@
               "appExtensions": [
                 {
                   "bundleIdentifier": "com.lndev.tchope.recipe-widget",
-                  "targetName": "RecipeWidget"
+                  "targetName": "RecipeWidget",
+                  "entitlements": {
+                    "com.apple.security.application-groups": [
+                      "group.com.lndev.tchope.widgets"
+                    ]
+                  }
                 }
               ]
             }

@@ -45,3 +45,10 @@ Pour ajouter une palette : définir tous les jetons clair/sombre à partir de `d
 Les captures natives des écrans principaux, réglages, personnalisation et assistant ont été comparées en quatre palettes et deux modes sur iPhone 17. La grille a aussi été ouverte sur iPhone Duo. Le contenu du thème par défaut a été comparé au dernier commit Git : aucun pixel différent dans les zones de contenu contrôlées (barre système, overlay de développement et zones variables exclus). Le nouvel écran ouvre bien le paywall pour un choix verrouillé ; le sélecteur Pro change la palette en gardant l’icône, et un ancien build affiche correctement le message de module natif indisponible. Les réglages de simulation ont été restaurés.
 
 Les tests de compilation ne remplacent pas les essais des icônes sur un téléphone physique. Aucun achat ni appel IA réel n’a été effectué pour ce changement.
+
+## Ajustements du 20 octobre
+
+Six icônes au premier affichage, bouton Voir plus/Voir moins si le catalogue dépasse six éléments ; pas de bloc d’aperçu en bas. L’icône et le thème restent indépendants. La ligne du paywall est placée en dernier.
+
+Tchopé : 6 icônes et 6 palettes, avec Bissap et Cacao. Icône Plantain et palette Plantain gratuites en plus des choix d’origine.
+La politique est centralisée dans `lib/personalisation-policy.ts` (`FREE_ICON`, `FREE_PALETTE`). Les cartes et les actions utilisent la même règle ; les autres nouveaux choix ouvrent le paywall pour les non-abonnés. Un choix conservé après expiration reste disponible.

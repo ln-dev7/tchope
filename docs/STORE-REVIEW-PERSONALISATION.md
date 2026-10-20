@@ -2,18 +2,20 @@
 
 ## App Store Connect — Review Notes (EN)
 
-This update adds Pro personalisation in Settings > Personalisation. Existing Tchopé Pro subscribers can choose an alternate app icon and one of four colour palettes. App icon, colour palette and Light/Dark/System appearance are independent. Non-subscribers see locked options that open the existing subscription paywall. Previously selected options remain applied after a subscription expires; selecting another Pro option requires an active subscription. Restoring the original icon and default palette is free. No new subscription product was added. iOS may show its standard confirmation after an icon change.
+Settings > Personalisation offers alternate app icons and six colour palettes. The original icon and palette, plus one additional icon and palette (Plantain / Plantain), are free. All other choices are included in the existing Tchopé Pro subscription. Locked choices open the existing paywall. No subscription product was added. Icons, palettes and Light/Dark/System appearance are independent. Applied choices remain after subscription expiry; selecting another Pro option requires an active subscription. The gallery initially shows six icons, with See more when additional icons are available.
 
-Use the existing sandbox purchase or Restore Purchases flow to verify Pro access. Open Settings > Personalisation, change a palette, then change an icon, close and reopen the app, and verify that both choices persist independently.
+Use the existing sandbox purchase or Restore Purchases flow to verify Pro access, then change an icon and palette and relaunch to verify independent persistence. iOS may display its system confirmation when changing icons.
+
+Home Screen widgets show actual app data (daily discovery, favourites, planning, shortcuts, shopping lists). Lock Screen widget sizes are included, with an assistant Control Centre shortcut on iOS 18+. Widgets require no subscription or login. Opening the assistant retains its normal in-app access checks. Open the app once to synchronise the data.
 
 ## Google Play — instructions de test (EN)
 
-Settings > Personalisation adds alternate launcher icons and four colour palettes to the existing Tchopé Pro subscription. The two selections are independent of each other and of Light/Dark/System mode. Locked choices open the existing paywall. The original icon/default palette can always be restored. An expired subscriber keeps their current choices but cannot select another Pro option. Please verify using the existing licensed test purchase/restore flow. The launcher may briefly refresh after an icon change; deep links and app data are preserved.
+The same personalisation access rules apply on Android. Test icon switching with a licensed test purchase or the free extra icon. The launcher may refresh briefly; app data and deep links are preserved. Add and resize Home Screen widgets, then change favourites/planning or the palette in the app to verify that the widget content follows. Empty states invite the user to open the relevant screen.
 
 ## Nouveautés FR
 
-Personnalisez Tchopé avec Pro : de nouvelles icônes et quatre palettes de couleurs, disponibles en clair et en sombre. Choisissez votre icône et votre thème séparément depuis les réglages.
+De nouvelles icônes et palettes pour une app à votre image, avec une icône et un thème supplémentaires gratuits. Retrouvez vos favoris, votre planning et vos raccourcis grâce aux nouveaux widgets. Améliorations de stabilité et de lisibilité.
 
 ## What's New EN
 
-Make Tchopé your own with Pro: new app icons and four colour palettes, available in light and dark mode. Choose your icon and theme independently in Settings.
+New icons and colour palettes to make the app your own, including an additional free icon and theme. Keep favourites, plans and shortcuts close with redesigned widgets. Stability and readability improvements.

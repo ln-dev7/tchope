@@ -104,3 +104,14 @@ test('native plugin preserves deep links, a single default launcher and app-only
  assert.deepEqual(objects.XCBuildConfiguration.app.buildSettings.ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES,['Ocean']);
  for(const key of ['global','app','widget'])assert.equal(objects.XCBuildConfiguration[key].buildSettings.OTHER_SETTING,'preserved');
 });
+
+test('one extra icon and palette are free; premium choices still open paywall',async()=>{
+ const {FREE_ICON,FREE_PALETTE}=load('@/lib/personalisation-policy');
+ const m=await mount({theme:'dark',language:'en'},{subscribed:false});
+ await act(async()=>{await m.api.choosePalette(FREE_PALETTE);await m.api.chooseIcon(FREE_ICON);});
+ assert.equal(m.paywalls,0);assert.equal(m.saved.palette,FREE_PALETTE);assert.equal(m.saved.appIcon,FREE_ICON);assert.equal(m.saved.theme,'dark');
+ const lockedPalette=PALETTE_IDS.find(id=>id!==DEFAULT_PALETTE&&id!==FREE_PALETTE);
+ const lockedIcon=APP_ICONS.find(i=>i.id!=='default'&&i.id!==FREE_ICON).id;
+ await act(async()=>{await m.api.choosePalette(lockedPalette);await m.api.chooseIcon(lockedIcon);});
+ assert.equal(m.paywalls,2);assert.equal(m.saved.palette,FREE_PALETTE);assert.equal(m.saved.appIcon,FREE_ICON);await m.unmount();
+});

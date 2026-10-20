@@ -5,6 +5,7 @@ export const proDict = {
   fr: {
     personalisation: {
   "title": "Personnalisation",
+  "showMore": "Voir plus", "showLess": "Voir moins", "free": "Gratuit",
   "subtitle": "Icône et thème se choisissent indépendamment.",
   "icons": "Icône de l’app",
   "themes": "Thème",
@@ -42,6 +43,8 @@ export const proDict = {
     "ndole": "Ndolé"
   },
   "themeNames": {
+    "bissap": "Bissap",
+    "cacao": "Cacao",
     "corail": "Corail",
     "ocean": "Océan",
     "savane": "Savane",
@@ -57,8 +60,7 @@ export const proDict = {
       "Votre assistant pour cuisiner, planifier et trouver l’inspiration.",
     reasonChat: "Vous avez utilisé vos {n} messages TchopAI gratuits.",
     reasonFeature: "Cette fonction fait partie de Tchopé Pro.",
-    perks:
-      "Icônes et thèmes exclusifs : personnalisez votre app indépendamment\nTchopAI : techniques, substitutions, conseils et recettes adaptées\nPhoto de votre plat ou de votre frigo : TchopAI l’analyse\nAvec mes ingrédients et recherche libre : trouvez la bonne recette\nPlanning et guidage vocal : votre semaine composée, et TchopAI qui vous guide à voix haute en cuisine\nLive : 100 réponses par semaine, dont 20 analyses photo. Renouvellement lundi à 00 h UTC.",
+    perks: "TchopAI : techniques, substitutions, conseils et recettes adaptées\nPhoto de votre plat ou de votre frigo : TchopAI l’analyse\nAvec mes ingrédients et recherche libre : trouvez la bonne recette\nPlanning et guidage vocal : votre semaine composée, et TchopAI qui vous guide à voix haute en cuisine\nLive : 100 réponses par semaine, dont 20 analyses photo. Renouvellement lundi à 00 h UTC.\nIcônes et thèmes exclusifs : personnalisez votre app indépendamment",
     priceLine: "{price} / mois",
     priceLoading: "Prix selon votre store…",
     renewal:
@@ -104,6 +106,7 @@ export const proDict = {
   en: {
     personalisation: {
   "title": "Personalisation",
+  "showMore": "See more", "showLess": "See less", "free": "Free",
   "subtitle": "App icon and theme are independent choices.",
   "icons": "App icon",
   "themes": "Theme",
@@ -141,6 +144,8 @@ export const proDict = {
     "ndole": "Ndolé"
   },
   "themeNames": {
+    "bissap": "Hibiscus",
+    "cacao": "Cocoa",
     "corail": "Coral",
     "ocean": "Ocean",
     "savane": "Savanna",
@@ -155,8 +160,7 @@ export const proDict = {
     subtitle: "Your assistant for cooking, planning and finding inspiration.",
     reasonChat: "You’ve used your {n} free TchopAI messages.",
     reasonFeature: "This feature is part of Tchopé Pro.",
-    perks:
-      "Exclusive icons and themes: personalise your app independently\nTchopAI: techniques, substitutions, tips and tailored recipes\nA photo of your dish or fridge: TchopAI analyzes it\nWith my ingredients and free search: find the right recipe\nMeal plan and voice guidance: your week planned, and TchopAI guiding you out loud as you cook\nLive: 100 responses per week, including 20 photo analyses. Resets Monday at 00:00 UTC.",
+    perks: "TchopAI: techniques, substitutions, tips and tailored recipes\nA photo of your dish or fridge: TchopAI analyzes it\nWith my ingredients and free search: find the right recipe\nMeal plan and voice guidance: your week planned, and TchopAI guiding you out loud as you cook\nLive: 100 responses per week, including 20 photo analyses. Resets Monday at 00:00 UTC.\nExclusive icons and themes: personalise your app independently",
     priceLine: "{price} / month",
     priceLoading: "Price from your store…",
     renewal:
