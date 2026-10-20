@@ -12,6 +12,7 @@
       "bundleIdentifier": "com.lndev.tchope",
       "appleTeamId": "JDWTCZR377",
       "infoPlist": {
+        "UIViewControllerBasedStatusBarAppearance": true,
         "NSSpeechRecognitionUsageDescription": "TchopAI Live utilise la reconnaissance vocale pour vous guider pendant la cuisine.",
         "NSMicrophoneUsageDescription": "TchopAI Live utilise le micro pour écouter vos questions pendant la cuisine.",
         "NSCameraUsageDescription": "TchopAI utilise la caméra pour analyser vos plats et ingrédients.",

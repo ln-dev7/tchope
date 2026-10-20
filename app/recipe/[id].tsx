@@ -1,5 +1,5 @@
 import { useResponsive } from '@/hooks/useResponsive';
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { requireAi } from '@/utils/proBridge';
 import { View, Text, ScrollView, TouchableOpacity, Share } from 'react-native';
 import * as Haptics from 'expo-haptics';
@@ -15,7 +15,6 @@ import { useToast } from '@/hooks/useToast';
 import { useShopping } from '@/context/ShoppingContext';
 import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
 import { useUserRecipes } from '@/hooks/useUserRecipes';
-import { useRating } from '@/context/RatingContext';
 import { getRecipeVideos } from '@/constants/videos';
 import RecipeImage from '@/components/RecipeImage';
 import { scaleQuantity } from '@/utils/quantity';
@@ -32,7 +31,6 @@ export default function RecipeDetailScreen() {
   const { toast } = useToast();
   const { addRecipe: addShoppingRecipe, isLoaded: shoppingLoaded } = useShopping();
   const { userRecipes } = useUserRecipes();
-  const { trackRecipeView } = useRating();
   const recipes = useLocalizedRecipes();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<Tab>('ingredients');
@@ -41,10 +39,6 @@ export default function RecipeDetailScreen() {
   const recipe = useMemo(() => {
     return recipes.find((r) => r.id === id) ?? userRecipes.find((r) => r.id === id);
   }, [id, userRecipes, recipes]);
-
-  useEffect(() => {
-    if (recipe) trackRecipeView();
-  }, [recipe, trackRecipeView]);
 
   const currentServings = servings ?? recipe?.servings ?? 1;
   const portionRatio = recipe ? currentServings / recipe.servings : 1;

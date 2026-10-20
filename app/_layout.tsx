@@ -1,7 +1,9 @@
 import "../global.css";
 import React, { useEffect } from 'react';
+import { Platform, View } from 'react-native';
 import { DarkTheme, DefaultTheme, ThemeProvider, Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import * as SystemUI from 'expo-system-ui';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import 'react-native-reanimated';
@@ -33,6 +35,12 @@ function InnerLayout() {
   const router = useRouter();
 
   useEffect(() => {
+    SystemUI.setBackgroundColorAsync(colors.background).catch((error) => {
+      if (__DEV__) console.warn('Unable to synchronize the native background', error);
+    });
+  }, [colors.background]);
+
+  useEffect(() => {
     AsyncStorage.getItem(ONBOARDING_KEY).then((val) => {
       if (val !== 'true') {
         router.replace('/onboarding' as any);
@@ -57,30 +65,32 @@ function InnerLayout() {
 
   return (
     <ThemeProvider value={navTheme}>
-      <Stack screenOptions={{ headerShown: false, animation: 'slide_from_right', contentStyle: { backgroundColor: navTheme.colors.background } }}>
-        <Stack.Screen name="(tabs)" options={{ animation: 'none' }} />
-        <Stack.Screen name="recipe/[id]" />
-        <Stack.Screen name="add-recipe" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
-        <Stack.Screen name="recipe-videos" />
-        <Stack.Screen name="recipes-list" />
-        <Stack.Screen name="ai-recipes" />
-        <Stack.Screen name="timer" />
-        <Stack.Screen name="shopping-list" />
-        <Stack.Screen name="plan-meal" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="notification-settings" />
-        <Stack.Screen name="photo-credits" />
-        <Stack.Screen name="cooking-mode" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
-        <Stack.Screen name="live-cooking" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
-        <Stack.Screen name="tchop-ai" options={{ animation: 'slide_from_bottom' }} />
-        <Stack.Screen name="notes" />
-        <Stack.Screen name="note/[id]" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
-        <Stack.Screen name="onboarding" options={{ animation: 'none' }} />
-      </Stack>
-      <NetworkBanner />
-      <UpdateModal />
-      <WhatsNewModal />
-      <Paywall />
-      <StatusBar style={isDark ? 'light' : 'dark'} />
+      <View style={{ flex: 1, backgroundColor: colors.background }}>
+        <Stack screenOptions={{ headerShown: false, statusBarStyle: isDark ? 'light' : 'dark', animation: 'slide_from_right', contentStyle: { backgroundColor: navTheme.colors.background } }}>
+          <Stack.Screen name="(tabs)" options={{ animation: 'none' }} />
+          <Stack.Screen name="recipe/[id]" />
+          <Stack.Screen name="add-recipe" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+          <Stack.Screen name="recipe-videos" />
+          <Stack.Screen name="recipes-list" />
+          <Stack.Screen name="ai-recipes" />
+          <Stack.Screen name="timer" />
+          <Stack.Screen name="shopping-list" />
+          <Stack.Screen name="plan-meal" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="notification-settings" />
+          <Stack.Screen name="photo-credits" />
+          <Stack.Screen name="cooking-mode" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
+          <Stack.Screen name="live-cooking" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
+          <Stack.Screen name="tchop-ai" options={{ animation: 'slide_from_bottom' }} />
+          <Stack.Screen name="notes" />
+          <Stack.Screen name="note/[id]" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+          <Stack.Screen name="onboarding" options={{ animation: 'none' }} />
+        </Stack>
+        <NetworkBanner />
+        <UpdateModal />
+        <WhatsNewModal />
+        <Paywall />
+        {Platform.OS !== 'ios' && <StatusBar style={isDark ? 'light' : 'dark'} />}
+      </View>
     </ThemeProvider>
   );
 }

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Appearance, Platform } from 'react-native';
 import type { Settings, NotificationPreferences } from '@/types';
 
 const SETTINGS_KEY = 'tchope_settings';
@@ -44,6 +45,14 @@ const SettingsContext = createContext<SettingsContextType>({
 
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const [settings, setSettings] = useState<Settings>(defaultSettings);
+
+  useEffect(() => {
+    if (Platform.OS !== 'web') {
+      // Keep native controls and the Duo system area aligned with the app.
+      // Clearing the override lets "system" follow future OS theme changes.
+      Appearance.setColorScheme(settings.theme === 'system' ? 'auto' : settings.theme);
+    }
+  }, [settings.theme]);
 
   useEffect(() => {
     AsyncStorage.getItem(SETTINGS_KEY).then((raw) => {
