@@ -43,7 +43,7 @@
           "android": {
             "enableMinifyInReleaseBuilds": true,
             "enableShrinkResourcesInReleaseBuilds": true,
-            "extraProguardRules": "-keep class com.revenuecat.** { *; }\n-keep class com.reactnativeandroidwidget.** { *; }\n-keep class expo.modules.** { *; }\n-dontwarn com.revenuecat.**"
+            "extraProguardRules": "-keep class com.revenuecat.** { *; }\n-keep class com.reactnativeandroidwidget.** { *; }\n-keep class expo.modules.** { *; }\n-dontwarn com.revenuecat.**\n# WorkManager (Room) : R8 retirait WorkDatabase_Impl -> plantage au lancement (androidx.startup, oct. 2026)\n-keep class * extends androidx.room.RoomDatabase { <init>(); }\n-keep class androidx.work.impl.WorkDatabase { *; }\n-keep class androidx.work.impl.WorkDatabase_Impl { *; }\n-keep class androidx.work.impl.** { *; }"
           }
         }
       ],
