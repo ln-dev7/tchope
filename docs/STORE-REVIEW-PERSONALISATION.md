@@ -1,4 +1,4 @@
-# Notes pour la review — Tchopé 2.2.0
+# Notes pour la review — Tchopé 2.3.0
 
 ## App Store Connect — Review Notes (EN)
 
