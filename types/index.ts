@@ -1,16 +1,3 @@
-export type Region =
-  | 'Littoral'
-  | 'Ouest'
-  | 'Centre'
-  | 'Sud'
-  | 'Nord'
-  | 'Est'
-  | 'Adamaoua'
-  | 'Extrême-Nord'
-  | 'Nord-Ouest'
-  | 'Sud-Ouest'
-  | 'TchopAI';
-
 export type Category =
   | 'Plat'
   | 'Sauce'
@@ -29,7 +16,6 @@ export type Recipe = {
   name: string;
   description: string;
   image: unknown | null;
-  region: Region;
   category: Category;
   duration: number;
   difficulty: Difficulty;
@@ -47,6 +33,8 @@ export type UserRecipe = Recipe & {
   isUserCreated: true;
   createdAt: string;
   imageUri?: string | null;
+  /** Recette enregistrée depuis TchopAI. */
+  source?: 'tchopai';
 };
 
 export type NotificationPreferences = {

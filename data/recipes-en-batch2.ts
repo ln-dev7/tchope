@@ -1,7 +1,7 @@
 export const batch2: Record<string, { name: string; description?: string; ingredients?: { name: string; quantity: string }[]; steps?: string[]; tips?: string | null }> = {
   'ekwang': {
     name: 'Ekwang (Grated Cocoyam)',
-    description: 'The prestige dish of the South-West and Littoral regions. The ultimate test of patience: each small cocoyam roll is individually wrapped in a leaf.',
+    description: 'A prestige dish. The ultimate test of patience: each small cocoyam roll is individually wrapped in a leaf.',
     ingredients: [
       { name: 'Cocoyam tubers (malanga/white taro)', quantity: '3 kg' },
       { name: 'Young cocoyam leaves (or large spinach leaves)', quantity: 'As needed' },
@@ -28,7 +28,7 @@ export const batch2: Record<string, { name: string; description?: string; ingred
   },
   'eru': {
     name: 'Eru and Waterleaf',
-    description: 'The iconic North-West Cameroon vegetable stew. The secret: absolutely no water added and a generous amount of red palm oil.',
+    description: 'The iconic Cameroonian vegetable stew. The secret: absolutely no water added and a generous amount of red palm oil.',
     ingredients: [
       { name: 'Eru leaves (Okazi, dried or fresh, finely chopped)', quantity: '500 g' },
       { name: 'Waterleaf (or fresh spinach, chopped)', quantity: '1 kg' },
@@ -75,7 +75,7 @@ export const batch2: Record<string, { name: string; description?: string; ingred
   },
   'folere-en-sauce': {
     name: 'Foléré Sauce',
-    description: 'A traditional Fulani dish from Northern Cameroon featuring tangy roselle leaves cooked with meat and peanut paste, served with corn fufu.',
+    description: 'A traditional Fulani dish featuring tangy roselle leaves cooked with meat and peanut paste, served with corn fufu.',
     ingredients: [
       { name: 'Meat', quantity: '1/2 kg' },
       { name: 'Roselle (sorrel) leaves', quantity: '3 bunches' },
@@ -168,7 +168,7 @@ export const batch2: Record<string, { name: string; description?: string; ingred
   },
   'gombo-crabe': {
     name: 'Okra Crab Soup',
-    description: 'A rich and flavorful okra soup with fresh crab, tomatoes, and garlic - a seafood lover\'s delight from the coast.',
+    description: 'A rich and flavorful okra soup with fresh crab, tomatoes, and garlic - a seafood lover\'s delight.',
     ingredients: [
       { name: 'Crabs', quantity: '1 kg' },
       { name: 'Okra', quantity: '300 g' },
@@ -220,7 +220,7 @@ export const batch2: Record<string, { name: string; description?: string; ingred
   },
   'kati-kati': {
     name: 'Kati Kati',
-    description: 'A spicy North-West Cameroonian chicken dish cooked in palm oil with tomatoes, peppers, and garlic, traditionally served with fufu.',
+    description: 'A spicy Cameroonian chicken dish cooked in palm oil with tomatoes, peppers, and garlic, traditionally served with fufu.',
     ingredients: [
       { name: 'Chicken', quantity: '1' },
       { name: 'Palm oil', quantity: '100 ml' },
@@ -244,7 +244,7 @@ export const batch2: Record<string, { name: string; description?: string; ingred
   },
   'njama-njama': {
     name: 'Njama Njama',
-    description: 'A popular North-West Cameroonian sauteed huckleberry greens dish cooked with tomatoes, onions, and palm oil.',
+    description: 'A popular Cameroonian sauteed huckleberry greens dish cooked with tomatoes, onions, and palm oil.',
     ingredients: [
       { name: 'Njama njama leaves', quantity: '1 kg' },
       { name: 'Tomatoes', quantity: '5 to 6' },
@@ -265,7 +265,7 @@ export const batch2: Record<string, { name: string; description?: string; ingred
   },
   'kelen-kelen': {
     name: 'Kelen Kelen',
-    description: 'A versatile Cameroonian dish made from okra leaves and cassava leaves with smoked fish and dried shrimp, enjoyed across all regions.',
+    description: 'A versatile Cameroonian dish made from okra leaves and cassava leaves with smoked fish and dried shrimp.',
     ingredients: [
       { name: 'Water', quantity: '1 litre' },
       { name: 'Smoked fish', quantity: '200 g' },
@@ -329,7 +329,7 @@ export const batch2: Record<string, { name: string; description?: string; ingred
   },
   'kouakoukou-sauce-blanche': {
     name: 'Kouakoukou with White Sauce',
-    description: 'A Western Cameroon delicacy of grated cocoyam steamed in banana leaves, served with a creamy peanut and fish sauce.',
+    description: 'A Cameroonian delicacy of grated cocoyam steamed in banana leaves, served with a creamy peanut and fish sauce.',
     ingredients: [
       { name: 'White cocoyams', quantity: '2 kg' },
       { name: 'Palm oil', quantity: '2 tablespoons' },
@@ -358,7 +358,7 @@ export const batch2: Record<string, { name: string; description?: string; ingred
   },
   'kpem-sale': {
     name: 'Salted Kpem',
-    description: 'A traditional Central/South Cameroon cassava leaf sauce enriched with peanut paste and palm oil, served with boiled cassava.',
+    description: 'A traditional Cameroonian cassava leaf sauce enriched with peanut paste and palm oil, served with boiled cassava.',
     ingredients: [
       { name: 'Meat or fish', quantity: '200 g' },
       { name: 'Water', quantity: '3 glasses' },
@@ -400,7 +400,7 @@ export const batch2: Record<string, { name: string; description?: string; ingred
   },
   'kwa-ni-ndong': {
     name: 'Kwa ni Ndong (Salt Pepper)',
-    description: 'An elaborate Eastern Cameroon catfish dish cooked with a complex blend of local herbs including messep, wild basil, and djansang.',
+    description: 'An elaborate catfish dish cooked with a complex blend of local herbs including messep, wild basil, and djansang.',
     ingredients: [
       { name: 'Fresh cleaned catfish', quantity: '2' },
       { name: 'Green tomatoes', quantity: '2' },
@@ -428,7 +428,7 @@ export const batch2: Record<string, { name: string; description?: string; ingred
   },
   'kwaa-ndzap': {
     name: 'Kwa\'a Ndzap',
-    description: 'A traditional Dschang (Bamileke) dish of pounded cocoyam served with sauteed black nightshade greens in a savory sauce.',
+    description: 'A traditional Bamileke dish of pounded cocoyam served with sauteed black nightshade greens in a savory sauce.',
     ingredients: [
       { name: 'Red cocoyams', quantity: '1 kg' },
       { name: 'Black nightshade', quantity: '3 bunches' },
@@ -454,7 +454,7 @@ export const batch2: Record<string, { name: string; description?: string; ingred
   },
   'kwanmkwala-esubag': {
     name: 'Kwanmkwala & Esubag',
-    description: 'A traditional Bakossi dish from South-West Cameroon featuring cocoyam leaf soup served alongside pounded taro fufu.',
+    description: 'A traditional Bakossi dish featuring cocoyam leaf soup served alongside pounded taro fufu.',
     ingredients: [
       { name: 'Cocoyam leaves', quantity: '1 kg' },
       { name: 'Taros', quantity: '5' },
@@ -479,7 +479,7 @@ export const batch2: Record<string, { name: string; description?: string; ingred
   },
   'mbol': {
     name: 'Mbol',
-    description: 'A treasured Eastern Cameroon dish combining smoked meat and fish with squash seeds, crayfish, and the unique sticky kanda ingredient.',
+    description: 'A treasured dish combining smoked meat and fish with squash seeds, crayfish, and the unique sticky kanda ingredient.',
     ingredients: [
       { name: 'Smoked fish', quantity: '1/2 kg' },
       { name: 'Smoked meat', quantity: '1/2 kg' },
@@ -529,7 +529,7 @@ export const batch2: Record<string, { name: string; description?: string; ingred
   },
   'met-de-pistache': {
     name: 'Bikedi (Pistachio Cake)',
-    description: 'A staple at weddings in Central and Eastern Cameroon. A pumpkin seed cake enriched with eggs, meat, and crayfish, steamed in banana leaves.',
+    description: 'A staple of Cameroonian cuisine, often served at weddings. A pumpkin seed cake enriched with eggs, meat, and crayfish, steamed in banana leaves.',
     ingredients: [
       { name: 'African pistachio seeds (squash/egusi)', quantity: '1 kg' },
       { name: 'Cooked beef or pork, diced small', quantity: '500 g' },

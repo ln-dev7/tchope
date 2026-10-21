@@ -153,7 +153,7 @@ export const batch1: Record<string, { name: string; description?: string; ingred
       'Finely dice the cucumber and half of the cilantro leaves, add them to the salad bowl.',
       'Gently toss everything together and plate. Add the remaining cilantro on top.',
     ],
-    tips: 'Penja pepper is one of the finest peppers in the world, grown in the Littoral region of Cameroon.',
+    tips: 'Penja pepper is one of the finest peppers in the world.',
   },
   'salade-fruits-exotiques': {
     name: 'Exotic Fruit Salad',
@@ -223,7 +223,7 @@ export const batch1: Record<string, { name: string; description?: string; ingred
   },
   'banane-malaxee': {
     name: 'Mashed Banana',
-    description: 'Known as "Toxi Banana", this Western Cameroon specialty features unripe bananas simmered in a rich peanut sauce with smoked fish and aromatic spices.',
+    description: 'Known as "Toxi Banana", this Cameroonian specialty features unripe bananas simmered in a rich peanut sauce with smoked fish and aromatic spices.',
     ingredients: [
       { name: 'Unripe green bananas', quantity: '12' },
       { name: 'Smoked fish or meat', quantity: '500 g' },
@@ -344,7 +344,7 @@ export const batch1: Record<string, { name: string; description?: string; ingred
   },
   'corn-tchap': {
     name: 'Corn Tchap',
-    description: 'A hearty South-West Cameroonian dish of red beans and corn cooked with smoked fish, dried shrimp, and red palm oil.',
+    description: 'A hearty Cameroonian dish of red beans and corn cooked with smoked fish, dried shrimp, and red palm oil.',
     ingredients: [
       { name: 'Red beans', quantity: '200 g' },
       { name: 'Smoked fish', quantity: 'To taste' },
@@ -369,7 +369,7 @@ export const batch1: Record<string, { name: string; description?: string; ingred
   },
   'crevettes-sauce-tomate': {
     name: 'Shrimp in Tomato Sauce',
-    description: 'Succulent shrimp cooked in a spiced tomato sauce with cumin, turmeric, and fresh coriander - a coastal Cameroonian delight.',
+    description: 'Succulent shrimp cooked in a spiced tomato sauce with cumin, turmeric, and fresh coriander - a Cameroonian delight.',
     ingredients: [
       { name: 'Peeled raw shrimp', quantity: '400 g' },
       { name: 'Tomatoes', quantity: '4' },
@@ -413,7 +413,7 @@ export const batch1: Record<string, { name: string; description?: string; ingred
   },
   'ebandjea': {
     name: 'Ebandjea',
-    description: 'A signature dish from Kribi featuring fresh fish steamed in banana leaves with hot peppers and fresh lemon juice - pure coastal simplicity.',
+    description: 'A signature dish featuring fresh fish steamed in banana leaves with hot peppers and fresh lemon juice - pure simplicity.',
     ingredients: [
       { name: 'Fresh fish', quantity: '1 kg' },
       { name: 'Chili peppers', quantity: '5 to 6' },
@@ -451,7 +451,7 @@ export const batch1: Record<string, { name: string; description?: string; ingred
   },
   'ekwang': {
     name: 'Ekwang (Grated Cocoyam)',
-    description: 'The prestige dish of the South-West and Littoral regions. The ultimate test of patience: each small cocoyam roll is individually wrapped in a leaf.',
+    description: 'A prestige dish. The ultimate test of patience: each small cocoyam roll is individually wrapped in a leaf.',
     ingredients: [
       { name: 'Cocoyam tubers (malanga/white taro)', quantity: '3 kg' },
       { name: 'Young cocoyam leaves (or large spinach leaves)', quantity: 'As needed' },
@@ -478,7 +478,7 @@ export const batch1: Record<string, { name: string; description?: string; ingred
   },
   'eru': {
     name: 'Eru and Waterleaf',
-    description: 'The iconic North-West Cameroon vegetable stew. The secret: absolutely no water added and a generous amount of red palm oil.',
+    description: 'The iconic Cameroonian vegetable stew. The secret: absolutely no water added and a generous amount of red palm oil.',
     ingredients: [
       { name: 'Eru leaves (Okazi, dried or fresh, finely chopped)', quantity: '500 g' },
       { name: 'Waterleaf (or fresh spinach, chopped)', quantity: '1 kg' },
@@ -525,7 +525,7 @@ export const batch1: Record<string, { name: string; description?: string; ingred
   },
   'folere-en-sauce': {
     name: 'Foléré Sauce',
-    description: 'A traditional Fulani dish from Northern Cameroon featuring tangy roselle leaves cooked with meat and peanut paste, served with corn fufu.',
+    description: 'A traditional Fulani dish featuring tangy roselle leaves cooked with meat and peanut paste, served with corn fufu.',
     ingredients: [
       { name: 'Meat', quantity: '1/2 kg' },
       { name: 'Roselle leaves (foléré)', quantity: '3 bunches' },

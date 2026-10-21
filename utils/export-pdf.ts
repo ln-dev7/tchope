@@ -36,7 +36,7 @@ function generateHTML({ plan, recipeMap, lang, title, shoppingListTitle }: Expor
     const mealsHTML = day.meals.map((meal) => {
       const recipe = recipeMap[meal.recipeId];
       const name = escapeHTML(recipe?.name ?? meal.recipeId);
-      const meta = recipe ? `${recipe.region} · ${recipe.duration} min${meal.servings ? ` · ${meal.servings} ${translations[lang].portions}` : ''}` : '';
+      const meta = recipe ? `${recipe.duration} min${meal.servings ? ` · ${meal.servings} ${translations[lang].portions}` : ''}` : '';
       return `
         <div class="meal">
           <span class="meal-label">${escapeHTML(meal.slot ? translations[lang][meal.slot] : meal.label)}</span>

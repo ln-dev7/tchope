@@ -51,7 +51,7 @@ function shortDay(dateStr: string, lang: 'fr' | 'en'): string {
 
 function buildRecipeIndex(recipes: Recipe[]): string {
   return recipes
-    .map((r) => `${r.id}|${r.name}|${r.category}|${r.region}|${r.duration}min|${r.difficulty}|${r.spiciness}`)
+    .map((r) => `${r.id}|${r.name}|${r.category}|${r.duration}min|${r.difficulty}|${r.spiciness}`)
     .join('\n');
 }
 
@@ -78,9 +78,9 @@ Meal labels to use (in ${isFr ? 'French' : 'English'}):
 
 Rules:
 - Vary recipes: never repeat the same dish twice in the week
-- Balance regions and categories
+- Balance categories
 - Light meals for breakfast/lunch, heartier for dinner
-- Match user preferences (regions, dietary needs, meal counts)
+- Match user preferences (dietary needs, meal counts)
 
 Days: ${dayLabels}
 
@@ -184,7 +184,7 @@ function MealCard({
             {recipe.name}
           </Text>
           <Text style={{ fontSize: 11, color: colors.textSecondary, marginTop: 2 }}>
-            {recipe.region} · {recipe.duration} min
+            {recipe.duration} min
           </Text>
         </View>
         <TouchableOpacity accessibilityRole="button" accessibilityLabel={removeLabel} onPress={onRemove} style={{ padding: 12, justifyContent: 'center' }}><Ionicons name="close-circle-outline" size={20} color={colors.textMuted} /></TouchableOpacity>

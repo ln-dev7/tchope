@@ -75,7 +75,7 @@ export default function RecipeDetailScreen() {
 
   const buildRecipeText = (): string => {
     let text = `🍽️ ${recipe.name}\n`;
-    text += `📍 ${recipe.region} | ⏱️ ${recipe.duration} min | 👥 ${recipe.servings} pers.\n\n`;
+    text += `⏱️ ${recipe.duration} min | 👥 ${recipe.servings} pers.\n\n`;
     text += `📝 ${recipe.description}\n\n`;
     text += `🛒 INGRÉDIENTS\n`;
     recipe.ingredients.forEach((ing) => {
@@ -226,7 +226,7 @@ export default function RecipeDetailScreen() {
 
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 16, marginTop: 12, alignItems: 'center' }}>
             <Text style={{ color: colors.textSecondary, fontSize: 15 }}>◷ {recipe.duration} min</Text>
-            <Text style={{ color: colors.textSecondary, fontSize: 15 }}>{difficultyLabel} · {recipe.region}</Text>
+            <Text style={{ color: colors.textSecondary, fontSize: 15 }}>{difficultyLabel}</Text>
           </View>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 12, marginTop: 16 }}>
             <Text style={{ color: colors.text, fontWeight: '600', flexGrow: 1 }}>{t('portions')}</Text>

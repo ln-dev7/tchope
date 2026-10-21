@@ -18,17 +18,12 @@ import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useUserRecipes } from '@/hooks/useUserRecipes';
 import { useToast } from '@/hooks/useToast';
-import type { Region, Difficulty, UserRecipe } from '@/types';
-
-const REGIONS: Region[] = [
-  'Littoral', 'Ouest', 'Centre', 'Sud', 'Nord',
-  'Est', 'Adamaoua', 'Extrême-Nord', 'Nord-Ouest', 'Sud-Ouest',
-];
+import type { Difficulty, UserRecipe } from '@/types';
 
 const DIFFICULTIES: Difficulty[] = ['Easy', 'Medium', 'Hard'];
 
 export default function AddRecipeScreen() {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
   const { bottom } = useSafeAreaInsets();
@@ -40,8 +35,6 @@ export default function AddRecipeScreen() {
   const isEditing = !!editingRecipe;
 
   const [name, setName] = useState(editingRecipe?.name ?? '');
-  const [region, setRegion] = useState<Region>(editingRecipe?.region ?? 'Centre');
-  const [showRegionPicker, setShowRegionPicker] = useState(false);
   const [duration, setDuration] = useState(editingRecipe ? String(editingRecipe.duration) : '45');
   const [difficulty, setDifficulty] = useState<Difficulty>(editingRecipe?.difficulty ?? 'Easy');
   const [ingredients, setIngredients] = useState<{ name: string; quantity: string }[]>(
@@ -109,7 +102,6 @@ export default function AddRecipeScreen() {
       name: name.trim(),
       description: '',
       image: null,
-      region,
       category: 'Plat',
       duration: parseInt(duration) || 45,
       difficulty,
@@ -246,66 +238,6 @@ export default function AddRecipeScreen() {
               paddingVertical: 18,
             }}
           />
-        </View>
-
-        {/* Region */}
-        <View style={{ gap: 10 }}>
-          <Text style={{ fontSize: 14, fontWeight: '600', color: colors.textSecondary, paddingLeft: 8 }}>
-            {t('region')}
-          </Text>
-          <TouchableOpacity
-            onPress={() => setShowRegionPicker(!showRegionPicker)}
-            activeOpacity={0.7}
-            style={{
-              backgroundColor: colors.inputBg,
-              borderRadius: 24,
-              paddingHorizontal: 20,
-              paddingVertical: 18,
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-            <Text style={{ fontSize: 16, color: colors.text }}>{region}</Text>
-            <Ionicons
-              name={showRegionPicker ? 'chevron-up' : 'chevron-down'}
-              size={20}
-              color={colors.textSecondary}
-            />
-          </TouchableOpacity>
-          {showRegionPicker && (
-            <View
-              style={{
-                backgroundColor: colors.card,
-                borderRadius: 24,
-                overflow: 'hidden',
-                shadowColor: fixedColors.shadow,
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.08,
-                shadowRadius: 12,
-                elevation: 4,
-              }}>
-              {REGIONS.map((r, i) => (
-                <TouchableOpacity
-                  key={r}
-                  onPress={() => { setRegion(r); setShowRegionPicker(false); }}
-                  style={{
-                    paddingHorizontal: 20,
-                    paddingVertical: 14,
-                    backgroundColor: region === r ? (isDark ? colors.surface : colors.surface) : 'transparent',
-                    borderBottomWidth: i < REGIONS.length - 1 ? 1 : 0,
-                    borderBottomColor: colors.border,
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}>
-                  <Text style={{ fontSize: 16, color: region === r ? colors.accent : colors.text }}>
-                    {r}
-                  </Text>
-                  {region === r && <Ionicons name="checkmark" size={18} color={colors.accent} />}
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
         </View>
 
         {/* Duration + Difficulty bento */}

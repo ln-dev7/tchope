@@ -10,11 +10,11 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
 import { useUserRecipes } from '@/context/UserRecipesContext';
 import RecipeCard from '@/components/RecipeCard';
-import type { Region, Recipe } from '@/types';
+import type { Recipe } from '@/types';
 import { photosFirst } from '@/constants/images';
 
 export default function RecipesListScreen() {
-  const { region, title } = useLocalSearchParams<{ region?: string; title?: string }>();
+  const { title } = useLocalSearchParams<{ title?: string }>();
   const { colors } = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
@@ -29,23 +29,21 @@ export default function RecipesListScreen() {
   );
 
   const filteredRecipes = useMemo(() => {
-    let list = region
-      ? allRecipes.filter((r) => r.region === region)
-      : allRecipes;
+    let list: Recipe[] = allRecipes;
 
     if (query.trim()) {
       const q = query.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
       list = list.filter((r) => {
-        const searchable = [r.name, r.description, r.region, ...r.ingredients.map((i) => i.name)].join(' ');
+        const searchable = [r.name, r.description, ...r.ingredients.map((i) => i.name)].join(' ');
         return searchable.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(q);
       });
     }
 
     // Ordre alphabétique, mais les plats sans photo fiable toujours à la fin.
     return photosFirst([...list].sort((a, b) => a.name.localeCompare(b.name)));
-  }, [allRecipes, region, query]);
+  }, [allRecipes, query]);
 
-  const screenTitle = title || (region ? `${region}` : t('allRecipes'));
+  const screenTitle = title || t('allRecipes');
 
   return (
     <SafeAreaView style={{ flex: 1, width: '100%', maxWidth: 840, alignSelf: 'center', backgroundColor: colors.background }} edges={['top', 'left', 'right']}>

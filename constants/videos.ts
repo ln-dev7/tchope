@@ -139,7 +139,7 @@ export const recipeVideos: Record<string, RecipeVideo[]> = {
     { id: 'XaFcgmMS04A', title: 'Tenue Militaire — Gâteau de maïs aux feuilles de macabo' },
   ],
   'ebandjea': [
-    { id: 'h_-IYGLD3Hc', title: 'Ebandjea — Poisson épicé de Kribi' },
+    { id: 'h_-IYGLD3Hc', title: 'Ebandjea — Poisson épicé' },
   ],
   'choux-farcis': [
     { id: 'BYVyZZM5V6o', title: 'Feuilles de chou farcies à la viande hachée' },

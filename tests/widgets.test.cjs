@@ -19,7 +19,7 @@ test('calendar uses local dates across midnight, month and year boundaries',()=>
  assert.deepEqual(model.strings([1,null,'ok',{}]),['ok']);
 });
 function fixture(storage){
- const recipe={id:'ndole',name:'Ndolé',region:'Littoral',duration:120,servings:4,ingredients:[]};
+ const recipe={id:'ndole',name:'Ndolé',category:'Sauce',duration:120,servings:4,ingredients:[]};
  const country={slug:'barbados',name:'Barbade',mainCity:'Bridgetown',tagline:'Une île des Caraïbes',emoji:'🇧🇧'};
  const mocks={
  '@react-native-async-storage/async-storage':{getItem:async key=>storage[key]===undefined?null:JSON.stringify(storage[key])},

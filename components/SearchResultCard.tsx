@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
+import { CATEGORY_KEYS } from '@/constants/categories';
 import RecipeImage from './RecipeImage';
 import FavoriteButton from './ui/FavoriteButton';
 import type { Recipe, UserRecipe } from '@/types';
@@ -21,7 +22,7 @@ export default function SearchResultCard({ recipe }: { recipe: Recipe }) {
       </View>
       <View style={{ padding: 18, gap: 10 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-          <Text style={{ flex: 1, fontSize: 11, fontWeight: '700', letterSpacing: 1, color: colors.accent, textTransform: 'uppercase' }}>{recipe.region}</Text>
+          <Text style={{ flex: 1, fontSize: 11, fontWeight: '700', letterSpacing: 1, color: colors.accent, textTransform: 'uppercase' }}>{t(CATEGORY_KEYS[recipe.category])}</Text>
           <Text style={{ fontSize: 12, color: colors.textSecondary }}>{difficultyLabel}</Text>
         </View>
         <Text style={{ fontSize: 21, fontWeight: '700', letterSpacing: -0.4, color: colors.text }}>{recipe.name}</Text>

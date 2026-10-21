@@ -175,7 +175,7 @@ export const batch3: Record<string, { name: string; description?: string; ingred
   // Recipe 58: Okok Salé
   'okok-sale': {
     name: 'Salted Okok',
-    description: 'The Bassa / Littoral version of Okok. The secret: the addition of rock salt (kanwa) and smoked fish or crayfish for intense umami flavor.',
+    description: 'The Bassa version of Okok. The secret: the addition of rock salt (kanwa) and smoked fish or crayfish for intense umami flavor.',
     ingredients: [
       { name: 'Finely chopped okok', quantity: '500 g' },
       { name: 'Concentrated palm nut juice', quantity: '1 liter' },
@@ -360,7 +360,7 @@ export const batch3: Record<string, { name: string; description?: string; ingred
   // Recipe 66: Pilé de Pommes de Terre
   'pile-pommes-de-terre': {
     name: 'Pounded Potatoes',
-    description: 'A Western Cameroon specialty of potatoes and beans pounded together with palm oil - simple, economical, and satisfying.',
+    description: 'A Cameroonian specialty of potatoes and beans pounded together with palm oil - simple, economical, and satisfying.',
     ingredients: [
       { name: 'Red or black beans', quantity: '700 g' },
       { name: 'Potatoes', quantity: '2 kg' },
@@ -550,7 +550,7 @@ export const batch3: Record<string, { name: string; description?: string; ingred
   // Recipe 74: Riz Jollof Façon Buea
   'riz-jollof': {
     name: 'Jollof Rice Buea Style',
-    description: 'A Cameroonian twist on the famous West African Jollof rice, enriched with coconut milk, mushrooms, and fresh vegetables.',
+    description: 'A Cameroonian twist on the famous Jollof rice, enriched with coconut milk, mushrooms, and fresh vegetables.',
     ingredients: [
       { name: 'Chopped onion', quantity: '1' },
       { name: 'Peanut oil', quantity: '2 tablespoons' },

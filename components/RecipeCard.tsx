@@ -4,6 +4,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
 import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from '@/hooks/useTranslation';
+import { CATEGORY_KEYS } from '@/constants/categories';
 import RecipeImage from './RecipeImage';
 import type { Recipe } from '@/types';
 
@@ -14,6 +16,7 @@ type Props = {
 
 export default function RecipeCard({ recipe, titlePaddingRight }: Props) {
   const { colors, isDark } = useTheme();
+  const { t } = useTranslation();
   const router = useRouter();
 
   return (
@@ -45,9 +48,9 @@ export default function RecipeCard({ recipe, titlePaddingRight }: Props) {
           {recipe.name}
         </Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-          <Ionicons name="location-outline" size={12} color={colors.textSecondary} />
+          <Ionicons name="restaurant-outline" size={12} color={colors.textSecondary} />
           <Text style={{ fontSize: 12, color: colors.textSecondary }}>
-            {recipe.region}
+            {t(CATEGORY_KEYS[recipe.category])}
           </Text>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14, paddingTop: 4 }}>

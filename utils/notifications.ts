@@ -65,8 +65,8 @@ async function scheduleRecipeOfTheDay(time: string, isFr: boolean) {
         ? `${recipe.emoji} Recette du jour : ${recipe.name}`
         : `${recipe.emoji} Recipe of the day: ${recipe.name}`,
       body: isFr
-        ? `${recipe.region} · ${recipe.duration} min — Découvrez la recette !`
-        : `${recipe.region} · ${recipe.duration} min — Check it out!`,
+        ? `${recipe.duration} min — Découvrez la recette !`
+        : `${recipe.duration} min — Check it out!`,
       sound: true,
       data: { screen: `/recipe/${recipe.id}` },
     },

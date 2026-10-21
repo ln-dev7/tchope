@@ -8,19 +8,11 @@ import { useRouter } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useLocalizedRecipes } from '@/hooks/useLocalizedRecipes';
-import { useUserRecipes } from '@/context/UserRecipesContext';
 import FeaturedCard from '@/components/FeaturedCard';
 import RecipeCard from '@/components/RecipeCard';
-import RegionItem from '@/components/RegionItem';
 import ProBadge from '@/components/ProBadge';
 import { useTabLayout } from '@/hooks/useTabLayout';
 import { type } from '@/constants/design';
-import type { Region } from '@/types';
-
-const ALL_REGIONS: Region[] = [
-  'Littoral', 'Ouest', 'Centre', 'Sud', 'Nord',
-  'Est', 'Adamaoua', 'Extrême-Nord', 'Nord-Ouest', 'Sud-Ouest',
-];
 
 const FEATURED_ORDER = [
   'ndole', 'poulet-dg', 'eru', 'poisson-braise',
@@ -40,13 +32,6 @@ export default function HomeScreen() {
   const router = useRouter();
   const recipes = useLocalizedRecipes();
   const { contentBottom } = useTabLayout();
-  const { userRecipes } = useUserRecipes();
-
-  const hasTchopAIRecipes = userRecipes.some((r) => r.region === 'TchopAI');
-  const displayRegions = useMemo(
-    () => hasTchopAIRecipes ? [...ALL_REGIONS, 'TchopAI' as Region] : ALL_REGIONS,
-    [hasTchopAIRecipes],
-  );
 
   const featuredRecipes = useMemo(
     () => FEATURED_ORDER.map((id) => recipes.find((r) => r.id === id)).filter(Boolean) as typeof recipes,
@@ -96,15 +81,7 @@ export default function HomeScreen() {
           </ScrollView>
         </View>
 
-        <View style={{ paddingVertical: 32, gap: 18 }}>
-          <View style={{ paddingHorizontal: 24, gap: 6 }}>
-            <Text accessibilityRole="header" style={[type.section, { color: colors.text }]}>{t('regions')}</Text>
-            <Text style={{ fontSize: 14, color: colors.textSecondary }}>{t('regionSubtitle')}</Text>
-          </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 24, gap: 12 }}>
-            {displayRegions.map((region) => <RegionItem key={region} region={region} onPress={() => router.push(`/recipes-list?region=${encodeURIComponent(region)}&title=${encodeURIComponent(region)}` as any)} />)}
-          </ScrollView>
-        </View>
+        <View style={{ height: 32 }} />
 
         <TouchableOpacity accessibilityRole="button" onPress={() => router.push('/tchop-ai')} activeOpacity={0.85}
           style={{ marginHorizontal: 24, padding: 20, backgroundColor: colors.accentSoft, borderRadius: 20, gap: 12 }}>

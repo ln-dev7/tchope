@@ -1,7 +1,7 @@
 export const batch5: Record<string, { name: string; description?: string; ingredients?: { name: string; quantity: string }[]; steps?: string[]; tips?: string | null }> = {
   'kilishi': {
     name: 'Kilishi',
-    description: 'Kilishi is sun-dried beef coated in a spicy peanut paste and grilled. An iconic specialty of the Fulani people of the Far North, it is a protein-rich snack that keeps for several weeks.',
+    description: 'Kilishi is sun-dried beef coated in a spicy peanut paste and grilled. An iconic specialty of the Fulani people, it is a protein-rich snack that keeps for several weeks.',
     ingredients: [
       { name: 'Lean beef', quantity: '1 kg' },
       { name: 'Roasted peanut paste', quantity: '200 g' },
@@ -27,7 +27,7 @@ export const batch5: Record<string, { name: string; description?: string; ingred
   },
   'boule-de-mil': {
     name: 'Millet Ball',
-    description: 'Millet ball is the staple food of the peoples of the Far North, including the Massa, Toupouri, and Mousgoum. It is a thick paste made from millet flour cooked in water, served as a ball and accompanied by sauces. It is eaten by hand.',
+    description: 'Millet ball is the staple food of several peoples, including the Massa, Toupouri, and Mousgoum. It is a thick paste made from millet flour cooked in water, served as a ball and accompanied by sauces. It is eaten by hand.',
     ingredients: [
       { name: 'Millet flour (sorghum)', quantity: '1 kg' },
       { name: 'Water', quantity: '1.5 liters' },
@@ -45,7 +45,7 @@ export const batch5: Record<string, { name: string; description?: string; ingred
   },
   'sauce-folere': {
     name: 'Foléré Sauce',
-    description: 'A tangy and refreshing sauce made from hibiscus calyces (folere), very popular in Maroua. Its bright red color and unique taste traditionally accompany millet balls.',
+    description: 'A tangy and refreshing sauce made from hibiscus calyces (folere), very popular. Its bright red color and unique taste traditionally accompany millet balls.',
     ingredients: [
       { name: 'Fresh folere calyces (or 150 g dried)', quantity: '300 g' },
       { name: 'Beef', quantity: '200 g' },
@@ -72,7 +72,7 @@ export const batch5: Record<string, { name: string; description?: string; ingred
   },
   'dambou-niari': {
     name: 'Dambou Niari',
-    description: 'A couscous made from millet flour mixed with bean leaf powder, steamed to perfection. A nutritious dish of the Hausa and Kanuri peoples of the Far North, often served with peanut oil and chili.',
+    description: 'A couscous made from millet flour mixed with bean leaf powder, steamed to perfection. A nutritious dish of the Hausa and Kanuri peoples, often served with peanut oil and chili.',
     ingredients: [
       { name: 'Millet flour', quantity: '500 g' },
       { name: 'Dried bean leaves (powdered)', quantity: '200 g' },
@@ -94,7 +94,7 @@ export const batch5: Record<string, { name: string; description?: string; ingred
   },
   'tchoukou': {
     name: 'Tchoukou',
-    description: 'Traditional cheese made by Fulani women of the Far North, prepared from curdled cow milk and sun-dried. It is an important source of protein sold at the markets in Maroua.',
+    description: 'Traditional cheese made by Fulani women, prepared from curdled cow milk and sun-dried. It is an important source of protein sold at markets.',
     ingredients: [
       { name: 'Fresh whole cow milk', quantity: '5 liters' },
       { name: 'Lemon juice (or natural rennet)', quantity: '5 tablespoons' },
@@ -113,7 +113,7 @@ export const batch5: Record<string, { name: string; description?: string; ingred
   },
   'bouillie-de-mil': {
     name: 'Millet Porridge',
-    description: 'An essential breakfast drink-food in the Far North. Prepared from millet flour, it is lightly sweetened and flavored with ginger and nutmeg.',
+    description: 'An essential breakfast drink-food. Prepared from millet flour, it is lightly sweetened and flavored with ginger and nutmeg.',
     ingredients: [
       { name: 'Millet flour', quantity: '300 g' },
       { name: 'Water', quantity: '1.5 liters' },
@@ -137,7 +137,7 @@ export const batch5: Record<string, { name: string; description?: string; ingred
   },
   'mbaibere': {
     name: 'Mbaiheré',
-    description: 'Golden and slightly crispy millet fritters, very popular in Maroua and Mokolo. They are eaten at breakfast or as a snack, often accompanied by millet porridge.',
+    description: 'Golden and slightly crispy millet fritters, very popular. They are eaten at breakfast or as a snack, often accompanied by millet porridge.',
     ingredients: [
       { name: 'Millet flour', quantity: '500 g' },
       { name: 'Wheat flour', quantity: '100 g' },
@@ -162,7 +162,7 @@ export const batch5: Record<string, { name: string; description?: string; ingred
   },
   'lwa-lwa': {
     name: 'Lwa Lwa',
-    description: 'A slimy sauce made from fresh okra, typical of the Massa and Mousgoum peoples of the Far North. Its characteristic stringy texture perfectly accompanies millet balls.',
+    description: 'A slimy sauce made from fresh okra, typical of the Massa and Mousgoum peoples. Its characteristic stringy texture perfectly accompanies millet balls.',
     ingredients: [
       { name: 'Fresh okra', quantity: '500 g' },
       { name: 'Smoked fish', quantity: '300 g' },
@@ -215,7 +215,7 @@ export const batch5: Record<string, { name: string; description?: string; ingred
   },
   'poisson-braise-maroua': {
     name: 'Maroua Grilled Fish',
-    description: 'A spicy grilled dish typical of the Far North, popular among the Kotoko people. The fish is marinated in a very hot spice blend before being grilled over embers. A festive dish from the evening markets.',
+    description: 'A spicy grilled dish popular among the Kotoko people. The fish is marinated in a very hot spice blend before being grilled over embers. A festive dish from the evening markets.',
     ingredients: [
       { name: 'Whole fish (Nile perch or tilapia)', quantity: '1.5 kg' },
       { name: 'Fresh red chili peppers (habanero)', quantity: '6' },
@@ -242,7 +242,7 @@ export const batch5: Record<string, { name: string; description?: string; ingred
   },
   'massa-galettes': {
     name: 'Massa',
-    description: 'Crispy and fluffy pancakes made from fermented millet and rice batter, cooked in an indented pan. Originating from the Hausa and Fulani peoples of Northern Cameroon, they are enjoyed at breakfast.',
+    description: 'Crispy and fluffy pancakes made from fermented millet and rice batter, cooked in an indented pan. Originating from the Hausa and Fulani peoples, they are enjoyed at breakfast.',
     ingredients: [
       { name: 'Small millet flour', quantity: '300 g' },
       { name: 'Rice', quantity: '200 g' },
@@ -265,7 +265,7 @@ export const batch5: Record<string, { name: string; description?: string; ingred
   },
   'sauce-feuilles-baobab': {
     name: 'Baobab Leaf Sauce',
-    description: 'A creamy and nutritious sauce made from dried baobab leaves (bokko), a daily dish of the Fulani and Toupouri peoples of Northern Cameroon. Its slightly slimy texture perfectly accompanies millet balls.',
+    description: 'A creamy and nutritious sauce made from dried baobab leaves (bokko), a daily dish of the Fulani and Toupouri peoples. Its slightly slimy texture perfectly accompanies millet balls.',
     ingredients: [
       { name: 'Dried baobab leaf powder', quantity: '100 g' },
       { name: 'Beef', quantity: '500 g' },
@@ -293,7 +293,7 @@ export const batch5: Record<string, { name: string; description?: string; ingred
   },
   'bouillie-mil-lait': {
     name: 'Millet Porridge with Milk',
-    description: 'A traditional breakfast from Northern Cameroon, prepared every morning by Fulani, Guidar, and Mundang families. A creamy millet porridge enriched with curdled milk, a pillar of Sahelian diet.',
+    description: 'A traditional breakfast, prepared every morning by Fulani, Guidar, and Mundang families. A creamy millet porridge enriched with curdled milk, a dietary staple.',
     ingredients: [
       { name: 'Millet flour', quantity: '200 g' },
       { name: 'Water', quantity: '1 liter' },
@@ -315,7 +315,7 @@ export const batch5: Record<string, { name: string; description?: string; ingred
   },
   'dambou': {
     name: 'Dambou',
-    description: 'Steamed millet couscous topped with finely chopped moringa leaves and sauteed onions. A nourishing everyday dish of the Fulani and Mbororo peoples of Adamaoua.',
+    description: 'Steamed millet couscous topped with finely chopped moringa leaves and sauteed onions. A nourishing everyday dish of the Fulani and Mbororo peoples.',
     ingredients: [
       { name: 'Millet semolina', quantity: '500 g' },
       { name: 'Fresh moringa leaves', quantity: '300 g' },
@@ -339,7 +339,7 @@ export const batch5: Record<string, { name: string; description?: string; ingred
   },
   'wayna': {
     name: 'Wayna',
-    description: 'Traditional Fulani fritters made from rice flour and cooked rice, fermented overnight before frying. Sold at the markets of Ngaoundere, these golden and fluffy fritters are a popular snack.',
+    description: 'Traditional Fulani fritters made from rice flour and cooked rice, fermented overnight before frying. Sold at markets, these golden and fluffy fritters are a popular snack.',
     ingredients: [
       { name: 'Rice', quantity: '500 g' },
       { name: 'Rice flour', quantity: '250 g' },
@@ -364,7 +364,7 @@ export const batch5: Record<string, { name: string; description?: string; ingred
   },
   'mbusiri': {
     name: 'Mbusiri',
-    description: 'A thick and nourishing porridge made from sorghum flour, enriched with peanut paste and tamarind. A widespread breakfast dish among the Fulani of Adamaoua, particularly popular during Ramadan.',
+    description: 'A thick and nourishing porridge made from sorghum flour, enriched with peanut paste and tamarind. A widespread breakfast dish among the Fulani, particularly popular during Ramadan.',
     ingredients: [
       { name: 'Sorghum flour', quantity: '250 g' },
       { name: 'Roasted peanut paste', quantity: '3 tablespoons' },
@@ -387,7 +387,7 @@ export const batch5: Record<string, { name: string; description?: string; ingred
   },
   'naakiyaari': {
     name: 'Naakiyaari',
-    description: 'A dense and sweet cake made from sorghum flour, honey, and oil, slowly cooked. A traditional Fulani pastry prepared for weddings and end-of-Ramadan celebrations in Adamaoua.',
+    description: 'A dense and sweet cake made from sorghum flour, honey, and oil, slowly cooked. A traditional Fulani pastry prepared for weddings and end-of-Ramadan celebrations.',
     ingredients: [
       { name: 'Sorghum flour', quantity: '500 g' },
       { name: 'Honey', quantity: '200 ml' },
@@ -410,7 +410,7 @@ export const batch5: Record<string, { name: string; description?: string; ingred
   },
   'dakkere-au-lait': {
     name: 'Dakkere with Milk',
-    description: 'Small millet balls steamed like couscous, served in fresh or fermented milk. A delicate dish from the Fulani Mbororo cuisine of Adamaoua, often prepared for celebrations and weddings.',
+    description: 'Small millet balls steamed like couscous, served in fresh or fermented milk. A delicate dish from the Fulani Mbororo cuisine, often prepared for celebrations and weddings.',
     ingredients: [
       { name: 'Fine millet flour', quantity: '400 g' },
       { name: 'Fresh or fermented milk', quantity: '1 liter' },
@@ -431,7 +431,7 @@ export const batch5: Record<string, { name: string; description?: string; ingred
   },
   'koko-arachides': {
     name: 'Koko with Peanuts',
-    description: 'An emblematic dish of Eastern Cameroon from the Kako people of Batouri, made from Gnetum africanum leaves (okok) simmered in a creamy peanut sauce with smoked meat and fish.',
+    description: 'An emblematic dish of the Kako people, made from Gnetum africanum leaves (okok) simmered in a creamy peanut sauce with smoked meat and fish.',
     ingredients: [
       { name: 'Finely chopped okok leaves', quantity: '400 g' },
       { name: 'Roasted peanuts', quantity: '250 g' },
@@ -459,7 +459,7 @@ export const batch5: Record<string, { name: string; description?: string; ingred
   },
   'mikom': {
     name: 'Mikom',
-    description: 'An ancestral dish of the forest peoples of Eastern Cameroon, where caterpillars are steamed in banana leaves with messep and local spices. A protein-rich dish from Baka gastronomy.',
+    description: 'An ancestral dish of the forest peoples, where caterpillars are steamed in banana leaves with messep and local spices. A protein-rich dish from Baka gastronomy.',
     ingredients: [
       { name: 'Black caterpillars', quantity: '500 g' },
       { name: 'Messep leaves (tropical basil)', quantity: '1 bunch' },
@@ -485,7 +485,7 @@ export const batch5: Record<string, { name: string; description?: string; ingred
   },
   'kpwem-noix-palme': {
     name: 'Kpwem with Palm Nut Juice',
-    description: 'A traditional vegan dish from Eastern Cameroon, made from pounded cassava leaves, ripe bananas, and freshly extracted palm nut juice. Served with cassava tubers.',
+    description: 'A traditional vegan dish, made from pounded cassava leaves, ripe bananas, and freshly extracted palm nut juice. Served with cassava tubers.',
     ingredients: [
       { name: 'Fresh cassava leaves with stems', quantity: '2 kg' },
       { name: 'Fresh palm nuts', quantity: '1 kg' },
@@ -504,7 +504,7 @@ export const batch5: Record<string, { name: string; description?: string; ingred
   },
   'sauce-gombo-gibier': {
     name: 'Okra Sauce with Smoked Game',
-    description: 'A slimy and aromatic sauce typical of the East, prepared with fresh okra and smoked bush meat. Kanwa is essential to preserve the characteristic viscous texture of the okra.',
+    description: 'A slimy and aromatic sauce, prepared with fresh okra and smoked bush meat. Kanwa is essential to preserve the characteristic viscous texture of the okra.',
     ingredients: [
       { name: 'Smoked bush meat', quantity: '1 kg' },
       { name: 'Fresh okra', quantity: '500 g' },
@@ -532,7 +532,7 @@ export const batch5: Record<string, { name: string; description?: string; ingred
   },
   'ndomba-poisson-eau-douce': {
     name: 'Freshwater Fish Ndomba',
-    description: 'A freshwater fish parcel (catfish or carp) steamed in banana leaves, perfumed with wild herbs from the Eastern forest.',
+    description: 'A freshwater fish parcel (catfish or carp) steamed in banana leaves, perfumed with wild herbs.',
     ingredients: [
       { name: 'Fresh catfish or carp', quantity: '1.5 kg' },
       { name: 'Medium onions', quantity: '2' },
@@ -560,7 +560,7 @@ export const batch5: Record<string, { name: string; description?: string; ingred
   },
   'feuilles-manioc-arachides': {
     name: 'Cassava Leaves with Peanuts',
-    description: 'A nourishing stew of pounded cassava leaves simmered with creamy peanut paste and beef. A classic of the forest cuisine of Eastern Cameroon.',
+    description: 'A nourishing stew of pounded cassava leaves simmered with creamy peanut paste and beef. A classic of forest cuisine.',
     ingredients: [
       { name: 'Fresh cassava leaves', quantity: '2 kg' },
       { name: 'Beef', quantity: '500 g' },
@@ -585,7 +585,7 @@ export const batch5: Record<string, { name: string; description?: string; ingred
   },
   'porc-epic-sauce-tomate': {
     name: 'Porcupine in Tomato Sauce',
-    description: 'A prized bush meat dish from the Eastern forests, where porcupine is simmered in a spicy tomato sauce with local spices. Considered a celebratory dish among the Baka and Kako peoples.',
+    description: 'A prized bush meat dish, where porcupine is simmered in a spicy tomato sauce with local spices. Considered a celebratory dish among the Baka and Kako peoples.',
     ingredients: [
       { name: 'Cleaned porcupine meat', quantity: '1.5 kg' },
       { name: 'Fresh tomatoes', quantity: '6' },
@@ -614,7 +614,7 @@ export const batch5: Record<string, { name: string; description?: string; ingred
   },
   'sauce-arachide-poisson-fume': {
     name: 'Peanut Sauce with Smoked Freshwater Fish',
-    description: 'A creamy and aromatic sauce made from roasted peanut paste and smoked freshwater fish, typical of the riverside villages of Eastern Cameroon.',
+    description: 'A creamy and aromatic sauce made from roasted peanut paste and smoked freshwater fish.',
     ingredients: [
       { name: 'Smoked freshwater fish (catfish)', quantity: '2' },
       { name: 'Roasted peanut paste', quantity: '250 g' },
@@ -665,7 +665,7 @@ export const batch5: Record<string, { name: string; description?: string; ingred
   },
   'mbanga-soup': {
     name: 'Mbanga Soup',
-    description: 'A thick and creamy palm nut juice soup from the Bakweri people of the South-West, flavored with bush spices, smoked fish, and bitter leaves. The signature dish of Mount Cameroon.',
+    description: 'A thick and creamy palm nut juice soup from the Bakweri people, flavored with bush spices, smoked fish, and bitter leaves.',
     ingredients: [
       { name: 'Fresh palm nuts (or 500 g paste)', quantity: '1 kg' },
       { name: 'Smoked fish', quantity: '400 g' },
@@ -693,7 +693,7 @@ export const batch5: Record<string, { name: string; description?: string; ingred
   },
   'garri-saute-arachides': {
     name: 'Stir-Fried Garri with Peanuts',
-    description: 'Garri, made from fermented, dried, and sifted cassava, sauteed with roasted peanut pieces and palm oil. A versatile side dish from South-West Cameroon.',
+    description: 'Garri, made from fermented, dried, and sifted cassava, sauteed with roasted peanut pieces and palm oil. A versatile side dish of Cameroonian cuisine.',
     ingredients: [
       { name: 'Garri (cassava tapioca)', quantity: '400 g' },
       { name: 'Roasted peanuts', quantity: '100 g' },
@@ -715,7 +715,7 @@ export const batch5: Record<string, { name: string; description?: string; ingred
   },
   'plantain-roti-poisson': {
     name: 'Roasted Plantain with Smoked Fish',
-    description: 'An essential street food from Buea and Limbe: ripe plantain roasted on coals accompanied by smoked fish and a spicy sauce. A simple meal that embodies the everyday cuisine of the South-West.',
+    description: 'An essential street food: ripe plantain roasted on coals accompanied by smoked fish and a spicy sauce. A simple meal that embodies everyday Cameroonian cuisine.',
     ingredients: [
       { name: 'Ripe plantains', quantity: '8' },
       { name: 'Smoked fish (mackerel or sea bass)', quantity: '4 pieces' },
@@ -760,7 +760,7 @@ export const batch5: Record<string, { name: string; description?: string; ingred
   },
   'poisson-braise-kribi': {
     name: 'Kribi Grilled Fish',
-    description: 'A culinary institution of the southern Cameroonian coast. Marinated with djansang, pebe, and ginger, then slowly grilled over coals, this fish is served with a green condiment sauce. The signature dish of Kribi\'s beaches.',
+    description: 'A Cameroonian culinary institution. Marinated with djansang, pebe, and ginger, then slowly grilled over coals, this fish is served with a green condiment sauce.',
     ingredients: [
       { name: 'Whole fresh fish (sea bass or sea bream)', quantity: '1.5 kg' },
       { name: 'Onion', quantity: '1' },
@@ -785,11 +785,11 @@ export const batch5: Record<string, { name: string; description?: string; ingred
       'Grill the fish over charcoal embers for 15 minutes per side, basting regularly.',
       'Serve topped with the green condiment sauce alongside cassava sticks.',
     ],
-    tips: 'The secret of Kribi: gentle and steady coals, never direct flames. The djansang and pebe make all the difference.',
+    tips: 'The secret: gentle and steady coals, never direct flames. The djansang and pebe make all the difference.',
   },
   'crevettes-kribiennes': {
     name: 'Kribi-Style Shrimp',
-    description: 'Kribi shrimp, caught at the confluence of the Lobe River and the ocean, seared at high heat with garlic and njansan. A simple dish that celebrates the maritime bounty of Kribi.',
+    description: 'Shrimp seared at high heat with garlic and njansan. A simple dish that celebrates the bounty of the sea.',
     ingredients: [
       { name: 'Large fresh shrimp', quantity: '500 g' },
       { name: 'Red onion', quantity: '1' },
@@ -841,7 +841,7 @@ export const batch5: Record<string, { name: string; description?: string; ingred
   },
   'maban-kribi': {
     name: 'Maban de Kribi',
-    description: 'Small local sardines called "bilolos," caught in the Atlantic Ocean, seasoned and slowly smoked. Once a humble food, maban has become the number one gastronomic attraction of Kribi.',
+    description: 'Small local sardines called "bilolos," seasoned and slowly smoked. Once a humble food, maban has become a true gastronomic attraction.',
     ingredients: [
       { name: 'Fresh small sardines (bilolos)', quantity: '1 kg' },
       { name: 'Coarse salt', quantity: '3 tablespoons' },
@@ -863,7 +863,7 @@ export const batch5: Record<string, { name: string; description?: string; ingred
   },
   'corn-chaff': {
     name: 'Corn Chaff',
-    description: 'A hearty and rustic dish from the North-West, combining corn and beans simmered in palm oil with local spices. A complete protein-rich meal eaten at breakfast as well as dinner.',
+    description: 'A hearty and rustic dish, combining corn and beans simmered in palm oil with local spices. A complete protein-rich meal eaten at breakfast as well as dinner.',
     ingredients: [
       { name: 'Dried corn', quantity: '500 g' },
       { name: 'Red beans or black-eyed peas', quantity: '300 g' },
@@ -890,7 +890,7 @@ export const batch5: Record<string, { name: string; description?: string; ingred
   },
   'fufu-corn': {
     name: 'Fufu Corn',
-    description: 'The quintessential accompaniment of North-West Cameroon, a firm and elastic paste made exclusively from corn flour. Inseparable from Njama Njama and Kati Kati, fufu corn is eaten with the fingers.',
+    description: 'The quintessential accompaniment of Cameroonian cuisine, a firm and elastic paste made exclusively from corn flour. Inseparable from Njama Njama and Kati Kati, fufu corn is eaten with the fingers.',
     ingredients: [
       { name: 'Fine corn flour', quantity: '500 g' },
       { name: 'Water', quantity: '1.5 liters' },
@@ -908,7 +908,7 @@ export const batch5: Record<string, { name: string; description?: string; ingred
   },
   'koki-corn': {
     name: 'Koki Corn',
-    description: 'A sweet-savory variant of traditional koki, prepared with ground fresh corn and steamed in banana leaves. A golden palm oil-infused dish, a staple of North-West markets.',
+    description: 'A sweet-savory variant of traditional koki, prepared with ground fresh corn and steamed in banana leaves. A golden palm oil-infused dish, a market staple.',
     ingredients: [
       { name: 'Fresh corn cobs', quantity: '8 large' },
       { name: 'Yellow corn flour', quantity: '100 g' },
@@ -933,7 +933,7 @@ export const batch5: Record<string, { name: string; description?: string; ingred
   },
   'shaa': {
     name: 'Sha\'a',
-    description: 'An ancestral corn beer of the Grassfields peoples of the North-West. Cloudy and slightly tart, it is at the heart of traditional ceremonies among the Nso, Kom, and Bafut.',
+    description: 'An ancestral corn beer. Cloudy and slightly tart, it is at the heart of traditional ceremonies among the Nso, Kom, and Bafut.',
     ingredients: [
       { name: 'Dried corn', quantity: '3 kg' },
       { name: 'Water', quantity: '10 liters' },

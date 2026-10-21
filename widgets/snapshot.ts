@@ -2,6 +2,8 @@ import { recipes } from '../data/recipes';
 import { recipesEn } from '../data/recipes-en';
 import { resolveColors } from '../constants/themes';
 import { hasRecipePhoto } from '../constants/images';
+import { CATEGORY_KEYS } from '../constants/categories';
+import { translations } from '../constants/translations';
 import type { MealPlan } from '../context/MealPlannerContext';
 import { buildShoppingList, type ShoppingSelection } from '../utils/shopping-list';
 import { readStored } from './storage';
@@ -11,7 +13,7 @@ export async function buildSnapshot(now = new Date()): Promise<WidgetSnapshot> {
  const en=settings.language==='en'; const locale=en?'en':'fr';
  const all=recipes.map(r=>({...r,...(en?{name:recipesEn[r.id]?.name||r.name,ingredients:r.ingredients.map((i,n)=>({...i,name:recipesEn[r.id]?.ingredients?.[n]?.name||i.name}))}:{})}));
  const map=Object.fromEntries(all.map(r=>[r.id,r])); const baseMap=Object.fromEntries(recipes.map(r=>[r.id,r]));
- const recipe=(id:string,subtitle?:string):WidgetItem|null=>{const r=map[id];return r?{id,title:r.name,subtitle:subtitle||r.region,detail:`${r.duration} min`,url:`tchope://recipe/${encodeURIComponent(id)}`,symbol:'fork.knife',image:hasRecipePhoto(id)?`asset:${id}`:''}:null;};
+ const recipe=(id:string,subtitle?:string):WidgetItem|null=>{const r=map[id];return r?{id,title:r.name,subtitle:subtitle||translations[locale][CATEGORY_KEYS[r.category]],detail:`${r.duration} min`,url:`tchope://recipe/${encodeURIComponent(id)}`,symbol:'fork.knife',image:hasRecipePhoto(id)?`asset:${id}`:''}:null;};
  const favorites=strings(await readStored('tchope_favorites',[])).map(id=>recipe(id)).filter((r):r is WidgetItem=>!!r).slice(0,6);
  const pool=all.filter(r=>hasRecipePhoto(r.id));
  const rawPlan=await readStored<MealPlan|null>('tchope_meal_plan',null);

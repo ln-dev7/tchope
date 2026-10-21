@@ -1,7 +1,7 @@
 export const batch4: Record<string, { name: string; description?: string; ingredients?: { name: string; quantity: string }[]; steps?: string[]; tips?: string | null }> = {
   'sanga': {
     name: 'Sanga',
-    description: 'The sweet tenderness of corn and greens. The secret: use very fresh corn (milky stage) for its natural sweet flavor. In Central Cameroon, neither salt nor sugar is added — the raw taste of ingredients is savored.',
+    description: 'The sweet tenderness of corn and greens. The secret: use very fresh corn (milky stage) for its natural sweet flavor. Traditionally, neither salt nor sugar is added — the raw taste of ingredients is savored.',
     ingredients: [
       { name: 'Fresh corn on the cob (or fresh corn kernels)', quantity: '10 cobs (or 1 kg)' },
       { name: 'Black cocoyam leaves (or fresh spinach)', quantity: '3 large bunches' },
@@ -14,7 +14,7 @@ export const batch4: Record<string, { name: string; description?: string; ingred
       'Incorporation: Add the cut leaves. Mix well.',
       'Reduction: Cook on low heat for about 1 hour, stirring regularly to prevent the bottom from burning. The Sanga is ready when the mixture has the consistency of a thick purée and the palm oil begins to bead on the sides.',
     ],
-    tips: 'Traditional note: In Central Cameroon, neither salt nor sugar is added — the raw taste of the ingredients is savored. Stir regularly to prevent burning.',
+    tips: 'Traditional note: neither salt nor sugar is added — the raw taste of the ingredients is savored. Stir regularly to prevent burning.',
   },
   'sauce-tomate-champignons': {
     name: 'Mushroom Tomato Sauce',
@@ -118,7 +118,7 @@ export const batch4: Record<string, { name: string; description?: string; ingred
   },
   'taro-sauce-jaune': {
     name: 'Achu (Taro with Yellow Sauce)',
-    description: 'The iconic dish of the North-West. The secret lies in the perfect emulsion between limestone water (kanwa) and palm oil, which transforms red oil into a smooth yellow sauce.',
+    description: 'An iconic dish. The secret lies in the perfect emulsion between limestone water (kanwa) and palm oil, which transforms red oil into a smooth yellow sauce.',
     ingredients: [
       { name: 'Taro (colocasia)', quantity: '2 kg' },
       { name: 'Unripe plantains (for texture)', quantity: '4' },
@@ -222,7 +222,7 @@ export const batch4: Record<string, { name: string; description?: string; ingred
   },
   'jus-gingembre': {
     name: 'Ginger Juice (Njinja)',
-    description: 'A fiery and invigorating ginger juice blended with pineapple juice and lime - a popular West African tonic.',
+    description: 'A fiery and invigorating ginger juice blended with pineapple juice and lime - a popular tonic.',
     ingredients: [
       { name: 'Fresh ginger', quantity: '400 g' },
       { name: 'Pineapple juice', quantity: '2 liters' },

@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from '@/hooks/useTranslation';
+import { CATEGORY_KEYS } from '@/constants/categories';
 import RecipeImage from './RecipeImage';
 import FavoriteButton from './ui/FavoriteButton';
 import type { Recipe } from '@/types';
@@ -28,7 +29,7 @@ export default function FeaturedCard({ recipe }: { recipe: Recipe }) {
       </View>
       <View style={{ padding: 18, gap: 8 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-          <Text style={{ flex: 1, color: colors.accent, fontSize: 11, fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase' }}>{recipe.region}</Text>
+          <Text style={{ flex: 1, color: colors.accent, fontSize: 11, fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase' }}>{t(CATEGORY_KEYS[recipe.category])}</Text>
           <Ionicons name="time-outline" size={14} color={colors.textSecondary} />
           <Text style={{ color: colors.textSecondary, fontSize: 12 }}>{recipe.duration} min</Text>
         </View>

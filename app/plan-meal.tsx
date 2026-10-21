@@ -69,7 +69,7 @@ export default function PlanMealScreen() {
       {filtered.length === 0 && <Text style={{ color: colors.textSecondary }}>{t('noResults')}</Text>}
       {filtered.map(r => <TouchableOpacity key={r.id} onPress={() => { setRecipeId(r.id); setPortions(null); }} accessibilityRole="button" accessibilityState={{ selected: recipeId === r.id }} style={{ flexDirection: 'row', alignItems: 'center', gap: 12, padding: 10, borderRadius: 18, borderWidth: 1, borderColor: recipeId === r.id ? colors.accent : colors.border, backgroundColor: colors.card }}>
         <RecipeImage recipeId={r.id} category={r.category} imageUri={'imageUri' in r ? r.imageUri as string : undefined} isDark={isDark} style={{ width: 64, height: 64 }} borderRadius={14} />
-        <View style={{ flex: 1 }}><Text style={{ color: colors.text, fontWeight: '700', fontSize: 16 }}>{r.name}</Text><Text style={{ color: colors.textSecondary, marginTop: 4 }}>{r.duration} min · {r.region}</Text></View>
+        <View style={{ flex: 1 }}><Text style={{ color: colors.text, fontWeight: '700', fontSize: 16 }}>{r.name}</Text><Text style={{ color: colors.textSecondary, marginTop: 4 }}>{r.duration} min</Text></View>
         <Ionicons name={recipeId === r.id ? 'checkmark-circle' : 'ellipse-outline'} size={24} color={recipeId === r.id ? colors.accent : colors.textMuted} />
       </TouchableOpacity>)}
     </ScrollView>

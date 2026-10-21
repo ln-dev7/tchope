@@ -34,7 +34,7 @@ export default function MiniRecipeCard({ recipe, isDark, colors, onPress }: {
           {recipe.name}
         </Text>
         <Text style={{ fontSize: 11, color: colors.textSecondary }}>
-          {recipe.region} · {recipe.duration} min
+          {recipe.duration} min
         </Text>
       </View>
       <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
